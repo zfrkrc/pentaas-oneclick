@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./reports:/reports:ro
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    env_file: .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # kontrol noktası
+      - ./reports:/app/reports
+      - ./backend/compose:/app/compose:ro
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+volumes:
+  redis_data:
