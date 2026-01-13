@@ -1,14 +1,10 @@
-FROM instrumentisto/nmap:7.94
+FROM nmap/nmap:7.94
 
 USER root
 
-ENV NMAPDIR=/usr/share/nmap
-ENV NMAP_DATA_DIR=/usr/share/nmap
-
-RUN apk add --no-cache \
-    bash \
-    curl \
-    jq
+RUN apt-get update && \
+    apt-get install -y bash curl jq && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /scan
 

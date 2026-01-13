@@ -16,9 +16,7 @@ mkdir -p "$DATA_DIR"
 echo "[+] Scan started for $TARGET"
 echo "[+] Output dir: $DATA_DIR"
 
-# 🔥 NSE PATH'i EXPLICIT veriyoruz
 nmap \
-  --datadir /usr/share/nmap \
   -Pn \
   -sV \
   -oA "$DATA_DIR/nmap" \
