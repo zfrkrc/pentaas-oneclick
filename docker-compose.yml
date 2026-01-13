@@ -15,7 +15,7 @@ services:
     build: ./backend
     env_file: .env
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock  # kontrol noktası
+      - /var/run/docker.sock:/var/run/docker.sock
       - ./reports:/app/reports
       - ./backend/compose:/app/compose:ro
     restart: unless-stopped
@@ -24,5 +24,6 @@ services:
     image: redis:7-alpine
     volumes:
       - redis_data:/data
+
 volumes:
   redis_data:

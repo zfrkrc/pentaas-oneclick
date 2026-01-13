@@ -1,11 +1,12 @@
 from fastapi import FastAPI, BackgroundTasks, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, IPvAnyAddress
-import uuid, subprocess, json, pathlib, os
+import uuid, pathlib, json, subprocess
 from engine import run_scan
 from ai_sum import summarise
 
 app = FastAPI(title="Pentest-OneClick")
-SCAN_ROOT = pathlib.Path("reports")
+SCAN_ROOT = pathlib.Path("/app/reports")
 
 class ScanReq(BaseModel):
     ip: IPvAnyAddress
@@ -13,7 +14,7 @@ class ScanReq(BaseModel):
 
 @app.post("/scan")
 def create_scan(req: ScanReq, bg: BackgroundTasks):
-    uid = run_scan(str(req.ip), req.category)  # engine.py
+    uid = run_scan(str(req.ip), req.category)
     return {"uid": uid, "status": "queued"}
 
 @app.get("/report/{uid}")
@@ -29,5 +30,5 @@ def get_report(uid: str):
 def download(uid: str):
     zip_path = SCAN_ROOT / uid / "bundle.zip"
     if not zip_path.exists():
-        subprocess.run(["zip", "-j", zip_path, SCAN_ROOT / uid], check=True)
+        subprocess.run(["zip", "-j", zip_path, *(SCAN_ROOT / uid).glob("*")], check=True)
     return FileResponse(zip_path, filename=f"{uid}.zip")

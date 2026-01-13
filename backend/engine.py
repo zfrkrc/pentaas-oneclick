@@ -1,21 +1,31 @@
-# backend/engine.py
-import uuid, subprocess, pathlib, json
+import subprocess
+from pathlib import Path
+import uuid
 
-SCAN_ROOT = pathlib.Path("/app/reports")
+BASE_DIR = Path("/app/reports")
 
 def run_scan(ip: str, category: str) -> str:
     uid = uuid.uuid4().hex
-    base = SCAN_ROOT / uid
-    base.mkdir(parents=True, exist_ok=True)
-    data_vol = base / "data"
-    data_vol.mkdir(exist_ok=True)
 
-    compose = f"/app/compose/docker-compose.{category}.yml"
-    subprocess.run([
-        "docker", "compose", "-f", compose,
+    data_dir = BASE_DIR / uid / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+
+    compose_file = "/app/compose/docker-compose.string.yml"
+
+    cmd = [
+        "docker", "compose",
+        "-f", compose_file,
         "run", "--rm",
         "-e", f"TARGET={ip}",
-        "-v", f"{data_vol.absolute()}:/data",
+        "-e", f"DATA_DIR={str(data_dir)}",
         "merge"
-    ], check=True)
+    ]
+
+    subprocess.run(
+        cmd,
+        check=True
+    )
+
+    print("Running:", " ".join(cmd))
+    subprocess.run(cmd, check=True, cwd="/home/zfrkrc/pentest/pentaas-oneclick")
     return uid
