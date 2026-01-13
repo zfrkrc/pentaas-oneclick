@@ -1,8 +1,9 @@
-FROM alpine:3.19
+FROM instrumentisto/nmap:7.94
+
+USER root
 
 RUN apk add --no-cache \
     bash \
-    nmap \
     curl \
     jq
 
