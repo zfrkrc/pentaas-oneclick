@@ -218,11 +218,11 @@ def get_scan_results(scan_id: str):
                 # dirsearch format is sometimes a dict with "results" or list of entries
                 entries = data if isinstance(data, list) else data.get("results", [])
                 for entry in entries:
-                    if entry.get("status") in [200, 204, 301, 302]:
+                    if entry.get("status") in [200, 204, 301, 302, 307]:
                         results["findings"].append({
                             "id": f"dir-{len(results['findings'])}",
                             "title": f"Directory Found: {entry.get('path', 'unknown')}",
-                            "severity": "Medium" if entry.get("status") == 200 else "Low",
+                            "severity": "Medium" if entry.get("status") in [200, 307] else "Low",
                             "description": f"Accessible path found: {entry.get('url')} (Status: {entry.get('status')})"
                         })
         except: pass
@@ -256,10 +256,19 @@ def get_scan_results(scan_id: str):
                 for item in data:
                     sev = item.get("severity", "INFO")
                     # Map TestSSL severity to frontend
-                    sev_map = {"CRITICAL": "Critical", "HIGH": "High", "MEDIUM": "Medium", "LOW": "Low", "WARN": "Medium", "INFO": "Info", "OK": "Info"}
+                    sev_map = {
+                        "FATAL": "Critical",
+                        "CRITICAL": "Critical",
+                        "HIGH": "High",
+                        "MEDIUM": "Medium",
+                        "LOW": "Low",
+                        "WARN": "Medium",
+                        "INFO": "Info",
+                        "OK": "Info"
+                    }
                     mapped_sev = sev_map.get(sev, "Info")
                     
-                    if sev in ["CRITICAL", "HIGH", "MEDIUM", "LOW", "WARN"]:
+                    if sev in ["FATAL", "CRITICAL", "HIGH", "MEDIUM", "LOW", "WARN"]:
                         results["findings"].append({
                             "id": f"tssl-{len(results['findings'])}",
                             "title": f"TestSSL: {item.get('id', 'Issue')}",
