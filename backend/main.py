@@ -83,7 +83,15 @@ def get_scan_results(scan_id: str):
             try:
                 with open(nikto_path, 'r') as f:
                     data = json.load(f)
-                    for item in data.get("vulnerabilities", []):
+                    # Nikto can be a list or a dict
+                    items = []
+                    if isinstance(data, list):
+                        for entry in data:
+                            items.extend(entry.get("vulnerabilities", []))
+                    else:
+                        items = data.get("vulnerabilities", [])
+                    
+                    for item in items:
                         results["findings"].append({
                             "id": f"nikto-{len(results['findings'])}",
                             "title": "Nikto Finding",
@@ -102,10 +110,12 @@ def get_scan_results(scan_id: str):
                 if isinstance(sites, dict): sites = [sites] # robustness
                 for site in sites:
                     for alert in site.get("alerts", []):
+                        # Map riskcode to severity
+                        risk = alert.get("riskdesc", "Medium").split(" ")[0].capitalize()
                         results["findings"].append({
                             "id": f"zap-{len(results['findings'])}",
                             "title": alert.get("name", "ZAP Finding"),
-                            "severity": alert.get("riskdesc", "Medium").split(" ")[0],
+                            "severity": risk,
                             "description": alert.get("desc", "No description provided.")
                         })
         except: pass
@@ -235,8 +245,27 @@ def get_scan_results(scan_id: str):
                          continue
 
                     scan_res = target.get("scan_result", {})
-                    # Add detailed SSL findings if scan_result exists
-                    # (logic for protocols, etc.)
+        except: pass
+
+    # 8. TestSSL (Common - JSON list)
+    testssl_path = os.path.join(data_dir, "testssl.json")
+    if os.path.exists(testssl_path):
+        try:
+            with open(testssl_path, 'r') as f:
+                data = json.load(f)
+                for item in data:
+                    sev = item.get("severity", "INFO")
+                    # Map TestSSL severity to frontend
+                    sev_map = {"CRITICAL": "Critical", "HIGH": "High", "MEDIUM": "Medium", "LOW": "Low", "WARN": "Medium", "INFO": "Info", "OK": "Info"}
+                    mapped_sev = sev_map.get(sev, "Info")
+                    
+                    if sev in ["CRITICAL", "HIGH", "MEDIUM", "LOW", "WARN"]:
+                        results["findings"].append({
+                            "id": f"tssl-{len(results['findings'])}",
+                            "title": f"TestSSL: {item.get('id', 'Issue')}",
+                            "severity": mapped_sev,
+                            "description": item.get("finding", "No description")
+                        })
         except: pass
 
     # Placeholder for counts if findings empty
