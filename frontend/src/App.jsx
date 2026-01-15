@@ -18,35 +18,53 @@ function App() {
     // Mode-specific templates
     const templates = {
       black: {
-        counts: [0, 1, 4, 12], // Crit, High, Med, Low
         findings: [
           { id: 1, title: 'Unencrypted HTTP Communication', severity: 'High', description: 'Sensitive data transmitted over plain text.' },
           { id: 2, title: 'Insecure SSL Cipher Suite', severity: 'Medium', description: 'Server supports deprecated TLS 1.0/1.1.' },
-          { id: 3, title: 'Missing Security Headers', severity: 'Low', description: 'HSTS and CSP headers are not present.' },
-          { id: 4, title: 'Exposed Server Signature', severity: 'Low', description: 'Server version (Nginx/1.18.0) is visible in headers.' }
+          { id: 3, title: 'Missing Security Headers', severity: 'Medium', description: 'HSTS and CSP headers are not present.' },
+          { id: 4, title: 'Exposed Server Signature', severity: 'Low', description: 'Server version (Nginx/1.18.0) is visible in headers.' },
+          { id: 5, title: 'Open Port 8080', severity: 'Low', description: 'Non-standard HTTP port is accessible externally.' },
+          { id: 6, title: 'Directory Browsing Enabled', severity: 'Low', description: '/backup directory allows file listing.' }
         ]
       },
       gray: {
-        counts: [1, 3, 8, 18],
         findings: [
           { id: 1, title: 'Session Hijacking via Lack of CSRF', severity: 'Critical', description: 'Forms lack anti-CSRF tokens.' },
           { id: 2, title: 'Insecure Direct Object Reference (IDOR)', severity: 'High', description: 'User data accessible by changing ID in URL.' },
-          { id: 3, title: 'Weak Password Policy', severity: 'Medium', description: 'Passwords lack complexity requirements.' },
-          { id: 4, title: 'Improper Error Handling', severity: 'Low', description: 'Stack traces visible on 500 errors.' }
+          { id: 3, title: 'Privilege Escalation', severity: 'High', description: 'Regular users can access admin endpoints.' },
+          { id: 4, title: 'Weak Password Policy', severity: 'Medium', description: 'Passwords lack complexity requirements.' },
+          { id: 5, title: 'Session Timeout Not Configured', severity: 'Medium', description: 'Sessions remain active indefinitely.' },
+          { id: 6, title: 'Improper Error Handling', severity: 'Low', description: 'Stack traces visible on 500 errors.' }
         ]
       },
       white: {
-        counts: [2, 5, 12, 24],
         findings: [
           { id: 1, title: 'Blind SQL Injection on /api/v1/search', severity: 'Critical', description: 'Database exfiltration possible via time-based injection.' },
           { id: 2, title: 'Remote Code Execution (RCE)', severity: 'Critical', description: 'Unsafe deserialization detected in file upload.' },
           { id: 3, title: 'Hardcoded API Credentials', severity: 'High', description: 'AWS Secret keys found in frontend build artifacts.' },
-          { id: 4, title: 'Insecure Cryptographic Storage', severity: 'High', description: 'User passwords stored using MD5 instead of Argon2/BCrypt.' }
+          { id: 4, title: 'Insecure Cryptographic Storage', severity: 'High', description: 'User passwords stored using MD5 instead of Argon2/BCrypt.' },
+          { id: 5, title: 'XML External Entity (XXE) Injection', severity: 'High', description: 'XML parser allows external entity references.' },
+          { id: 6, title: 'Command Injection in Log Parser', severity: 'High', description: 'User input passed directly to shell commands.' },
+          { id: 7, title: 'Path Traversal Vulnerability', severity: 'Medium', description: 'File download endpoint allows ../../../etc/passwd access.' },
+          { id: 8, title: 'Insecure Deserialization', severity: 'Medium', description: 'Pickle files accepted without validation.' }
         ]
       }
     };
 
     const selected = templates[mode] || templates.black;
+
+    // Calculate counts dynamically from findings
+    const calculateCounts = (findings) => {
+      const counts = { Critical: 0, High: 0, Medium: 0, Low: 0 };
+      findings.forEach(f => {
+        if (counts[f.severity] !== undefined) {
+          counts[f.severity]++;
+        }
+      });
+      return [counts.Critical, counts.High, counts.Medium, counts.Low];
+    };
+
+    const counts = calculateCounts(selected.findings);
 
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -57,10 +75,10 @@ function App() {
             ip: target,
             mode: mode,
             vulnerabilities: [
-              { severity: 'Critical', count: selected.counts[0] },
-              { severity: 'High', count: selected.counts[1] },
-              { severity: 'Medium', count: selected.counts[2] },
-              { severity: 'Low', count: selected.counts[3] }
+              { severity: 'Critical', count: counts[0] },
+              { severity: 'High', count: counts[1] },
+              { severity: 'Medium', count: counts[2] },
+              { severity: 'Low', count: counts[3] }
             ],
             findings: selected.findings,
             time: new Date().toLocaleString()
@@ -71,6 +89,7 @@ function App() {
       });
     }, 300);
   };
+
 
 
   const downloadCSV = () => {
