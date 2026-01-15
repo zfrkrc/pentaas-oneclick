@@ -7,7 +7,7 @@ export default function App() {
   const [cat, setCat] = useState("white");
   const [loading, setLoading] = useState(false);
 
-  // Simple route check (since we are in strict mode and explicit routes weren't defined)
+  // Simple route check
   const isReport = window.location.pathname.startsWith("/report/");
   const reportId = isReport ? window.location.pathname.split("/")[2] : null;
 
@@ -25,14 +25,37 @@ export default function App() {
         body: JSON.stringify({ ip, category: cat })
       });
 
+      const contentType = r.headers.get("content-type");
+
       if (!r.ok) {
-        const err = await r.json();
-        throw new Error(err.detail || "Sunucu hatası");
+        let errMsg = "Sunucu hatası (" + r.status + ")";
+        if (contentType && contentType.includes("application/json")) { // Handle JSON error
+          try {
+            const err = await r.json();
+            errMsg = err.detail || errMsg;
+          } catch (ignore) { }
+        } else { // Handle HTML/Text error (e.g. Nginx 502)
+          const text = await r.text();
+          console.error("Non-JSON Error:", text);
+          // Show first 100 chars of HTML to hint at the error
+          errMsg += ": " + text.substring(0, 100).replace(/<[^>]*>?/gm, "") + "..."; // Strip tags
+        }
+        throw new Error(errMsg);
       }
 
-      // FIX: Backend returns 'scan_id', not 'uid'
-      const { scan_id } = await r.json();
-      navigate(`/report/${scan_id}`);
+      // Success check
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await r.text();
+        console.error("Non-JSON Success Body:", text);
+        throw new Error("Sunucu JSON döndürmedi (" + r.status + "). Beklenmeyen yanıt.");
+      }
+
+      const resData = await r.json();
+      if (!resData.scan_id) {
+        throw new Error("Sunucu scan_id döndürmedi.");
+      }
+
+      navigate(`/report/${resData.scan_id}`);
     } catch (e) {
       console.error(e);
       alert("Hata: " + e.message);

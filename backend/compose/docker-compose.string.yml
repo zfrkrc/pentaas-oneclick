@@ -4,9 +4,7 @@ services:
       context: ./merge
       dockerfile: Dockerfile
     container_name: pentaas_merge
-    environment:
-      - TARGET=${TARGET}
-      - DATA_DIR=${DATA_DIR}
+    # Env vars are passed via -e flags in engine.py
     volumes:
       - ./reports:/app/reports
     network_mode: bridge
