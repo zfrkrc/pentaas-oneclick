@@ -93,17 +93,15 @@ function App() {
 
 
   const downloadCSV = () => {
-    console.log("Download CSV triggered. ScanResult:", scanResult);
+    console.log("Download CSV initiated...");
     if (!scanResult) {
-      console.error("No scan result found to download.");
+      alert("No scan results detected. Please run a scan first.");
       return;
     }
 
     try {
-      // Calculate total vulnerabilities
       const totalVulns = scanResult.vulnerabilities.reduce((sum, v) => sum + v.count, 0);
 
-      // Create comprehensive CSV with metadata
       const rows = [
         ["PENTAAS ONECLICK - SECURITY SCAN REPORT"],
         [""],
@@ -128,30 +126,37 @@ function App() {
         rows.push([f.id, f.title, f.severity, f.description]);
       });
 
-      const csvContent = rows.map(e => e.map(val => `"${val}"`).join(",")).join("\n");
-      console.log("CSV Content generated, size:", csvContent.length);
+      // Character-safe CSV conversion
+      const csvString = rows.map(row =>
+        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+      ).join("\r\n");
 
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      // UTF-8 BOM for Turkish character support in Excel
+      const blob = new Blob(["\ufeff", csvString], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
 
+      const link = document.createElement('a');
       const safeIp = scanResult.ip.replace(/[^a-z0-9]/gi, '_');
-      const filename = "pentaas_report_" + safeIp + "_" + scanResult.mode + ".csv";
+      const fileName = `pentaas_report_${safeIp}.csv`;
 
-      console.log("Attempting download with filename:", filename);
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
 
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
+      console.log("Downloading file:", fileName);
+      link.click();
 
       setTimeout(() => {
-        document.body.removeChild(a);
+        document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-        console.log("Download cleanup complete.");
-      }, 100);
+        console.log("Download cleanup done.");
+      }, 150);
+
+      alert("Success: report generated as " + fileName);
+
     } catch (err) {
-      console.error("Error during CSV generation/download:", err);
+      console.error("CSV Download Error:", err);
+      alert("Failed to generate CSV: " + err.message);
     }
   };
 
