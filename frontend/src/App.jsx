@@ -7,21 +7,35 @@ function App() {
   const [mode, setMode] = useState('black');
   const [isScanning, setIsScanning] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [scanResult, setScanResult] = useState(null);
+
 
   const handleStartScan = () => {
     setIsScanning(true);
     setProgress(0);
+    setScanResult(null);
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setIsScanning(false);
-          alert(`Scan completed on ${target}!`);
+          setScanResult({
+            ip: target,
+            mode: mode,
+            vulnerabilities: [
+              { severity: 'Critical', count: 2 },
+              { severity: 'High', count: 5 },
+              { severity: 'Medium', count: 12 },
+              { severity: 'Low', count: 24 }
+            ],
+            time: new Date().toLocaleString()
+          });
           return 100;
         }
         return prev + 5;
       });
     }, 300);
+
   };
 
 
@@ -118,21 +132,58 @@ function App() {
 
                     {isScanning && (
                       <div className="mt-4">
-                        <div className="progress" style={{ height: '20px', borderRadius: '10px' }}>
+                        <div className="progress" style={{ height: '20px', borderRadius: '10px', backgroundColor: '#e9ecef' }}>
                           <div
                             className="progress-bar progress-bar-striped progress-bar-animated"
                             role="progressbar"
-                            style={{ width: `${progress}%` }}
+                            style={{ width: `${progress}%`, backgroundColor: '#232323' }}
                             aria-valuenow={progress}
                             aria-valuemin="0"
                             aria-valuemax="100"
                           ></div>
                         </div>
-                        <p className="text-center mt-2 mbr-fonts-style display-7">
-                          Scanning <strong>{target}</strong>...
+                        <p className="text-center mt-2 mbr-fonts-style display-7" style={{ color: '#232323' }}>
+                          Scanning <strong>{target}</strong>... {progress}%
                         </p>
                       </div>
                     )}
+
+                    {!isScanning && scanResult && (
+                      <div className="mt-5 p-4 border rounded shadow-sm" style={{ backgroundColor: '#fff', borderLeft: '5px solid #232323' }}>
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                          <h3 className="mbr-fonts-style display-5 mb-0"><strong>Scan Results</strong></h3>
+                          <span className="badge bg-dark p-2">{scanResult.time}</span>
+                        </div>
+                        <p className="mbr-fonts-style display-7 mb-4">
+                          Target: <strong>{scanResult.ip}</strong> | Mode: <strong>{scanResult.mode.toUpperCase()}</strong>
+                        </p>
+
+                        <div className="row g-3">
+                          {scanResult.vulnerabilities.map((v, i) => (
+                            <div key={i} className="col-6 col-md-3">
+                              <div className="p-3 text-center border rounded bg-light">
+                                <h4 className={`mbr-fonts-style display-7 mb-1 ${v.severity === 'Critical' ? 'text-danger' : v.severity === 'High' ? 'text-warning' : 'text-primary'}`}>
+                                  <strong>{v.severity}</strong>
+                                </h4>
+                                <span className="display-5"><strong>{v.count}</strong></span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mt-4 pt-3 border-top text-end">
+                          <button className="btn btn-outline-dark display-4 me-2" onClick={() => window.print()}>
+                            <span className="mobi-mbri mobi-mbri-print mbr-iconfont mbr-iconfont-btn"></span>
+                            Print PDF
+                          </button>
+                          <button className="btn btn-primary display-4" onClick={() => alert('Full report downloading...')}>
+                            <span className="mobi-mbri mobi-mbri-download mbr-iconfont mbr-iconfont-btn"></span>
+                            Download CSV
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
 
                   </div>
                 </div>
