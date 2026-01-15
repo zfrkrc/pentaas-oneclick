@@ -57,8 +57,9 @@ services:
     image: zaproxy/zap-stable
     profiles: [ "gray" ]
     user: root
-    # ZAP requires a writable dir
-    command: zap-baseline.py -t ${TARGET} -J zap.json
+    # ZAP output is tricky, we force a debug log
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: "zap-baseline.py -t ${TARGET} -J zap.json > /zap/wrk/zap_debug.log 2>&1 || cp /home/zap/.ZAP/zap.log /zap/wrk/zap_internal.log"
     volumes:
       - ${HOST_DATA_DIR}:/data
       - ${HOST_DATA_DIR}:/zap/wrk
