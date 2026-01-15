@@ -16,10 +16,13 @@ mkdir -p "$DATA_DIR"
 echo "[+] Scan started for $TARGET"
 echo "[+] Output dir: $DATA_DIR"
 
-nmap \
-  -Pn \
-  -sV \
-  -oA "$DATA_DIR/nmap" \
-  "$TARGET"
+echo "Listing generated reports:"
+ls -l "$DATA_DIR"
 
-echo "[+] Scan completed"
+# Simple summary generation
+echo "Scan Summary for $TARGET" > "$DATA_DIR/scan_summary.txt"
+echo "Date: $(date)" >> "$DATA_DIR/scan_summary.txt"
+echo "Files found:" >> "$DATA_DIR/scan_summary.txt"
+ls -1 "$DATA_DIR" >> "$DATA_DIR/scan_summary.txt"
+
+echo "[+] Merge/Verification completed. Summary saved to scan_summary.txt"
