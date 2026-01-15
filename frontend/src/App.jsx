@@ -14,24 +14,19 @@ function App() {
           <div className="row">
             <div className="content-wrap col-12 col-md-12">
               <h1 className="mbr-section-title mbr-fonts-style mbr-white mb-4 display-1">
-                <strong>Teknoloji Partneri</strong></h1>
-              <p className="mbr-fonts-style mbr-text mbr-white mb-4 display-7">Sistem ürünleri, sunucular ve depolama çözümleriyle dijital gücünüzü artırın.</p>
+                <strong>Pentest One-Click</strong></h1>
+              <p className="mbr-fonts-style mbr-text mbr-white mb-4 display-7">Comprehensive Security Testing Suite: Nmap, WPScan, ZAP, and more.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Intro / Testimonials Section (Repurpose for Quick Intro) */}
       <section data-bs-version="5.1" className="people07 cid-uSrJKo6yl4" id="testimonials-8-uSrJKo6yl4">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-md-12 col-lg-8">
-              <p className="card-text mbr-fonts-style display-5">Sistemlerinizin performans ve güvenlik beklentilerini anlayıp tasarlamamız için iletişime geçebilirsiniz.</p>
-              <div className="img-wrapper mt-3 justify-content-center">
-                <img src="/assets/images/screenshot-20250201-170402-instagram-240x240.webp" alt="" data-slide-to="0" data-bs-slide-to="0" />
-              </div>
-              <p className="card-title mbr-fonts-style mt-3 display-7">
-                <strong>Zafer KARACA , Matematikçi</strong></p>
+              <p className="card-text mbr-fonts-style display-5">Identify vulnerabilities before they are exploited. Automated scanning for web and network assets.</p>
             </div>
           </div>
         </div>
@@ -53,8 +48,8 @@ function App() {
             <div className="card col-12 col-md-12 col-lg-12">
               <div className="card-wrapper">
                 <div className="card-box align-center">
-                  <h1 className="card-title mbr-fonts-style mb-4 display-1"><strong>Adım Adım Teknoloji</strong></h1>
-                  <p className="mbr-text mbr-fonts-style mb-4 display-7">İnovatif çözümlerimizle işinizi ileriye taşıyın. Hemen harekete geçin!</p>
+                  <h1 className="card-title mbr-fonts-style mb-4 display-1"><strong>Start Scanning Now</strong></h1>
+                  <p className="mbr-text mbr-fonts-style mb-4 display-7">Secure your infrastructure with our one-click solutions.</p>
                 </div>
               </div>
             </div>
@@ -70,9 +65,9 @@ function App() {
               <div className="col-12 content-head">
                 <div className="mbr-section-head mb-5">
                   <h4 className="mbr-section-title mbr-fonts-style align-center mb-0 display-2">
-                    <strong>Öne Çıkanlar</strong>
+                    <strong>Core Features</strong>
                   </h4>
-                  <h5 className="mbr-section-subtitle mbr-fonts-style align-center mb-0 mt-4 display-7">Teknolojinin Zirvesi</h5>
+                  <h5 className="mbr-section-subtitle mbr-fonts-style align-center mb-0 mt-4 display-7">Security at your fingertips</h5>
                 </div>
               </div>
             </div>
@@ -85,14 +80,14 @@ function App() {
                   <div className="slide-content">
                     <div className="item-img">
                       <div className="item-wrapper">
-                        <img src="/assets/images/photo-1584169417032-d34e8d805e8b.webp" alt="ZK" title="" data-slide-to="1" data-bs-slide-to="1" />
+                        <img src="/assets/images/photo-1584169417032-d34e8d805e8b.webp" alt="Scan" title="" data-slide-to="1" data-bs-slide-to="1" />
                       </div>
                     </div>
                     <div className="item-content">
                       <h5 className="item-title mbr-fonts-style display-5">
-                        <strong>Sunucular</strong>
+                        <strong>Network Scan</strong>
                       </h5>
-                      <p className="mbr-text mbr-fonts-style mt-3 display-7">Güçlü sunucularımızla kesintisiz hizmet.</p>
+                      <p className="mbr-text mbr-fonts-style mt-3 display-7">Comprehensive port scanning with Nmap.</p>
                     </div>
                   </div>
                 </div>
@@ -100,14 +95,14 @@ function App() {
                   <div className="slide-content">
                     <div className="item-img">
                       <div className="item-wrapper">
-                        <img src="/assets/images/photo-1683322499436-f4383dd59f5a.webp" alt="ZK" title="" data-slide-to="2" data-bs-slide-to="2" />
+                        <img src="/assets/images/photo-1683322499436-f4383dd59f5a.webp" alt="Web" title="" data-slide-to="2" data-bs-slide-to="2" />
                       </div>
                     </div>
                     <div className="item-content">
                       <h5 className="item-title mbr-fonts-style display-5">
-                        <strong>Depolama</strong>
+                        <strong>Web Scan</strong>
                       </h5>
-                      <p className="mbr-text mbr-fonts-style mt-3 display-7">Gelişmiş depolama sistemleriyle verilerinizi koruyun.</p>
+                      <p className="mbr-text mbr-fonts-style mt-3 display-7">Vulnerability scanning for web apps using ZAP.</p>
                     </div>
                   </div>
                 </div>
@@ -115,14 +110,15 @@ function App() {
                   <div className="slide-content">
                     <div className="item-img">
                       <div className="item-wrapper">
-                        <img src="/assets/images/photo-1667372459607-2cfe842fdc4b.webp" alt="ZK" title="" data-slide-to="3" data-bs-slide-to="3" />
+                        {/* Reusing existing image as placeholder */}
+                        <img src="/assets/images/photo-1667372459607-2cfe842fdc4b.webp" alt="CMS" title="" data-slide-to="3" data-bs-slide-to="3" />
                       </div>
                     </div>
                     <div className="item-content">
                       <h5 className="item-title mbr-fonts-style display-5">
-                        <strong>Sistemler</strong>
+                        <strong>CMS Scan</strong>
                       </h5>
-                      <p className="mbr-text mbr-fonts-style mt-3 display-7">Windows ve Linux sistemleriyle esnek çözümler.</p>
+                      <p className="mbr-text mbr-fonts-style mt-3 display-7">Specialized WPScan integration for WordPress sites.</p>
                     </div>
                   </div>
                 </div>
@@ -130,29 +126,14 @@ function App() {
                   <div className="slide-content">
                     <div className="item-img">
                       <div className="item-wrapper">
-                        <img src="/assets/images/photo-1573164713988-8665fc963095.webp" alt="ZK" title="" data-slide-to="4" data-bs-slide-to="4" />
+                        <img src="/assets/images/photo-1573164713988-8665fc963095.webp" alt="SSL" title="" data-slide-to="4" data-bs-slide-to="4" />
                       </div>
                     </div>
                     <div className="item-content">
                       <h5 className="item-title mbr-fonts-style display-5">
-                        <strong>Sanallaştırma</strong>
+                        <strong>SSL Tests</strong>
                       </h5>
-                      <p className="mbr-text mbr-fonts-style mt-3 display-7">Proxmox ile sanallaştırma altyapınızı optimize edin.</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="embla__slide slider-image item" style={{ marginLeft: '4rem', marginRight: '4rem' }}>
-                  <div className="slide-content">
-                    <div className="item-img">
-                      <div className="item-wrapper">
-                        <img src="/assets/images/photo-1680691257251-5fead813b73e.webp" alt="ZK" title="" data-slide-to="5" data-bs-slide-to="5" />
-                      </div>
-                    </div>
-                    <div className="item-content">
-                      <h5 className="item-title mbr-fonts-style display-5">
-                        <strong>Güvenlik</strong>
-                      </h5>
-                      <p className="mbr-text mbr-fonts-style mt-3 display-7">Güvenlik duvarları ve testlerle ağınızı güvence altına alın.</p>
+                      <p className="mbr-text mbr-fonts-style mt-3 display-7">Verify SSL/TLS configurations with testssl.sh.</p>
                     </div>
                   </div>
                 </div>
@@ -176,7 +157,7 @@ function App() {
           <div className="row mb-5 justify-content-center">
             <div className="col-12 content-head">
               <h3 className="mbr-section-title mbr-fonts-style align-center mb-0 display-2">
-                <strong>Veri Merkezi Çözümleri</strong>
+                <strong>Security Solutions</strong>
               </h3>
             </div>
           </div>
@@ -185,9 +166,9 @@ function App() {
               <div className="item-wrapper">
                 <div className="card-box align-left">
                   <h5 className="card-title mbr-fonts-style display-5">
-                    <strong>Sunucu &amp; Depolama</strong>
+                    <strong>Automation</strong>
                   </h5>
-                  <p className="card-text mbr-fonts-style display-7">Sunucular, depolama sistemleri ve ağ donanımları ile veri merkezleri için güçlü çözümler.</p>
+                  <p className="card-text mbr-fonts-style display-7">Schedule and automate your security tests with Docker Compose Integration.</p>
                 </div>
               </div>
             </div>
@@ -195,9 +176,9 @@ function App() {
               <div className="item-wrapper">
                 <div className="card-box align-left">
                   <h5 className="card-title mbr-fonts-style display-5">
-                    <strong>İşletim Sistemleri</strong>
+                    <strong>Reporting</strong>
                   </h5>
-                  <p className="card-text mbr-fonts-style display-7">Windows, Linux ve açık kaynak işletim sistemleri ile esnek altyapılar.</p>
+                  <p className="card-text mbr-fonts-style display-7">Generate detailed reports in multiple formats (HTML, JSON).</p>
                 </div>
               </div>
             </div>
@@ -205,9 +186,9 @@ function App() {
               <div className="item-wrapper">
                 <div className="card-box align-left">
                   <h5 className="card-title mbr-fonts-style display-5">
-                    <strong>Güvenlik &amp; Sanallaştırma</strong>
+                    <strong>Scalability</strong>
                   </h5>
-                  <p className="card-text mbr-fonts-style display-7">Sanallaştırma, güvenlik duvarları ve sızma testleri ile üst düzey güvenlik.</p>
+                  <p className="card-text mbr-fonts-style display-7">Built on modern microservices architecture.</p>
                 </div>
               </div>
             </div>
