@@ -17,9 +17,9 @@ services:
     network_mode: bridge
 
   dirsearch:
-    image: maurosoria/dirsearch
+    image: python:3.9-slim
     profiles: [ "white" ]
-    command: --url ${TARGET} --format=json -o /data/dirsearch.json
+    command: sh -c "pip install dirsearch && dirsearch -u ${TARGET} --format=json -o /data/dirsearch.json"
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
