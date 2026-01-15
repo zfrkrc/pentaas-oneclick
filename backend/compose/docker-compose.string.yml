@@ -59,9 +59,9 @@ services:
     image: zaproxy/zap-stable
     profiles: [ "gray" ]
     user: root
-    working_dir: /zap/wrk
-    # Use HTTP and relative filename to avoid path nesting issues
-    command: zap-baseline.py -t http://${TARGET} -J zap.json
+    # ZAP baseline script expects output in /zap/wrk/ by default when mapped.
+    # Using absolute path inside container to be safe.
+    command: zap-baseline.py -t http://${TARGET} -J /zap/wrk/zap.json
     volumes:
       - ${HOST_DATA_DIR}:/zap/wrk
     network_mode: bridge

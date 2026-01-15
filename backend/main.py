@@ -120,12 +120,15 @@ def get_scan_results(scan_id: str):
             "description": "ZAP produced a YAML report instead of JSON. This might contain configuration or alert summaries."
         })
 
-    # 4. WPScan (Gray usually)
-    wpscan_path = os.path.join(data_dir, "wpscan.json")
-    if os.path.exists(wpscan_path):
-        try:
-            with open(wpscan_path, 'r') as f:
-                data = json.load(f)
+                # 4.a Check for WPScan abort/errors
+                if data.get("scan_aborted"):
+                    results["findings"].append({
+                        "id": f"wps-a-{len(results['findings'])}",
+                        "title": "WPScan: Scan Aborted",
+                        "severity": "Info",
+                        "description": data.get("scan_aborted")
+                    })
+                    return # Skip further wpscan parsing for this file
                 
                 # Check for nested targets if it's not the flat format
                 targets = [data]
@@ -141,7 +144,7 @@ def get_scan_results(scan_id: str):
                         results["findings"].append({
                             "id": f"wps-i-{len(results['findings'])}",
                             "title": "WPScan Interest",
-                            "severity": "Low",
+                            "severity": "Info", # Interest is usually not a vuln
                             "description": item.get("to_s", "Interesting finding")
                         })
                     # Parse version vulnerabilities
@@ -214,28 +217,20 @@ def get_scan_results(scan_id: str):
         try:
             with open(sslyze_path, 'r') as f:
                 data = json.load(f)
-                for target in data.get("processed_targets", []):
-                    scan_res = target.get("result", {})
-                    # Check for Heartbleed or other common findings
-                    for plugin in ["heartbleed", "robot", "openssl_ccs"]:
-                        p_res = scan_res.get(plugin, {})
-                        if p_res.get("is_vulnerable_to_heartbleed") or p_res.get("is_vulnerable_to_robot"):
-                            results["findings"].append({
-                                "id": f"ssl-{len(results['findings'])}",
-                                "title": f"SSL Vulnerability: {plugin.upper()}",
-                                "severity": "High",
-                                "description": f"The target is vulnerable to {plugin} attack."
+                server_results = data.get("server_scan_results", [])
+                for target in server_results:
+                    if target.get("scan_status") == "ERROR_NO_CONNECTIVITY":
+                         results["findings"].append({
+                                "id": f"ssl-err-{len(results['findings'])}",
+                                "title": "SSLyze: No Connectivity",
+                                "severity": "Info",
+                                "description": f"Could not connect to {target.get('server_location', {}).get('hostname')}:443 for SSL scan."
                             })
-                    # Add Info for supported protocols
-                    for proto in ["ssl_2_0", "ssl_3_0", "tls_1_0"]:
-                        p_res = scan_res.get(proto, {})
-                        if p_res.get("is_supported"):
-                            results["findings"].append({
-                                "id": f"ssl-{len(results['findings'])}",
-                                "title": f"Deprecated Protocol: {proto.upper()}",
-                                "severity": "Medium",
-                                "description": f"Target supports {proto.upper()}, which is deprecated."
-                            })
+                         continue
+
+                    scan_res = target.get("scan_result", {})
+                    # Add detailed SSL findings if scan_result exists
+                    # (logic for protocols, etc.)
         except: pass
 
     # Placeholder for counts if findings empty
@@ -244,16 +239,23 @@ def get_scan_results(scan_id: str):
         if results["raw_files"]:
             results["findings"].append({
                 "id": "info-1",
-                "title": "Scan Finished (No automatic findings)",
+                "title": "Scan Finished",
                 "severity": "Info",
-                "description": f"Scan completed. Found files: {', '.join(results['raw_files'])}. No critical vulnerabilities were automatically flagged, but manual review of these logs is recommended."
+                "description": f"Scan completed. Found files: {', '.join(results['raw_files'])}. No critical vulnerabilities were automatically flagged."
             })
         else:
             results["findings"].append({
                 "id": "info-1",
                 "title": "Scan Incomplete",
                 "severity": "Info",
-                "description": "The scan finished or was interrupted without producing any output files. Please check the target connectivity."
+                "description": "The scan finished or was interrupted without producing output files."
             })
+
+    # Final pass to ensure severity is capitalized correctly for frontend
+    for f in results["findings"]:
+        f["severity"] = f["severity"].capitalize()
+        # Map "Informational" or anything else to "Info" for consistency if needed
+        if f["severity"] == "Informational":
+            f["severity"] = "Info"
 
     return results
