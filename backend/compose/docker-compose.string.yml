@@ -66,14 +66,12 @@ services:
     network_mode: bridge
 
   sslyze:
-    image: python:3.9-slim
+    build:
+      context: ./sslyze
+      dockerfile: Dockerfile
     profiles: [ "gray" ]
-    environment:
-      - PIP_ROOT_USER_ACTION=ignore
-    command: >
-      sh -c "pip install --upgrade pip --disable-pip-version-check &&
-             pip install --disable-pip-version-check sslyze &&
-             sslyze --json_out=/data/sslyze.json ${TARGET}"
+    # Command is now just the arguments, entrypoint is in Dockerfile
+    command: --json_out=/data/sslyze.json ${TARGET}
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
