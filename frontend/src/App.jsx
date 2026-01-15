@@ -62,30 +62,33 @@ function App() {
 
                       {/* White Box */}
                       <div
-                        className={`p-3 border rounded cursor-pointer ${mode === 'white' ? 'bg-primary text-white' : 'bg-light'}`}
-                        style={{ cursor: 'pointer', flex: '1 1 200px', textAlign: 'center', transition: 'all 0.3s' }}
-                        onClick={() => setMode('white')}
+                        className={`p-3 border rounded cursor-pointer ${mode === 'white' ? 'bg-primary text-white' : 'bg-light'} ${isScanning ? 'opacity-50' : ''}`}
+                        style={{ cursor: isScanning ? 'not-allowed' : 'pointer', flex: '1 1 200px', textAlign: 'center', transition: 'all 0.3s' }}
+                        onClick={() => !isScanning && setMode('white')}
                       >
+
                         <h4 className="mbr-fonts-style display-7"><strong>White Box</strong></h4>
                         <small>Full Access / Auth Scan</small>
                       </div>
 
                       {/* Gray Box */}
                       <div
-                        className={`p-3 border rounded cursor-pointer ${mode === 'gray' ? 'bg-primary text-white' : 'bg-light'}`}
-                        style={{ cursor: 'pointer', flex: '1 1 200px', textAlign: 'center', transition: 'all 0.3s' }}
-                        onClick={() => setMode('gray')}
+                        className={`p-3 border rounded cursor-pointer ${mode === 'gray' ? 'bg-primary text-white' : 'bg-light'} ${isScanning ? 'opacity-50' : ''}`}
+                        style={{ cursor: isScanning ? 'not-allowed' : 'pointer', flex: '1 1 200px', textAlign: 'center', transition: 'all 0.3s' }}
+                        onClick={() => !isScanning && setMode('gray')}
                       >
+
                         <h4 className="mbr-fonts-style display-7"><strong>Gray Box</strong></h4>
                         <small>Partial Access</small>
                       </div>
 
                       {/* Black Box */}
                       <div
-                        className={`p-3 border rounded cursor-pointer ${mode === 'black' ? 'bg-primary text-white' : 'bg-light'}`}
-                        style={{ cursor: 'pointer', flex: '1 1 200px', textAlign: 'center', transition: 'all 0.3s' }}
-                        onClick={() => setMode('black')}
+                        className={`p-3 border rounded cursor-pointer ${mode === 'black' ? 'bg-primary text-white' : 'bg-light'} ${isScanning ? 'opacity-50' : ''}`}
+                        style={{ cursor: isScanning ? 'not-allowed' : 'pointer', flex: '1 1 200px', textAlign: 'center', transition: 'all 0.3s' }}
+                        onClick={() => !isScanning && setMode('black')}
                       >
+
                         <h4 className="mbr-fonts-style display-7"><strong>Black Box</strong></h4>
                         <small>No Access / External</small>
                       </div>
