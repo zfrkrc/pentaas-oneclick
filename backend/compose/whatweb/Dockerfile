@@ -8,6 +8,6 @@ RUN apt-get update && apt-get install -y \
 
 RUN git clone https://github.com/urbanadventurer/WhatWeb.git /opt/whatweb
 WORKDIR /opt/whatweb
-RUN gem install bundle && bundle install
+RUN gem install bundler && bundle install
 
 ENTRYPOINT ["/opt/whatweb/whatweb"]
