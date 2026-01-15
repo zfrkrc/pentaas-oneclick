@@ -25,7 +25,7 @@ services:
     network_mode: bridge
 
   nikto_white:
-    image: secfa/docker-nikto
+    image: sullo/nikto
     profiles: [ "white" ]
     command: -h ${TARGET} -o /data/nikto_white.json
     volumes:
@@ -86,7 +86,7 @@ services:
     network_mode: bridge
 
   nikto_black:
-    image: secfa/docker-nikto
+    image: sullo/nikto
     profiles: [ "black" ]
     command: -h ${TARGET} -o /data/nikto_black.json
     volumes:
