@@ -1,7 +1,7 @@
 services:
 merge:
   build:
-    context: ./compose/merge
+    context: ./merge
     dockerfile: Dockerfile
   container_name: pentaas_merge
   environment:

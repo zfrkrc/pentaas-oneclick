@@ -19,6 +19,7 @@ def create_scan(req: ScanRequest):
             "scan_id": uid
         }
     except Exception as e:
+        print(f"Error during scan: {e}")
         raise HTTPException(
             status_code=400,
             detail=str(e)
