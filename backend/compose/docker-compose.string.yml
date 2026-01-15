@@ -59,9 +59,8 @@ services:
     image: zaproxy/zap-stable
     profiles: [ "gray" ]
     user: root
-    entrypoint: [ "/bin/sh", "-c" ]
-    # Force root to avoid permission issues, and capture output to debug log
-    command: "zap-baseline.py -t ${TARGET} -J /zap/wrk/zap.json > /zap/wrk/zap_debug.log 2>&1"
+    # Standard command, relying on root for permissions. No complex shell redirection.
+    command: zap-baseline.py -t ${TARGET} -J zap.json
     volumes:
       - ${HOST_DATA_DIR}:/zap/wrk
     network_mode: bridge
