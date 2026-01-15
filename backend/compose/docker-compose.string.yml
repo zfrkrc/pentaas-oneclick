@@ -45,13 +45,11 @@ services:
     network_mode: bridge
 
   wpscan:
-    build:
-      context: ./wpscan
-      dockerfile: Dockerfile
+    image: wpscanteam/wpscan
     profiles: [ "gray" ]
     entrypoint: [ "/bin/sh", "-c" ]
-    # Redirect all output to log file to catch errors
-    command: "wpscan --url ${TARGET} --format json -o /data/wpscan.json --disable-tls-checks > /data/wpscan_debug.log 2>&1"
+    # Debug: Print version first, then scan. Catch EVERYTHING.
+    command: "echo 'Starting WPScan...' > /data/wpscan_debug.log && wpscan --version >> /data/wpscan_debug.log 2>&1 && echo 'Running Scan...' >> /data/wpscan_debug.log && wpscan --url ${TARGET} --format json -o /data/wpscan.json --disable-tls-checks >> /data/wpscan_debug.log 2>&1"
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -61,8 +59,8 @@ services:
     profiles: [ "gray" ]
     user: root
     entrypoint: [ "/bin/sh", "-c" ]
-    # Use full path for zap-baseline.py and capture logs
-    command: "export PATH=$PATH:/zap && zap-baseline.py -t ${TARGET} -J zap.json > /zap/wrk/zap_debug.log 2>&1"
+    # Debug: Check path, print version, then scan.
+    command: "echo 'Starting ZAP...' > /data/zap_debug.log && ls -la /zap >> /data/zap_debug.log 2>&1 && zap-baseline.py -t ${TARGET} -J zap.json >> /data/zap_debug.log 2>&1"
     volumes:
       - ${HOST_DATA_DIR}:/data
       - ${HOST_DATA_DIR}:/zap/wrk
