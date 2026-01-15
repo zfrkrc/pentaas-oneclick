@@ -19,15 +19,9 @@ def run_scan(target: str, category: str) -> str:
     host_data_dir = f"{host_reports_path}/{uid}/data"
 
     env_vars = os.environ.copy()
+    env_vars = os.environ.copy()
     env_vars["TARGET"] = target
     env_vars["HOST_DATA_DIR"] = host_data_dir
-
-    # DEBUG: Verify content of compose file inside container
-    try:
-        with open(COMPOSE_FILE, "r") as f:
-            print(f"DEBUG: Content of {COMPOSE_FILE}:\n{f.read(500)}...\n(truncated)")
-    except Exception as e:
-        print(f"DEBUG: Could not read compose file: {e}")
 
     # 1. Run Scanners
     print(f"Starting {category} scan for {target}...")
