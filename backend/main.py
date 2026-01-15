@@ -1,6 +1,7 @@
 import os
 import json
-from fastapi import FastAPI, HTTPException
+import uuid
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from engine import run_scan, REPORT_DIR
 
@@ -13,15 +14,20 @@ class ScanRequest(BaseModel):
 
 
 @app.post("/scan")
-def create_scan(req: ScanRequest):
+async def create_scan(req: ScanRequest, background_tasks: BackgroundTasks):
     try:
-        uid = run_scan(req.ip, req.category)
+        # Generate UID here so we can return it immediately
+        uid = uuid.uuid4().hex
+        
+        # Run the heavy subprocess in the background
+        background_tasks.add_task(run_scan, req.ip, req.category, uid)
+        
         return {
             "status": "started",
             "scan_id": uid
         }
     except Exception as e:
-        print(f"Error during scan: {e}")
+        print(f"Error starting scan task: {e}")
         raise HTTPException(
             status_code=400,
             detail=str(e)
@@ -125,6 +131,46 @@ def get_scan_results(scan_id: str):
                         "severity": "High",
                         "description": f"Fixed in: {v.get('fixed_in', 'N/A')}"
                     })
+        except: pass
+
+    # 5. Nmap (Common - XML Parsing)
+    import xml.etree.ElementTree as ET
+    for nmap_file in ["nmap_white.xml", "nmap_gray.xml", "nmap_black.xml"]:
+        nmap_path = os.path.join(data_dir, nmap_file)
+        if os.path.exists(nmap_path):
+            try:
+                tree = ET.parse(nmap_path)
+                root = tree.getroot()
+                for port in root.findall(".//port"):
+                    portid = port.get("portid")
+                    state = port.find("state").get("state")
+                    if state == "open":
+                        service = port.find("service")
+                        svc_name = service.get("name") if service is not None else "unknown"
+                        results["findings"].append({
+                            "id": f"nmap-{len(results['findings'])}",
+                            "title": f"Open Port: {portid} ({svc_name})",
+                            "severity": "Low",
+                            "description": f"The port {portid} running {svc_name} was found open."
+                        })
+            except: pass
+
+    # 6. Dirsearch (White/Gray)
+    dirsearch_path = os.path.join(data_dir, "dirsearch.json")
+    if os.path.exists(dirsearch_path):
+        try:
+            with open(dirsearch_path, 'r') as f:
+                data = json.load(f)
+                # dirsearch format is sometimes a dict with "results" or list of entries
+                entries = data if isinstance(data, list) else data.get("results", [])
+                for entry in entries:
+                    if entry.get("status") in [200, 204, 301, 302]:
+                        results["findings"].append({
+                            "id": f"dir-{len(results['findings'])}",
+                            "title": f"Directory Found: {entry.get('path', 'unknown')}",
+                            "severity": "Medium" if entry.get("status") == 200 else "Low",
+                            "description": f"Accessible path found: {entry.get('url')} (Status: {entry.get('status')})"
+                        })
         except: pass
 
     # Placeholder for counts if findings empty

@@ -7,8 +7,9 @@ COMPOSE_FILE = f"{BASE_DIR}/compose/docker-compose.string.yml"
 REPORT_DIR = f"{BASE_DIR}/reports"
 
 
-def run_scan(target: str, category: str) -> str:
-    uid = uuid.uuid4().hex
+def run_scan(target: str, category: str, uid: str = None) -> str:
+    if not uid:
+        uid = uuid.uuid4().hex
     
     # Internal path (container view)
     data_dir_internal = f"{REPORT_DIR}/{uid}/data"
