@@ -45,10 +45,10 @@ services:
     network_mode: bridge
 
   wpscan:
-    image: wpscanteam/wpscan
+    image: ruby:3-slim
     profiles: [ "gray" ]
     entrypoint: [ "/bin/sh", "-c" ]
-    command: "wpscan --url ${TARGET} --format json -o /data/wpscan.json --disable-tls-checks > /data/wpscan_debug.log 2>&1"
+    command: "gem install wpscan && wpscan --url ${TARGET} --format json -o /data/wpscan.json --disable-tls-checks"
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -57,9 +57,9 @@ services:
     image: zaproxy/zap-stable
     profiles: [ "gray" ]
     user: root
-    # ZAP output is tricky, we force a debug log
+    # ZAP output is tricky, we verify path
     entrypoint: [ "/bin/sh", "-c" ]
-    command: "zap-baseline.py -t ${TARGET} -J zap.json > /zap/wrk/zap_debug.log 2>&1 || cp /home/zap/.ZAP/zap.log /zap/wrk/zap_internal.log"
+    command: "ls -la /zap/ > /zap/wrk/zap_dir_list.log 2>&1 && zap-baseline.py -t ${TARGET} -J zap.json > /zap/wrk/zap_debug.log 2>&1"
     volumes:
       - ${HOST_DATA_DIR}:/data
       - ${HOST_DATA_DIR}:/zap/wrk
