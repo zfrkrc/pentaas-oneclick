@@ -287,11 +287,23 @@ def get_scan_results(scan_id: str):
                 for entry in data:
                     plugins = entry.get("plugins", {})
                     for p_name, p_val in plugins.items():
+                        # Extract string or version, joining lists if necessary
+                        desc_parts = []
+                        for key in ["string", "version"]:
+                            val = p_val.get(key)
+                            if val:
+                                if isinstance(val, list):
+                                    desc_parts.extend([str(v) for v in val])
+                                else:
+                                    desc_parts.append(str(val))
+                        
+                        desc = ", ".join(desc_parts) if desc_parts else "Detected"
+                        
                         results["findings"].append({
                             "id": f"ww-{len(results['findings'])}",
                             "title": f"Tech Detected: {p_name}",
                             "severity": "Info",
-                            "description": str(p_val.get("string", p_val.get("version", "Detected")))
+                            "description": desc
                         })
         except: pass
 
