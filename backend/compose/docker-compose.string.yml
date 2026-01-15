@@ -50,8 +50,8 @@ services:
       dockerfile: Dockerfile
     profiles: [ "gray" ]
     entrypoint: [ "/bin/sh", "-c" ]
-    # Redirect all output to log file to catch errors
-    command: "wpscan --url ${TARGET} --format json -o /data/wpscan.json --disable-tls-checks > /data/wpscan_debug.log 2>&1"
+    # Debug: Check if container starts and can write
+    command: "echo 'WPScan container is alive' > /data/wpscan_alive.txt && wpscan --version >> /data/wpscan_alive.txt 2>&1"
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -61,8 +61,8 @@ services:
     profiles: [ "gray" ]
     user: root
     entrypoint: [ "/bin/sh", "-c" ]
-    # Use full path for zap-baseline.py and capture logs
-    command: "export PATH=$PATH:/zap && zap-baseline.py -t ${TARGET} -J zap.json > /zap/wrk/zap_debug.log 2>&1"
+    # Debug: Check if container starts and can write
+    command: "echo 'ZAP container is alive' > /data/zap_alive.txt && ls -la /zap/ >> /data/zap_alive.txt 2>&1"
     volumes:
       - ${HOST_DATA_DIR}:/data
       - ${HOST_DATA_DIR}:/zap/wrk
