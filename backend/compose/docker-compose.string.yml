@@ -58,8 +58,10 @@ services:
   zap:
     image: zaproxy/zap-stable
     profiles: [ "gray" ]
-    # Mount to /zap/wrk, and tell ZAP to write the report THERE.
-    command: zap-baseline.py -t ${TARGET} -J /zap/wrk/zap.json
+    user: root
+    entrypoint: [ "/bin/sh", "-c" ]
+    # Force root to avoid permission issues, and capture output to debug log
+    command: "zap-baseline.py -t ${TARGET} -J /zap/wrk/zap.json > /zap/wrk/zap_debug.log 2>&1"
     volumes:
       - ${HOST_DATA_DIR}:/zap/wrk
     network_mode: bridge
