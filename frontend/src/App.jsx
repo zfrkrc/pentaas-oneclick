@@ -93,47 +93,66 @@ function App() {
 
 
   const downloadCSV = () => {
-    if (!scanResult) return;
+    console.log("Download CSV triggered. ScanResult:", scanResult);
+    if (!scanResult) {
+      console.error("No scan result found to download.");
+      return;
+    }
 
-    // Calculate total vulnerabilities
-    const totalVulns = scanResult.vulnerabilities.reduce((sum, v) => sum + v.count, 0);
+    try {
+      // Calculate total vulnerabilities
+      const totalVulns = scanResult.vulnerabilities.reduce((sum, v) => sum + v.count, 0);
 
-    // Create comprehensive CSV with metadata
-    const metadata = [
-      "PENTAAS ONECLICK - SECURITY SCAN REPORT",
-      "",
-      "SCAN INFORMATION",
-      `Target,${scanResult.ip}`,
-      `Scan Mode,${scanResult.mode.toUpperCase()} BOX`,
-      `Scan Time,${scanResult.time}`,
-      `Total Vulnerabilities,${totalVulns}`,
-      "",
-      "VULNERABILITY SUMMARY",
-      `Critical,${scanResult.vulnerabilities.find(v => v.severity === 'Critical')?.count || 0}`,
-      `High,${scanResult.vulnerabilities.find(v => v.severity === 'High')?.count || 0}`,
-      `Medium,${scanResult.vulnerabilities.find(v => v.severity === 'Medium')?.count || 0}`,
-      `Low,${scanResult.vulnerabilities.find(v => v.severity === 'Low')?.count || 0}`,
-      "",
-      "DETAILED FINDINGS",
-      "ID,Title,Severity,Description"
-    ].join("\n");
+      // Create comprehensive CSV with metadata
+      const rows = [
+        ["PENTAAS ONECLICK - SECURITY SCAN REPORT"],
+        [""],
+        ["SCAN INFORMATION"],
+        ["Target", scanResult.ip],
+        ["Scan Mode", scanResult.mode.toUpperCase() + " BOX"],
+        ["Scan Time", scanResult.time],
+        ["Total Vulnerabilities", totalVulns],
+        [""],
+        ["VULNERABILITY SUMMARY"]
+      ];
 
-    const body = scanResult.findings.map(f =>
-      `${f.id},"${f.title}","${f.severity}","${f.description}"`
-    ).join("\n");
+      scanResult.vulnerabilities.forEach(v => {
+        rows.push([v.severity, v.count]);
+      });
 
-    const csvContent = metadata + "\n" + body;
+      rows.push([""]);
+      rows.push(["DETAILED FINDINGS"]);
+      rows.push(["ID", "Title", "Severity", "Description"]);
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.setAttribute('hidden', '');
-    a.setAttribute('href', url);
-    a.setAttribute('download', `pentaas_scan_report_${scanResult.ip.replace(/\./g, '_')}_${scanResult.mode}_${new Date().getTime()}.csv`);
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+      scanResult.findings.forEach(f => {
+        rows.push([f.id, f.title, f.severity, f.description]);
+      });
+
+      const csvContent = rows.map(e => e.map(val => `"${val}"`).join(",")).join("\n");
+      console.log("CSV Content generated, size:", csvContent.length);
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+
+      const safeIp = scanResult.ip.replace(/[^a-z0-9]/gi, '_');
+      const filename = "pentaas_report_" + safeIp + "_" + scanResult.mode + ".csv";
+
+      console.log("Attempting download with filename:", filename);
+
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        console.log("Download cleanup complete.");
+      }, 100);
+    } catch (err) {
+      console.error("Error during CSV generation/download:", err);
+    }
   };
 
 
