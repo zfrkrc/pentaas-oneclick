@@ -5,6 +5,25 @@ import Footer from './components/Footer'
 function App() {
   const [target, setTarget] = useState('');
   const [mode, setMode] = useState('black');
+  const [isScanning, setIsScanning] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const handleStartScan = () => {
+    setIsScanning(true);
+    setProgress(0);
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsScanning(false);
+          alert(`Scan completed on ${target}!`);
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 300);
+  };
+
 
   return (
     <>
@@ -31,7 +50,9 @@ function App() {
                       placeholder="e.g., 192.168.1.1 or example.com"
                       value={target}
                       onChange={(e) => setTarget(e.target.value)}
+                      disabled={isScanning}
                     />
+
                   </div>
 
                   {/* Scan Mode Selection */}
@@ -75,13 +96,41 @@ function App() {
                   {/* Start Button */}
                   <div className="col-12 text-center">
                     <button
-                      className="btn btn-primary display-4 w-100"
-                      onClick={() => alert(`Starting ${mode} scan on ${target}`)}
-                      disabled={!target}
+                      className={`btn btn-primary display-4 w-100 ${isScanning ? 'disabled' : ''}`}
+                      onClick={handleStartScan}
+                      disabled={!target || isScanning}
                     >
-                      <span className="mobi-mbri mobi-mbri-play mbr-iconfont mbr-iconfont-btn"></span>
-                      Start Scan
+                      {isScanning ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Scanning... {progress}%
+                        </>
+                      ) : (
+                        <>
+                          <span className="mobi-mbri mobi-mbri-play mbr-iconfont mbr-iconfont-btn"></span>
+                          Start Scan
+                        </>
+                      )}
                     </button>
+
+                    {isScanning && (
+                      <div className="mt-4">
+                        <div className="progress" style={{ height: '20px', borderRadius: '10px' }}>
+                          <div
+                            className="progress-bar progress-bar-striped progress-bar-animated"
+                            role="progressbar"
+                            style={{ width: `${progress}%` }}
+                            aria-valuenow={progress}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                          ></div>
+                        </div>
+                        <p className="text-center mt-2 mbr-fonts-style display-7">
+                          Scanning <strong>{target}</strong>...
+                        </p>
+                      </div>
+                    )}
+
                   </div>
                 </div>
               </div>
