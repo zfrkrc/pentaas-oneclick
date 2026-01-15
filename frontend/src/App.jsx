@@ -7,6 +7,10 @@ export default function App() {
   const [cat, setCat] = useState("white");
   const [loading, setLoading] = useState(false);
 
+  // Simple route check (since we are in strict mode and explicit routes weren't defined)
+  const isReport = window.location.pathname.startsWith("/report/");
+  const reportId = isReport ? window.location.pathname.split("/")[2] : null;
+
   const scan = async () => {
     if (!ip) {
       alert("Lütfen bir IP adresi girin.");
@@ -26,8 +30,9 @@ export default function App() {
         throw new Error(err.detail || "Sunucu hatası");
       }
 
-      const { uid } = await r.json();
-      navigate(`/report/${uid}`);
+      // FIX: Backend returns 'scan_id', not 'uid'
+      const { scan_id } = await r.json();
+      navigate(`/report/${scan_id}`);
     } catch (e) {
       console.error(e);
       alert("Hata: " + e.message);
@@ -35,6 +40,22 @@ export default function App() {
       setLoading(false);
     }
   };
+
+  if (isReport) {
+    return (
+      <div className="container">
+        <h1>Rapor Hazırlanıyor</h1>
+        <p>Tarama başlatıldı/tamamlandı.</p>
+        <p>ID: {reportId}</p>
+        <a href={`/reports/${reportId}/`} target="_blank" rel="noreferrer">
+          <button>Dosyaları Görüntüle</button>
+        </a>
+        <br /><br />
+        <button onClick={() => navigate("/")} style={{ backgroundColor: '#64748b' }}>Yeni Tarama</button>
+      </div>
+    );
+  }
+
   return (
     <div className="container">
       <h1>Pentest-OneClick</h1>
