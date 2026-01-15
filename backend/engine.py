@@ -26,7 +26,7 @@ def run_scan(target: str, category: str) -> str:
     print(f"Starting {category} scan for {target}...")
     try:
         subprocess.run(
-            ["docker", "compose", "-f", COMPOSE_FILE, "--profile", category, "up", "--abort-on-container-exit"],
+            ["docker", "compose", "-f", COMPOSE_FILE, "--profile", category, "up"],
             env=env_vars,
             check=True,
             capture_output=True,
