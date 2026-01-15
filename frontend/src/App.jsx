@@ -93,70 +93,58 @@ function App() {
 
 
   const downloadCSV = () => {
-    console.log("Download CSV initiated...");
     if (!scanResult) {
-      alert("No scan results detected. Please run a scan first.");
+      alert("Hata: Tarama sonucu bulunamadı.");
       return;
     }
 
     try {
+      console.log("CSV hazırlanalıyor...");
       const totalVulns = scanResult.vulnerabilities.reduce((sum, v) => sum + v.count, 0);
 
-      const rows = [
-        ["PENTAAS ONECLICK - SECURITY SCAN REPORT"],
-        [""],
-        ["SCAN INFORMATION"],
-        ["Target", scanResult.ip],
-        ["Scan Mode", scanResult.mode.toUpperCase() + " BOX"],
-        ["Scan Time", scanResult.time],
-        ["Total Vulnerabilities", totalVulns],
-        [""],
-        ["VULNERABILITY SUMMARY"]
+      let csvRows = [
+        "PENTAAS ONECLICK - SCAN REPORT",
+        "",
+        "SCAN INFO",
+        `Target,${scanResult.ip}`,
+        `Mode,${scanResult.mode}`,
+        `Time,${scanResult.time}`,
+        `Total Findings,${totalVulns}`,
+        "",
+        "SUMMARY",
+        "Severity,Count"
       ];
 
       scanResult.vulnerabilities.forEach(v => {
-        rows.push([v.severity, v.count]);
+        csvRows.push(`${v.severity},${v.count}`);
       });
 
-      rows.push([""]);
-      rows.push(["DETAILED FINDINGS"]);
-      rows.push(["ID", "Title", "Severity", "Description"]);
+      csvRows.push("", "DETAILED FINDINGS", "ID,Title,Severity,Description");
 
       scanResult.findings.forEach(f => {
-        rows.push([f.id, f.title, f.severity, f.description]);
+        const descToken = f.description.replace(/,/g, ';'); // escape commas for simple CSV
+        csvRows.push(`${f.id},${f.title},${f.severity},${descToken}`);
       });
 
-      // Character-safe CSV conversion
-      const csvString = rows.map(row =>
-        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")
-      ).join("\r\n");
-
-      // UTF-8 BOM for Turkish character support in Excel
-      const blob = new Blob(["\ufeff", csvString], { type: 'text/csv;charset=utf-8;' });
+      const csvContent = csvRows.join("\n");
+      const blob = new Blob([csvContent], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
-
       const link = document.createElement('a');
       const safeIp = scanResult.ip.replace(/[^a-z0-9]/gi, '_');
-      const fileName = `pentaas_report_${safeIp}.csv`;
 
       link.href = url;
-      link.setAttribute('download', fileName);
+      link.download = `pentaas_${safeIp}.csv`;
       document.body.appendChild(link);
-
-      console.log("Downloading file:", fileName);
       link.click();
 
       setTimeout(() => {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-        console.log("Download cleanup done.");
-      }, 150);
+      }, 500);
 
-      alert("Success: report generated as " + fileName);
-
+      alert("Rapor indiriliyor: " + link.download + "\nNot: Rapor tarayıcı tarafından oluşturuldu, sunucuya kaydedilmedi.");
     } catch (err) {
-      console.error("CSV Download Error:", err);
-      alert("Failed to generate CSV: " + err.message);
+      alert("Hata oluştu: " + err.message);
     }
   };
 
