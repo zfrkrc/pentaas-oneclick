@@ -45,11 +45,12 @@ services:
     network_mode: bridge
 
   wpscan:
-    image: wpscanteam/wpscan
+    build:
+      context: ./wpscan
+      dockerfile: Dockerfile
     profiles: [ "gray" ]
-    entrypoint: [ "/bin/sh", "-c" ]
-    # Debug: Print version first, then scan. Catch EVERYTHING.
-    command: "echo 'Starting WPScan...' > /data/wpscan_debug.log && wpscan --version >> /data/wpscan_debug.log 2>&1 && echo 'Running Scan...' >> /data/wpscan_debug.log && wpscan --url ${TARGET} --format json -o /data/wpscan.json --disable-tls-checks >> /data/wpscan_debug.log 2>&1"
+    # Simple command since entrypoint is set in Dockerfile
+    command: --url ${TARGET} --format json -o /data/wpscan.json --disable-tls-checks
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -57,12 +58,11 @@ services:
   zap:
     image: zaproxy/zap-stable
     profiles: [ "gray" ]
-    user: root
-    entrypoint: [ "/bin/sh", "-c" ]
-    # Debug: Check path, print version, then scan.
-    command: "echo 'Starting ZAP...' > /data/zap_debug.log && ls -la /zap >> /data/zap_debug.log 2>&1 && zap-baseline.py -t ${TARGET} -J zap.json >> /data/zap_debug.log 2>&1"
+    # ZAP runs as user 'zap' (1000). We mount data directly to /zap/wrk where it has permissions.
+    # We do NOT override entrypoint, just user the command.
+    command: zap-baseline.py -t ${TARGET} -J zap.json
     volumes:
-      - ${HOST_DATA_DIR}:/data
+      # Mount directly to /zap/wrk so zap.json ends up in HOST_DATA_DIR
       - ${HOST_DATA_DIR}:/zap/wrk
     network_mode: bridge
 
