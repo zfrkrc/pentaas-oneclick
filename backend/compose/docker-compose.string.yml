@@ -10,6 +10,7 @@ services:
 
   testssl:
     image: drwetter/testssl.sh
+    user: root
     profiles: [ "white" ]
     command: --jsonfile /data/testssl.json ${TARGET}
     volumes:
@@ -27,7 +28,7 @@ services:
   nikto_white:
     image: debian:bookworm-slim
     profiles: [ "white" ]
-    command: sh -c "apt-get update && apt-get install -y nikto && nikto -h ${TARGET} -o /data/nikto_white.json"
+    command: sh -c "apt-get update && apt-get install -y nikto && nikto -h ${TARGET} -o /data/nikto_white.json > /data/nikto_debug.log 2>&1"
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -88,18 +89,16 @@ services:
   nikto_black:
     image: debian:bookworm-slim
     profiles: [ "black" ]
-    command: sh -c "apt-get update && apt-get install -y nikto && nikto -h ${TARGET} -o /data/nikto_black.json"
+    command: sh -c "apt-get update && apt-get install -y nikto && nikto -h ${TARGET} -o /data/nikto_black.json > /data/nikto_debug.log 2>&1"
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
 
-  # Merge Service (Runs after scans)
+  # Merge Service (Alpine based, no build needed)
   merge:
-    build:
-      context: ./merge
-      dockerfile: Dockerfile
+    image: alpine
     container_name: pentaas_merge
-    # No profile means it won't run with others unless specified, but we will run it explicitly with run
+    command: sh -c "echo 'Scanning contents of ${DATA_DIR}...' && ls -l /app/reports/session/data && echo 'Scan Summary for ${TARGET}' > /app/reports/session/data/scan_summary.txt && echo 'Files found:' >> /app/reports/session/data/scan_summary.txt && ls -1 /app/reports/session/data >> /app/reports/session/data/scan_summary.txt"
     volumes:
       - ${HOST_DATA_DIR}:/app/reports/session/data
     environment:
