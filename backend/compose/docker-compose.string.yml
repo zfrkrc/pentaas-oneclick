@@ -45,24 +45,17 @@ services:
     network_mode: bridge
 
   wpscan:
-    build:
-      context: ./wpscan
-      dockerfile: Dockerfile
+    image: alpine
     profiles: [ "gray" ]
-    entrypoint: [ "/bin/sh", "-c" ]
-    # Debug: Check if container starts and can write
-    command: "echo 'WPScan container is alive' > /data/wpscan_alive.txt && wpscan --version >> /data/wpscan_alive.txt 2>&1"
+    command: sh -c "echo 'Alpine WPScan substitute is alive' > /data/wpscan_alpine.txt"
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
 
   zap:
-    image: zaproxy/zap-stable
+    image: alpine
     profiles: [ "gray" ]
-    user: root
-    entrypoint: [ "/bin/sh", "-c" ]
-    # Debug: Check if container starts and can write
-    command: "echo 'ZAP container is alive' > /data/zap_alive.txt && ls -la /zap/ >> /data/zap_alive.txt 2>&1"
+    command: sh -c "echo 'Alpine ZAP substitute is alive' > /data/zap_alpine.txt"
     volumes:
       - ${HOST_DATA_DIR}:/data
       - ${HOST_DATA_DIR}:/zap/wrk

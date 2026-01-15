@@ -26,13 +26,14 @@ def run_scan(target: str, category: str) -> str:
     # 1. Run Scanners
     print(f"Starting {category} scan for {target}...")
     try:
-        subprocess.run(
+        result = subprocess.run(
             ["docker", "compose", "-f", COMPOSE_FILE, "--profile", category, "up"],
             env=env_vars,
             check=True,
             capture_output=True,
             text=True
         )
+        print(f"DEBUG: Scan Success.\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}")
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"Scan failed (code {e.returncode}):\nSTDOUT: {e.stdout}\nSTDERR: {e.stderr}")
 
