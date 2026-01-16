@@ -38,10 +38,10 @@ except Exception as e:
 BASE_DIR = "/app"
 REPORT_DIR = f"{BASE_DIR}/reports"
 
-# Pydantic Models
+# Pydantic Models matches Frontend Request
 class ScanRequest(BaseModel):
-    target: str
-    scan_type: str  # white, gray, black
+    ip: str
+    category: str  # white, gray, black
 
 class ScanResponse(BaseModel):
     message: str
@@ -62,13 +62,17 @@ async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks):
     """
     from worker import queue_scan  # Deferred import to avoid circular dependency
     
+    # Map frontend fields to backend variables
+    target = scan.ip
+    scan_type = scan.category
+
     scan_id = uuid.uuid4().hex
     
     # Save initial metadata to Redis immediately
     if redis_conn:
         redis_conn.hmset(f"scan:{scan_id}:meta", {
-            "target": scan.target,
-            "category": scan.scan_type,
+            "target": target,
+            "category": scan_type,
             "uid": scan_id,
             "status": "queued",
             "started_at": datetime.now().isoformat()
@@ -77,7 +81,7 @@ async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks):
 
     try:
         # Enqueue task
-        job = queue_scan(scan.target, scan.scan_type, scan_id)
+        job = queue_scan(target, scan_type, scan_id)
         
         return {
             "message": "Scan started successfully",
