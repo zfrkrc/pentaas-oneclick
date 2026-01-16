@@ -340,6 +340,38 @@ def get_scan_results(scan_id: str):
                         "description": f"URL: {item.get('url', 'N/A')}\nParam: {item.get('param', 'N/A')}\nPoc: {item.get('poc', 'N/A')}"
                     })
         except: pass
+    
+    # 10. Waf00f
+    waf_path = os.path.join(data_dir, "wafw00f.json")
+    if os.path.exists(waf_path):
+        try:
+            with open(waf_path, 'r') as f:
+                data = json.load(f)
+                for item in data:
+                    if item.get("firewall") != "None":
+                        results["findings"].append({
+                            "id": f"waf-{len(results['findings'])}",
+                            "title": f"WAF Detected: {item.get('firewall')}",
+                            "severity": "Info",
+                            "description": f"Target is protected by {item.get('firewall')} ({item.get('manufacturer', 'N/A')})"
+                        })
+        except: pass
+
+    # 11. DNSRecon
+    dns_path = os.path.join(data_dir, "dnsrecon.json")
+    if os.path.exists(dns_path):
+        try:
+            with open(dns_path, 'r') as f:
+                data = json.load(f)
+                for item in data:
+                    results["findings"].append({
+                        "id": f"dns-{len(results['findings'])}",
+                        "title": f"DNS Record: {item.get('type')}",
+                        "severity": "Info",
+                        "description": f"Name: {item.get('name')}\nValue: {item.get('address') or item.get('exchange') or item.get('strings') or 'N/A'}"
+                    })
+        except: pass
+
 
     # Placeholder for counts if findings empty
     if not results["findings"]:

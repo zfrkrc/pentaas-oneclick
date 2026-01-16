@@ -3,7 +3,7 @@ services:
   nmap_white:
     image: instrumentisto/nmap
     profiles: [ "white" ]
-    command: -sT -F -oX /data/nmap_white.xml ${TARGET}
+    command: -sT -F -oX /data/nmap_white.xml ${TARGET_DOMAIN}
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -12,7 +12,7 @@ services:
     image: drwetter/testssl.sh
     user: root
     profiles: [ "white" ]
-    command: --jsonfile /data/testssl.json ${TARGET}
+    command: --jsonfile /data/testssl.json ${TARGET_DOMAIN}
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile
     profiles: [ "white" ]
     # -q: quiet mode to avoid log flooding
-    command: -u ${TARGET} --format=json -o /data/dirsearch.json -q
+    command: -u ${TARGET_URL} --format=json -o /data/dirsearch.json -q
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -34,7 +34,7 @@ services:
       dockerfile: Dockerfile
     profiles: [ "white" ]
     # -Plugins +: adds all default plus extra, -Tuning 123b: specific categories (interesting files, misconfigs)
-    command: -h ${TARGET} -o /data/nikto_white.json -Plugins @@ALL -Tuning 123b
+    command: -h ${TARGET_URL} -o /data/nikto_white.json -Plugins @@ALL -Tuning 123b
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -44,7 +44,7 @@ services:
       context: ./whatweb
       dockerfile: Dockerfile
     profiles: [ "white" ]
-    command: --log-json /data/whatweb.json ${TARGET}
+    command: --log-json /data/whatweb.json ${TARGET_URL}
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -53,7 +53,7 @@ services:
     image: projectdiscovery/nuclei
     profiles: [ "white" ]
     # Focus on non-intrusive tech detection and exposures
-    command: -u http://${TARGET} -tags exposures,tech-detect -jsonl -o /data/nuclei_white.json
+    command: -u ${TARGET_URL} -tags exposures,tech-detect -jsonl -o /data/nuclei_white.json
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -64,7 +64,7 @@ services:
       dockerfile: Dockerfile
     profiles: [ "white" ]
     # Ensure protocol is present for Arjun
-    command: -u http://${TARGET} -oJ /data/arjun.json
+    command: -u ${TARGET_URL} -oJ /data/arjun.json
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
@@ -75,7 +75,23 @@ services:
       dockerfile: Dockerfile
     profiles: [ "white" ]
     # Ensure protocol is present for Dalfox
-    command: url http://${TARGET} --output /data/dalfox.json --format json
+    command: url ${TARGET_URL} --output /data/dalfox.json --format json
+    volumes:
+      - ${HOST_DATA_DIR}:/data
+    network_mode: bridge
+
+  wafw00f:
+    image: enablesecurity/wafw00f
+    profiles: [ "white" ]
+    command: ${TARGET_URL} -f json -o /data/wafw00f.json
+    volumes:
+      - ${HOST_DATA_DIR}:/data
+    network_mode: bridge
+
+  dnsrecon:
+    image: darkoperator/dnsrecon
+    profiles: [ "white" ]
+    command: -d ${TARGET_DOMAIN} --json /data/dnsrecon.json
     volumes:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge

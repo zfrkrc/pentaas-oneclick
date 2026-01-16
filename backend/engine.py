@@ -19,9 +19,15 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
     host_reports_path = os.environ.get("HOST_REPORTS_PATH", f"{os.getcwd()}/reports")
     host_data_dir = f"{host_reports_path}/{uid}/data"
 
+    # Sanitize and parse target
+    target_raw = target.strip()
+    target_domain = target_raw.replace("https://", "").replace("http://", "").split('/')[0].split(':')[0]
+    target_url = target_raw if (target_raw.startswith("http://") or target_raw.startswith("https://")) else f"http://{target_raw}"
+
     env_vars = os.environ.copy()
-    env_vars = os.environ.copy()
-    env_vars["TARGET"] = target
+    env_vars["TARGET"] = target_raw
+    env_vars["TARGET_URL"] = target_url
+    env_vars["TARGET_DOMAIN"] = target_domain
     env_vars["HOST_DATA_DIR"] = host_data_dir
 
     # 1. Run Scanners
