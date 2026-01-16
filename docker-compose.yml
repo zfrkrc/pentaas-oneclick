@@ -39,5 +39,137 @@ services:
     volumes:
       - redis_data:/data
 
+  # Tool Microservices
+  nmap-service:
+    build: ./backend/services/nmap
+    ports:
+      - "8001:8000"
+    environment:
+      - SERVICE_NAME=nmap
+      - RESULTS_DIR=/data/results
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  nuclei-service:
+    build: ./backend/services/nuclei
+    ports:
+      - "8002:8000"
+    environment:
+      - SERVICE_NAME=nuclei
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  testssl-service:
+    build: ./backend/services/testssl
+    ports:
+      - "8003:8000"
+    environment:
+      - SERVICE_NAME=testssl
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  dirsearch-service:
+    build: ./backend/services/dirsearch
+    ports:
+      - "8004:8000"
+    environment:
+      - SERVICE_NAME=dirsearch
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  nikto-service:
+    build: ./backend/services/nikto
+    ports:
+      - "8005:8000"
+    environment:
+      - SERVICE_NAME=nikto
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  whatweb-service:
+    build: ./backend/services/whatweb
+    ports:
+      - "8006:8000"
+    environment:
+      - SERVICE_NAME=whatweb
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  arjun-service:
+    build: ./backend/services/arjun
+    ports:
+      - "8007:8000"
+    environment:
+      - SERVICE_NAME=arjun
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  dalfox-service:
+    build: ./backend/services/dalfox
+    ports:
+      - "8008:8000"
+    environment:
+      - SERVICE_NAME=dalfox
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  wafw00f-service:
+    build: ./backend/services/wafw00f
+    ports:
+      - "8009:8000"
+    environment:
+      - SERVICE_NAME=wafw00f
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  dnsrecon-service:
+    build: ./backend/services/dnsrecon
+    ports:
+      - "8010:8000"
+    environment:
+      - SERVICE_NAME=dnsrecon
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  wpscan-service:
+    build: ./backend/services/wpscan
+    ports:
+      - "8011:8000"
+    environment:
+      - SERVICE_NAME=wpscan
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  zap-service:
+    build: ./backend/services/zap
+    ports:
+      - "8012:8000"
+    environment:
+      - SERVICE_NAME=zap
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  sslyze-service:
+    build: ./backend/services/sslyze
+    ports:
+      - "8013:8000"
+    environment:
+      - SERVICE_NAME=sslyze
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
 volumes:
   redis_data:
