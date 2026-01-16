@@ -36,6 +36,29 @@ function App() {
           if (!statusRes.ok) return;
           const statusData = await statusRes.json();
 
+          // Update tool progress from services status
+          if (statusData.services) {
+            const completed = [];
+            const pending = [];
+
+            Object.entries(statusData.services).forEach(([name, info]) => {
+              if (info.completed) {
+                completed.push(name);
+              } else {
+                pending.push(name);
+              }
+            });
+
+            setToolProgress({ completed, pending });
+
+            // Calculate progress percentage
+            const total = completed.length + pending.length;
+            if (total > 0) {
+              const progressPercent = Math.floor((completed.length / total) * 100);
+              setProgress(progressPercent);
+            }
+          }
+
           // Fetch intermediate results to show progress
           fetchResults(scan_id, false);
 
@@ -43,12 +66,12 @@ function App() {
             clearInterval(pollInterval);
             fetchResults(scan_id, true);
           } else if (statusData.status === 'running') {
-            setProgress((prev) => (prev < 90 ? prev + 2 : prev)); // Visual progress
+            // Progress is now calculated from service statuses
           }
         } catch (pollErr) {
           console.error("Polling error:", pollErr);
         }
-      }, 4000);
+      }, 2000); // Poll every 2 seconds for faster updates
 
 
     } catch (err) {
