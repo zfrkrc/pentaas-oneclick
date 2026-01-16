@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar'; // Adjust import if Navbar is up one level
-import Footer from './Footer';
 
 function History() {
     const [scans, setScans] = useState([]);
@@ -60,69 +58,14 @@ function History() {
     };
 
     return (
-        <>
-            <Navbar />
-            <section className="header18 cid-uSrJKo5xsn" style={{ paddingTop: '6rem', minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
-                <div className="container">
-                    <div className="row justify-content-center">
-                        <div className="col-12 col-md-10">
-                            <h2 className="mb-4 text-center">Scan History</h2>
+                                </div >
+                            </div >
 
-                            <div className="card shadow-sm">
-                                <div className="card-body p-0">
-                                    <div className="table-responsive">
-                                        <table className="table table-hover mb-0">
-                                            <thead className="bg-light">
-                                                <tr>
-                                                    <th className="p-3">Date</th>
-                                                    <th className="p-3">Target</th>
-                                                    <th className="p-3">Type</th>
-                                                    <th className="p-3">Status</th>
-                                                    <th className="p-3 text-end">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {loading ? (
-                                                    <tr><td colSpan="5" className="text-center p-4">Loading...</td></tr>
-                                                ) : scans.length === 0 ? (
-                                                    <tr><td colSpan="5" className="text-center p-4">No scans found.</td></tr>
-                                                ) : (
-                                                    scans.map(scan => (
-                                                        <tr key={scan.scan_id}>
-                                                            <td className="p-3">{new Date(scan.timestamp).toLocaleString()}</td>
-                                                            <td className="p-3 fw-bold">{scan.target}</td>
-                                                            <td className="p-3">
-                                                                <span className={`badge ${scan.scan_type === 'white' ? 'bg-info' : scan.scan_type === 'gray' ? 'bg-secondary' : 'bg-dark'}`}>
-                                                                    {scan.scan_type.toUpperCase()}
-                                                                </span>
-                                                            </td>
-                                                            <td className="p-3">
-                                                                <span className={`badge ${scan.status === 'completed' ? 'bg-success' : scan.status === 'running' ? 'bg-warning' : 'bg-danger'}`}>
-                                                                    {scan.status.toUpperCase()}
-                                                                </span>
-                                                            </td>
-                                                            <td className="p-3 text-end">
-                                                                <button
-                                                                    className="btn btn-sm btn-primary"
-                                                                    onClick={() => downloadReport(scan.scan_id, scan.target)}
-                                                                >
-                                                                    Download CSV
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    ))
-                                                )}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </section>
-            <Footer />
+                        </div >
+                    </div >
+                </div >
+            </section >
+        <Footer />
         </>
     );
 }

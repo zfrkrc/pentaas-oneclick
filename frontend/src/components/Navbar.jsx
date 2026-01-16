@@ -1,13 +1,13 @@
 import React from 'react';
 
-const Navbar = ({ onNavigate, currentView }) => {
+const Navbar = () => {
     return (
         <section data-bs-version="5.1" className="menu menu6 cid-uV07AC1aCa" once="menu" id="menu06-a">
             <nav className="navbar navbar-dropdown opacityScrollOff navbar-fixed-top navbar-expand-lg">
                 <div className="container">
-                    <div className="navbar-brand" style={{ cursor: 'pointer' }} onClick={() => onNavigate('home')}>
+                    <div className="navbar-brand">
                         <span className="navbar-logo">
-                            <a>
+                            <a href="/">
                                 <img src="/assets/images/capture-206x207.jpg" alt="Logo" style={{ height: '3rem' }} />
                             </a>
                         </span>
@@ -33,15 +33,8 @@ const Navbar = ({ onNavigate, currentView }) => {
                     <div className="collapse navbar-collapse opacityScrollOff" id="navbarSupportedContent">
                         <ul className="navbar-nav nav-dropdown nav-right" data-app-modern-menu="true">
                             <li className="nav-item">
-                                <span className={`nav-link link text-black show display-4 ${currentView === 'home' ? 'text-primary' : ''}`} style={{ cursor: 'pointer' }} onClick={() => onNavigate('home')}>Dashboard</span>
+                                <a className="nav-link link text-black show text-primary display-4" href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4" aria-expanded="false">Hakkımızda</a>
                             </li>
-                            <li className="nav-item">
-                                <span className={`nav-link link text-black show display-4 ${currentView === 'history' ? 'text-primary' : ''}`} style={{ cursor: 'pointer' }} onClick={() => onNavigate('history')}>Scan History</span>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link link text-black show text-primary display-4" href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Hakkımızda</a>
-                            </li>
-
                             <li className="nav-item">
                                 <a className="nav-link link text-black show text-primary display-4" href="https://postaci.zaferkaraca.net">Posta Hizmeti</a>
                             </li>
