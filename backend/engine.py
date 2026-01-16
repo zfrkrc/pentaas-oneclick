@@ -38,9 +38,12 @@ def log_scan(uid: str, message: str):
 
 
 async def run_service_async(service_name: str, env_vars: dict, uid: str) -> tuple:
-    """Run a single service asynchronously using docker compose"""
+    """Run a single service asynchronously using docker compose with timeout"""
     log_scan(uid, f"🚀 Starting {service_name}...")
     start_time = time.time()
+    
+    # Set timeout for each service (e.g., 20 minutes)
+    SERVICE_TIMEOUT = 1200 
     
     try:
         # Run service using docker compose run
@@ -52,16 +55,25 @@ async def run_service_async(service_name: str, env_vars: dict, uid: str) -> tupl
             stderr=asyncio.subprocess.PIPE
         )
         
-        stdout, stderr = await process.communicate()
-        duration = time.time() - start_time
-        
-        if process.returncode == 0:
-            log_scan(uid, f"✅ {service_name} completed in {duration:.1f}s")
-            return (service_name, True, None)
-        else:
-            error_msg = stderr.decode()[:200] if stderr else "Unknown error"
-            log_scan(uid, f"❌ {service_name} failed: {error_msg}")
-            return (service_name, False, error_msg)
+        try:
+            # Wait for process with timeout
+            stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=SERVICE_TIMEOUT)
+            
+            duration = time.time() - start_time
+            if process.returncode == 0:
+                log_scan(uid, f"✅ {service_name} completed in {duration:.1f}s")
+                return (service_name, True, None)
+            else:
+                error_msg = stderr.decode()[:200] if stderr else "Unknown error"
+                log_scan(uid, f"❌ {service_name} failed: {error_msg}")
+                return (service_name, False, error_msg)
+                
+        except asyncio.TimeoutError:
+            process.kill()
+            await process.wait()
+            duration = time.time() - start_time
+            log_scan(uid, f"⏱️ {service_name} timed out after {duration:.1f}s")
+            return (service_name, False, "Operation timed out")
             
     except Exception as e:
         duration = time.time() - start_time
