@@ -93,6 +93,40 @@ async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/scans")
+def list_scans():
+    """List all past scans from Redis"""
+    if not redis_conn:
+        return {"scans": []}
+    
+    try:
+        # Find all scan meta keys
+        keys = redis_conn.keys("scan:*:meta")
+        scans = []
+        
+        for key in keys:
+            try:
+                # key format: scan:{uid}:meta
+                uid = key.split(":")[1]
+                meta = redis_conn.hgetall(key)
+                scans.append({
+                    "scan_id": uid,
+                    "target": meta.get("target", "Unknown"),
+                    "scan_type": meta.get("category", "Unknown"),
+                    "status": meta.get("status", "Unknown"),
+                    "timestamp": meta.get("started_at", "")
+                })
+            except:
+                continue
+        
+        # Sort by timestamp desc
+        scans.sort(key=lambda x: x["timestamp"], reverse=True)
+        return {"scans": scans}
+    except Exception as e:
+        logger.error(f"Error listing scans: {e}")
+        return {"scans": [], "error": str(e)}
+
+
 @app.get("/scan/{scan_id}")
 async def get_scan_status(scan_id: str):
     """Get real-time scan status from Redis"""
