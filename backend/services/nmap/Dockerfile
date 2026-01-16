@@ -12,6 +12,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy base service module
+COPY ../base /app/services/base/
+
 # Copy service code
 COPY . /app/
 
