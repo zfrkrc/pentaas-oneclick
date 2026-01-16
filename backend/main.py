@@ -7,6 +7,33 @@ from engine import run_scan, REPORT_DIR
 
 app = FastAPI()
 
+PROFILE_TOOLS = {
+    "white": {
+        "Nmap": "nmap_white.xml",
+        "TestSSL": "testssl.json",
+        "Dirsearch": "dirsearch.json",
+        "Nikto": "nikto_white.json",
+        "WhatWeb": "whatweb.json",
+        "Nuclei": "nuclei_white.json",
+        "Arjun": "arjun.json",
+        "Dalfox": "dalfox.json",
+        "Wafw00f": "wafw00f.json",
+        "DNSRecon": "dnsrecon.json"
+    },
+    "gray": {
+        "Nmap": "nmap_gray.xml",
+        "WPScan": "wpscan.json",
+        "ZAP Baseline": "zap.json",
+        "SSLyze": "sslyze.json"
+    },
+    "black": {
+        "Nmap": "nmap_black.xml",
+        "Nuclei": "nuclei.json",
+        "Nikto": "nikto_black.json"
+    }
+}
+
+
 
 class ScanRequest(BaseModel):
     ip: str
@@ -56,8 +83,28 @@ def get_scan_results(scan_id: str):
 
     results = {
         "findings": [],
-        "raw_files": os.listdir(data_dir)
+        "raw_files": os.listdir(data_dir),
+        "progress": {"completed": [], "pending": []}
     }
+
+    # Load metadata to know which category we are in
+    meta_path = os.path.join(data_dir, "meta.json")
+    category = "white"
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path, 'r') as f:
+                meta = json.load(f)
+                category = meta.get("category", "white")
+        except: pass
+
+    # Track progress
+    expected_tools = PROFILE_TOOLS.get(category, {})
+    for tool_name, filename in expected_tools.items():
+        if os.path.exists(os.path.join(data_dir, filename)):
+            results["progress"]["completed"].append(tool_name)
+        else:
+            results["progress"]["pending"].append(tool_name)
+
 
     # Helper to parse common tool outputs
     # 1. Nuclei (All modes)

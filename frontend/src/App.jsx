@@ -8,6 +8,8 @@ function App() {
   const [isScanning, setIsScanning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [scanResult, setScanResult] = useState(null);
+  const [toolProgress, setToolProgress] = useState({ completed: [], pending: [] });
+
 
 
   const handleStartScan = async () => {
@@ -34,16 +36,20 @@ function App() {
           if (!statusRes.ok) return;
           const statusData = await statusRes.json();
 
+          // Fetch intermediate results to show progress
+          fetchResults(scan_id, false);
+
           if (statusData.status === 'completed') {
             clearInterval(pollInterval);
-            fetchResults(scan_id);
+            fetchResults(scan_id, true);
           } else if (statusData.status === 'running') {
             setProgress((prev) => (prev < 90 ? prev + 2 : prev)); // Visual progress
           }
         } catch (pollErr) {
           console.error("Polling error:", pollErr);
         }
-      }, 3000);
+      }, 4000);
+
 
     } catch (err) {
       console.error("Scan Error:", err);
@@ -52,11 +58,16 @@ function App() {
     }
   };
 
-  const fetchResults = async (scanId) => {
+  const fetchResults = async (scanId, isFinal = false) => {
     try {
       const res = await fetch(`/api/scan/${scanId}/results`);
       if (!res.ok) throw new Error('Could not fetch results');
       const data = await res.json();
+
+      // Update tool progress
+      if (data.progress) {
+        setToolProgress(data.progress);
+      }
 
       // Calculate counts from real findings
       const counts = { Critical: 0, High: 0, Medium: 0, Low: 0, Info: 0 };
@@ -78,14 +89,20 @@ function App() {
         findings: data.findings,
         time: new Date().toLocaleString()
       });
-      setProgress(100);
-      setIsScanning(false);
+
+      if (isFinal) {
+        setProgress(100);
+        setIsScanning(false);
+      }
     } catch (err) {
       console.error("Results Fetch Error:", err);
-      alert("Sonuçlar alınırken hata oluştu.");
-      setIsScanning(false);
+      if (isFinal) {
+        alert("Sonuçlar alınırken hata oluştu.");
+        setIsScanning(false);
+      }
     }
   };
+
 
 
 
@@ -253,8 +270,27 @@ function App() {
                         <p className="text-center mt-2 mbr-fonts-style display-7" style={{ color: '#232323' }}>
                           Scanning <strong>{target}</strong>... {progress}%
                         </p>
+
+                        <div className="mt-3 p-3 bg-white rounded shadow-sm border" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                          <h6 className="mbr-fonts-style display-7 mb-3 text-start"><strong>Tool Status:</strong></h6>
+                          <div className="d-flex flex-wrap gap-2">
+                            {toolProgress.completed.map((t, idx) => (
+                              <span key={idx} className="badge bg-success p-2">
+                                <span className="mobi-mbri mobi-mbri-success mbr-iconfont me-1" style={{ fontSize: '1rem' }}></span>
+                                {t}
+                              </span>
+                            ))}
+                            {toolProgress.pending.map((t, idx) => (
+                              <span key={idx} className="badge bg-light text-dark border p-2">
+                                <span className="spinner-border spinner-border-sm me-1" role="status" style={{ width: '0.8rem', height: '0.8rem' }}></span>
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     )}
+
 
                     {!isScanning && scanResult && (
                       <div id="scan-results" className="mt-5 p-4 border rounded shadow-sm" style={{ backgroundColor: '#fff', borderLeft: '5px solid #232323' }}>

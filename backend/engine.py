@@ -19,6 +19,10 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
     host_reports_path = os.environ.get("HOST_REPORTS_PATH", f"{os.getcwd()}/reports")
     host_data_dir = f"{host_reports_path}/{uid}/data"
 
+    # Save metadata for UI tracking
+    with open(f"{data_dir_internal}/meta.json", "w") as f:
+        json.dump({"target": target, "category": category, "uid": uid}, f)
+
     # Sanitize and parse target
     target_raw = target.strip()
     target_domain = target_raw.replace("https://", "").replace("http://", "").split('/')[0].split(':')[0]
