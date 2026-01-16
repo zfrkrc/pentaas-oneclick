@@ -152,6 +152,12 @@ async def get_scan_status(scan_id: str):
                 if len(parts) > 1:
                     svc = parts[1].split("(")[0].strip().split("...")[0].strip()
                     services_status[svc] = {"status": "running", "completed": False}
+            elif "⏳ Pending" in line:
+                parts = line.split("Pending ")
+                if len(parts) > 1:
+                    svc = parts[1].strip()
+                    if svc not in services_status:
+                        services_status[svc] = {"status": "pending", "completed": False}
             elif "✅" in line and "completed" in line:
                 parts = line.split("] ✅ ")
                 if len(parts) > 1:

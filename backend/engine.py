@@ -228,6 +228,10 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
     log_scan(uid, f"🎯 Starting {category.upper()} scan for {target}")
     log_scan(uid, f"📦 Services: {', '.join(services)}")
     
+    # Notify UI about all expected services
+    for svc in services:
+        log_scan(uid, f"⏳ Pending {svc}")
+    
     # Run all services in parallel
     try:
         asyncio.run(run_all_services_parallel(services, env_vars, uid))
