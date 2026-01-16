@@ -19,4 +19,4 @@ COPY . /app/
 EXPOSE 8000
 
 # Run service
-CMD ["python", "services/nmap/service.py"]
+CMD ["python", "service.py"]

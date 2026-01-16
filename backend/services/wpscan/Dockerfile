@@ -5,4 +5,4 @@ COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 COPY . /app/
 EXPOSE 8000
-CMD ["python3", "services/wpscan/service.py"]
+CMD ["python3", "service.py"]

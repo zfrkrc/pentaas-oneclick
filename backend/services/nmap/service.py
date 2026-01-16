@@ -34,11 +34,17 @@ class NmapService(BaseToolService):
         output_file = f"/tmp/nmap_{target.replace('.', '_')}.xml"
         cmd = ["nmap"] + nmap_args + ["-oX", output_file, target]
         
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+        try:
+            # Increased timeout to 30 minutes for full port scans
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
+            raw_output = result.stdout
+        except subprocess.TimeoutExpired:
+            raw_output = f"Scan timed out after 1800 seconds. Command: {' '.join(cmd)}"
+        except Exception as e:
+            raw_output = f"Error running nmap: {str(e)}"
         
         # Parse XML output
         findings = []
-        raw_output = result.stdout
         
         if os.path.exists(output_file):
             findings = self._parse_nmap_xml(output_file)

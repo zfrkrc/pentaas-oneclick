@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 import uuid
 import os
 import json
+import asyncio
 from typing import Dict, Any
 from .models import (
     ScanRequest, ScanResponse, ScanStatusResponse, 
@@ -51,8 +52,8 @@ class BaseToolService(ABC):
                 "status": ScanStatus.QUEUED
             }
             
-            # Start scan asynchronously
-            await self._execute_scan(scan_id, request.target, request.options)
+            # Start scan asynchronously in background
+            asyncio.create_task(self._execute_scan(scan_id, request.target, request.options))
             
             return ScanResponse(scan_id=scan_id, status=ScanStatus.QUEUED)
         
@@ -107,12 +108,23 @@ class BaseToolService(ABC):
             # Save results
             results_file = os.path.join(self.results_dir, f"{scan_id}.json")
             with open(results_file, 'w') as f:
-                json.dump(results, f)
+                json.dump(results, f, indent=2)
             
             self.scans[scan_id]["status"] = ScanStatus.COMPLETED
+            print(f"[{self.service_name}] Scan {scan_id} completed successfully")
         except Exception as e:
+            error_msg = f"Scan failed: {type(e).__name__}: {str(e)}"
             self.scans[scan_id]["status"] = ScanStatus.FAILED
-            self.scans[scan_id]["message"] = str(e)
+            self.scans[scan_id]["message"] = error_msg
+            print(f"[{self.service_name}] Scan {scan_id} failed: {error_msg}")
+            
+            # Save partial results if any
+            try:
+                results_file = os.path.join(self.results_dir, f"{scan_id}.json")
+                with open(results_file, 'w') as f:
+                    json.dump({"error": error_msg, "findings": []}, f, indent=2)
+            except:
+                pass
     
     @abstractmethod
     async def scan(self, target: str, options: Dict[str, Any]) -> Dict[str, Any]:

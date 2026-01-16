@@ -6,4 +6,4 @@ RUN apk add --no-cache python3 py3-pip && pip install --no-cache-dir -r requirem
 COPY . /app/
 
 EXPOSE 8000
-CMD ["python3", "services/nuclei/service.py"]
+CMD ["python3", "service.py"]
