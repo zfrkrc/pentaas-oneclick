@@ -4,13 +4,20 @@ import uuid
 import xml.etree.ElementTree as ET
 import logging
 from typing import List, Dict, Any
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from engine import run_scan, REPORT_DIR
+import redis
+from rq import Queue
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# RQ Setup
+redis_url = os.getenv('REDIS_URL', 'redis://redis:6379')
+redis_conn = redis.from_url(redis_url)
+q = Queue(connection=redis_conn)
 
 app = FastAPI()
 
@@ -48,20 +55,22 @@ class ScanRequest(BaseModel):
 
 
 @app.post("/scan")
-async def create_scan(req: ScanRequest, background_tasks: BackgroundTasks):
+async def create_scan(req: ScanRequest):
     try:
         # Generate UID here so we can return it immediately
         uid = uuid.uuid4().hex
         
-        # Run the heavy subprocess in the background
-        background_tasks.add_task(run_scan, req.ip, req.category, uid)
+        # Enqueue the scan job to RQ
+        job = q.enqueue(run_scan, req.ip, req.category, uid)
+        logger.info(f"Enqueued scan job {job.id} for target {req.ip}, UID: {uid}")
         
         return {
             "status": "started",
-            "scan_id": uid
+            "scan_id": uid,
+            "job_id": job.id
         }
     except Exception as e:
-        print(f"Error starting scan task: {e}")
+        logger.error(f"Error starting scan job: {e}")
         raise HTTPException(
             status_code=400,
             detail=str(e)
@@ -102,7 +111,8 @@ def get_scan_results(scan_id: str):
             with open(meta_path, 'r') as f:
                 meta = json.load(f)
                 category = meta.get("category", "white")
-        except: pass
+        except Exception as e:
+            logger.error(f"Error reading meta.json: {e}")
 
     # Track progress
     expected_tools = PROFILE_TOOLS.get(category, {})
@@ -158,7 +168,8 @@ def get_scan_results(scan_id: str):
                             "severity": "Medium",
                             "description": item.get("msg", "Unknown finding")
                         })
-            except: pass
+            except Exception as e:
+                logger.error(f"Error reading nikto file: {e}")
 
     # 3. ZAP (Gray usually)
     zap_path = os.path.join(data_dir, "zap.json")
@@ -178,7 +189,8 @@ def get_scan_results(scan_id: str):
                             "severity": risk,
                             "description": alert.get("desc", "No description provided.")
                         })
-        except: pass
+        except Exception as e:
+            logger.error(f"Error reading ZAP file: {e}")
     
     # Check for ZAP yaml just in case
     zap_yaml = os.path.join(data_dir, "zap.yaml")
@@ -267,7 +279,8 @@ def get_scan_results(scan_id: str):
                             "severity": "Low",
                             "description": f"Service: {full_svc} detected on port {portid}."
                         })
-            except: pass
+            except Exception as e:
+                logger.error(f"Error parsing Nmap XML: {e}")
 
     # 6. Dirsearch (White/Gray)
     dirsearch_path = os.path.join(data_dir, "dirsearch.json")
@@ -285,7 +298,8 @@ def get_scan_results(scan_id: str):
                             "severity": "Medium" if entry.get("status") in [200, 307] else "Low",
                             "description": f"Accessible path found: {entry.get('url')} (Status: {entry.get('status')})"
                         })
-        except: pass
+        except Exception as e:
+            logger.error(f"Error reading dirsearch file: {e}")
 
     # 7. SSLyze (Gray/White)
     sslyze_path = os.path.join(data_dir, "sslyze.json")
@@ -361,7 +375,8 @@ def get_scan_results(scan_id: str):
                             "severity": mapped_sev,
                             "description": item.get("finding", "No description")
                         })
-        except: pass
+        except Exception as e:
+            logger.error(f"Error reading testssl file: {e}")
 
     # 9. WhatWeb (Common - JSON list)
     whatweb_path = os.path.join(data_dir, "whatweb.json")
@@ -390,7 +405,8 @@ def get_scan_results(scan_id: str):
                             "severity": "Info",
                             "description": desc
                         })
-        except: pass
+        except Exception as e:
+            logger.error(f"Error reading whatweb file: {e}")
 
     # 10. Arjun (Hidden parameter discovery)
     arjun_path = os.path.join(data_dir, "arjun.json")
@@ -407,7 +423,8 @@ def get_scan_results(scan_id: str):
                             "severity": "Medium",
                             "description": f"Target: {url}\nParameters: {', '.join(params)}"
                         })
-        except: pass
+        except Exception as e:
+            logger.error(f"Error reading arjun file: {e}")
 
     # 11. Dalfox (XSS Scanner)
     dalfox_path = os.path.join(data_dir, "dalfox.json")
@@ -424,7 +441,8 @@ def get_scan_results(scan_id: str):
                         "severity": "High",
                         "description": f"URL: {item.get('url', 'N/A')}\nParam: {item.get('param', 'N/A')}\nPoc: {item.get('poc', 'N/A')}"
                     })
-        except: pass
+        except Exception as e:
+            logger.error(f"Error reading dalfox file: {e}")
     
     # 10. Waf00f
     waf_path = os.path.join(data_dir, "wafw00f.json")
@@ -440,7 +458,8 @@ def get_scan_results(scan_id: str):
                             "severity": "Info",
                             "description": f"Target is protected by {item.get('firewall')} ({item.get('manufacturer', 'N/A')})"
                         })
-        except: pass
+        except Exception as e:
+            logger.error(f"Error reading wafw00f file: {e}")
 
     # 11. DNSRecon
     dns_path = os.path.join(data_dir, "dnsrecon.json")
@@ -455,7 +474,8 @@ def get_scan_results(scan_id: str):
                         "severity": "Info",
                         "description": f"Name: {item.get('name')}\nValue: {item.get('address') or item.get('exchange') or item.get('strings') or 'N/A'}"
                     })
-        except: pass
+        except Exception as e:
+            logger.error(f"Error reading dnsrecon file: {e}")
 
 
     # Placeholder for counts if findings empty

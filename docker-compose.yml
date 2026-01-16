@@ -20,6 +20,21 @@ services:
       - ./backend/compose:/app/compose:ro
     restart: unless-stopped
 
+  worker:
+    build: ./backend
+    command: python worker.py
+    env_file: .env
+    environment:
+      - HOST_REPORTS_PATH=${PWD}/reports
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./reports:/app/reports
+      - ./backend/compose:/app/compose:ro
+    depends_on:
+      - redis
+    restart: unless-stopped
+
   redis:
     image: redis:7-alpine
     volumes:
