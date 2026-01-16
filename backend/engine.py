@@ -18,9 +18,9 @@ REPORT_DIR = f"{BASE_DIR}/reports"
 
 # Define services for each profile
 PROFILE_SERVICES = {
-    "white": ["nmap_white", "testssl", "dirsearch", "nikto_white", "whatweb", "nuclei_white", "arjun", "dalfox", "wafw00f", "dnsrecon"],
+    "white": ["nmap_white", "testssl", "dirsearch", "nikto_white", "whatweb", "arjun", "dalfox", "wafw00f", "dnsrecon", "nuclei_white"],
     "gray": ["nmap_gray", "wpscan", "zap", "sslyze"],
-    "black": ["nmap_black", "nuclei", "nikto_black"]
+    "black": ["nmap_black", "nikto_black", "nuclei"]
 }
 
 
@@ -38,7 +38,7 @@ def log_scan(uid: str, message: str):
 
 
 async def run_service_async(service_name: str, env_vars: dict, uid: str) -> tuple:
-    """Run a single service asynchronously using docker compose with timeout"""
+    """Run a single service asynchronously using docker compose with timeout and live logging"""
     # Timeout settings: 3 minutes (180s)
     SERVICE_TIMEOUT = 180 
     
@@ -46,7 +46,7 @@ async def run_service_async(service_name: str, env_vars: dict, uid: str) -> tupl
     start_time = time.time()
     
     try:
-        # Run service using docker compose run
+        # Run service, piping stdout/stderr
         process = await asyncio.create_subprocess_exec(
             "docker", "compose", "-f", COMPOSE_FILE,
             "run", "--rm", service_name,
@@ -55,19 +55,35 @@ async def run_service_async(service_name: str, env_vars: dict, uid: str) -> tupl
             stderr=asyncio.subprocess.PIPE
         )
         
+        # Helper to read stream and log
+        async def read_stream(stream, label):
+            while True:
+                line = await stream.readline()
+                if not line:
+                    break
+                decoded_line = line.decode().strip()
+                if decoded_line:
+                    if "error" in decoded_line.lower() or "fail" in decoded_line.lower() or "warning" in decoded_line.lower():
+                         log_scan(uid, f"📝 [{service_name}] {decoded_line}")
+        
         try:
-            # Wait for process with timeout
-            stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=SERVICE_TIMEOUT)
+            # Run stream readers concurrently with wait_for
+            await asyncio.wait_for(
+                asyncio.gather(
+                    read_stream(process.stdout, "stdout"),
+                    read_stream(process.stderr, "stderr"),
+                    process.wait()
+                ),
+                timeout=SERVICE_TIMEOUT
+            )
             
             duration = time.time() - start_time
             if process.returncode == 0:
                 log_scan(uid, f"✅ {service_name} completed in {duration:.1f}s")
                 return (service_name, True, None)
             else:
-                # Capture stderr or stdout for error
-                error_msg = stderr.decode()[:200] if stderr else stdout.decode()[:200] if stdout else "Unknown error"
-                log_scan(uid, f"❌ {service_name} failed: {error_msg}")
-                return (service_name, False, error_msg)
+                log_scan(uid, f"❌ {service_name} failed with code {process.returncode}")
+                return (service_name, False, f"Exit code {process.returncode}")
                 
         except asyncio.TimeoutError:
             try:
@@ -86,16 +102,26 @@ async def run_service_async(service_name: str, env_vars: dict, uid: str) -> tupl
 
 
 async def run_all_services_parallel(services: list, env_vars: dict, uid: str):
-    """Run all services in parallel"""
-    log_scan(uid, f"📋 Running {len(services)} services in parallel...")
+    """Run services: Others first (parallel), then Nuclei (last)"""
     
-    # Create tasks for all services
-    tasks = [run_service_async(svc, env_vars, uid) for svc in services]
+    # Separate Nuclei from other services
+    nuclei_services = [s for s in services if 'nuclei' in s]
+    other_services = [s for s in services if 'nuclei' not in s]
     
-    # Wait for all to complete
-    results = await asyncio.gather(*tasks, return_exceptions=True)
+    results = []
     
-    # Summary
+    # 1. Run all non-nuclei services in parallel first
+    if other_services:
+        log_scan(uid, f"📋 Running {len(other_services)} services in parallel (Priority Group)...")
+        tasks = [run_service_async(svc, env_vars, uid) for svc in other_services]
+        results.extend(await asyncio.gather(*tasks, return_exceptions=True))
+    
+    # 2. Run Nuclei services last
+    if nuclei_services:
+        log_scan(uid, f"📋 Running Nuclei services ({len(nuclei_services)}) - Last Step...")
+        tasks = [run_service_async(svc, env_vars, uid) for svc in nuclei_services]
+        results.extend(await asyncio.gather(*tasks, return_exceptions=True))
+    
     successful = sum(1 for r in results if isinstance(r, tuple) and r[1])
     failed = len(results) - successful
     
