@@ -307,6 +307,23 @@ def get_scan_results(scan_id: str):
                         })
         except: pass
 
+    # 10. Arjun (Hidden parameter discovery)
+    arjun_path = os.path.join(data_dir, "arjun.json")
+    if os.path.exists(arjun_path):
+        try:
+            with open(arjun_path, 'r') as f:
+                data = json.load(f)
+                # Arjun JSON: {"url": ["param1", "param2"]}
+                for url, params in data.items():
+                    if params:
+                        results["findings"].append({
+                            "id": f"arjun-{len(results['findings'])}",
+                            "title": "Hidden Parameters Found",
+                            "severity": "Medium",
+                            "description": f"Target: {url}\nParameters: {', '.join(params)}"
+                        })
+        except: pass
+
     # Placeholder for counts if findings empty
     if not results["findings"]:
         # Check if we at least have files but no findings

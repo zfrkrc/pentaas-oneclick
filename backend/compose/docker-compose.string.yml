@@ -57,6 +57,17 @@ services:
       - ${HOST_DATA_DIR}:/data
     network_mode: bridge
 
+  arjun:
+    build:
+      context: ./arjun
+      dockerfile: Dockerfile
+    profiles: [ "white" ]
+    # Finds hidden parameters in the target
+    command: -u ${TARGET} -oJ /data/arjun.json
+    volumes:
+      - ${HOST_DATA_DIR}:/data
+    network_mode: bridge
+
   # Gray Profile
   nmap_gray:
     image: instrumentisto/nmap
