@@ -179,8 +179,7 @@ def get_scan_results(scan_id: str):
                     try:
                         data = json.load(f)
                     except json.JSONDecodeError:
-                        logger.warning(f"Nikto file {nikto_file} exists but matches invalid JSON")
-                        continue
+                        continue 
 
                     # Nikto can be a list or a dict
                     items = []
@@ -202,6 +201,38 @@ def get_scan_results(scan_id: str):
 
     # ... (ZAP, WPScan, Nmap, etc. skipped in diff) ...
 
+    # 8. TestSSL (Common - JSON list)
+    testssl_path = os.path.join(data_dir, "testssl.json")
+    if os.path.exists(testssl_path):
+        try:
+            if os.path.getsize(testssl_path) == 0:
+                pass
+            else:
+                with open(testssl_path, 'r') as f:
+                    try:
+                        data = json.load(f)
+                        if isinstance(data, list):
+                            for item in data:
+                                sev = item.get("severity", "INFO")
+                                sev_map = {
+                                    "FATAL": "Critical", "CRITICAL": "Critical", "HIGH": "High",
+                                    "MEDIUM": "Medium", "LOW": "Low", "WARN": "Medium",
+                                    "INFO": "Info", "OK": "Info"
+                                }
+                                mapped_sev = sev_map.get(sev, "Info")
+                                
+                                if sev in ["FATAL", "CRITICAL", "HIGH", "MEDIUM", "LOW", "WARN"]:
+                                    results["findings"].append({
+                                        "id": f"tssl-{len(results['findings'])}",
+                                        "title": f"TestSSL: {item.get('id', 'Issue')}",
+                                        "severity": mapped_sev,
+                                        "description": item.get("finding", "No description")
+                                    })
+                    except json.JSONDecodeError:
+                        pass # File likely being written
+        except Exception as e:
+            logger.error(f"Error reading testssl file: {e}")
+
     # 11. Dalfox (XSS Scanner)
     dalfox_path = os.path.join(data_dir, "dalfox.json")
     if os.path.exists(dalfox_path) and os.path.getsize(dalfox_path) > 0:
@@ -222,7 +253,7 @@ def get_scan_results(scan_id: str):
                                 "description": f"URL: {item.get('url', 'N/A')}\nParam: {item.get('param', 'N/A')}\nPoc: {item.get('poc', 'N/A')}"
                             })
                     except json.JSONDecodeError:
-                        logger.error("Failed to parse Dalfox as JSON Array")
+                        pass
                 else:
                     # JSON Lines format
                     for line in content.splitlines():
