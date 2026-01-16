@@ -171,8 +171,17 @@ def get_scan_results(scan_id: str):
         nikto_path = os.path.join(data_dir, nikto_file)
         if os.path.exists(nikto_path):
             try:
+                # Check if file is empty
+                if os.path.getsize(nikto_path) == 0:
+                    continue
+
                 with open(nikto_path, 'r') as f:
-                    data = json.load(f)
+                    try:
+                        data = json.load(f)
+                    except json.JSONDecodeError:
+                        logger.warning(f"Nikto file {nikto_file} exists but matches invalid JSON")
+                        continue
+
                     # Nikto can be a list or a dict
                     items = []
                     if isinstance(data, list):
@@ -191,276 +200,43 @@ def get_scan_results(scan_id: str):
             except Exception as e:
                 logger.error(f"Error reading nikto file: {e}")
 
-    # 3. ZAP (Gray usually)
-    zap_path = os.path.join(data_dir, "zap.json")
-    if os.path.exists(zap_path):
-        try:
-            with open(zap_path, 'r') as f:
-                data = json.load(f)
-                sites = data.get("site", [])
-                if isinstance(sites, dict): sites = [sites] # robustness
-                for site in sites:
-                    for alert in site.get("alerts", []):
-                        # Map riskcode to severity
-                        risk = alert.get("riskdesc", "Medium").split(" ")[0].capitalize()
-                        results["findings"].append({
-                            "id": f"zap-{len(results['findings'])}",
-                            "title": alert.get("name", "ZAP Finding"),
-                            "severity": risk,
-                            "description": alert.get("desc", "No description provided.")
-                        })
-        except Exception as e:
-            logger.error(f"Error reading ZAP file: {e}")
-    
-    # Check for ZAP yaml just in case
-    zap_yaml = os.path.join(data_dir, "zap.yaml")
-    if os.path.exists(zap_yaml):
-        results["findings"].append({
-            "id": f"zap-y-{len(results['findings'])}",
-            "title": "ZAP YAML Report Found",
-            "severity": "Info",
-            "description": "ZAP produced a YAML report instead of JSON. This might contain configuration or alert summaries."
-        })
-
-    # 4. WPScan (Gray usually)
-    wpscan_path = os.path.join(data_dir, "wpscan.json")
-    if os.path.exists(wpscan_path):
-        try:
-            with open(wpscan_path, 'r') as f:
-                data = json.load(f)
-                
-                # Check for WPScan abort/errors
-                if data.get("scan_aborted"):
-                    results["findings"].append({
-                        "id": f"wps-a-{len(results['findings'])}",
-                        "title": "WPScan: Scan Aborted",
-                        "severity": "Info",
-                        "description": data.get("scan_aborted")
-                    })
-                else:
-                    # Check for nested targets if it's not the flat format
-                    targets = [data]
-                    if not data.get("interesting_findings") and not data.get("version"):
-                        # Try to find target keys (they are usually URLs)
-                        for k, v in data.items():
-                            if isinstance(v, dict) and (v.get("interesting_findings") or v.get("version")):
-                                targets.append(v)
-                    
-                    for t in targets:
-                        # Parse interesting findings
-                        for item in t.get("interesting_findings", []):
-                            results["findings"].append({
-                                "id": f"wps-i-{len(results['findings'])}",
-                                "title": "WPScan Interest",
-                                "severity": "Info",
-                                "description": item.get("to_s", "Interesting finding")
-                            })
-                        # Parse version vulnerabilities
-                        vulnerabilities = t.get("version", {}).get("vulnerabilities", [])
-                        for v in vulnerabilities:
-                            results["findings"].append({
-                                "id": f"wps-v-{len(results['findings'])}",
-                                "title": v.get("title", "WordPress Vulnerability"),
-                                "severity": "High",
-                                "description": f"Fixed in: {v.get('fixed_in', 'N/A')}"
-                            })
-                        # Parse plugin vulnerabilities
-                        for p_name, p_data in t.get("plugins", {}).items():
-                            for v in p_data.get("vulnerabilities", []):
-                                results["findings"].append({
-                                    "id": f"wps-p-{len(results['findings'])}",
-                                    "title": f"Plugin: {p_name}",
-                                    "severity": "High",
-                                    "description": v.get("title", "Vulnerability")
-                                })
-        except Exception as e:
-            logger.error(f"Error reading wpscan file: {e}")
-
-    # 5. Nmap (Common - XML Parsing)
-    for nmap_file in ["nmap_white.xml", "nmap_gray.xml", "nmap_black.xml"]:
-        nmap_path = os.path.join(data_dir, nmap_file)
-        if os.path.exists(nmap_path):
-            try:
-                tree = ET.parse(nmap_path)
-                root = tree.getroot()
-                for port in root.findall(".//port"):
-                    portid = port.get("portid")
-                    state_node = port.find("state")
-                    if state_node is not None and state_node.get("state") == "open":
-                        service = port.find("service")
-                        svc_name = service.get("name") if service is not None else "unknown"
-                        svc_ver = service.get("version") if service is not None else ""
-                        svc_prod = service.get("product") if service is not None else ""
-                        full_svc = f"{svc_prod} {svc_ver}".strip() or svc_name
-                        
-                        results["findings"].append({
-                            "id": f"nmap-{len(results['findings'])}",
-                            "title": f"Open Port: {portid} ({svc_name})",
-                            "severity": "Low",
-                            "description": f"Service: {full_svc} detected on port {portid}."
-                        })
-            except Exception as e:
-                logger.error(f"Error parsing Nmap XML: {e}")
-
-    # 6. Dirsearch (White/Gray)
-    dirsearch_path = os.path.join(data_dir, "dirsearch.json")
-    if os.path.exists(dirsearch_path):
-        try:
-            with open(dirsearch_path, 'r') as f:
-                data = json.load(f)
-                # dirsearch format is sometimes a dict with "results" or list of entries
-                entries = data if isinstance(data, list) else data.get("results", [])
-                for entry in entries:
-                    if entry.get("status") in [200, 204, 301, 302, 307]:
-                        results["findings"].append({
-                            "id": f"dir-{len(results['findings'])}",
-                            "title": f"Directory Found: {entry.get('path', 'unknown')}",
-                            "severity": "Medium" if entry.get("status") in [200, 307] else "Low",
-                            "description": f"Accessible path found: {entry.get('url')} (Status: {entry.get('status')})"
-                        })
-        except Exception as e:
-            logger.error(f"Error reading dirsearch file: {e}")
-
-    # 7. SSLyze (Gray/White)
-    sslyze_path = os.path.join(data_dir, "sslyze.json")
-    if os.path.exists(sslyze_path):
-        try:
-            with open(sslyze_path, 'r') as f:
-                data = json.load(f)
-                server_results = data.get("server_scan_results", [])
-                for target in server_results:
-                    if target.get("scan_status") == "ERROR_NO_CONNECTIVITY":
-                         results["findings"].append({
-                                "id": f"ssl-err-{len(results['findings'])}",
-                                "title": "SSLyze: No Connectivity",
-                                "severity": "Info",
-                                "description": f"Could not connect to {target.get('server_location', {}).get('hostname')}:443 for SSL scan."
-                            })
-                         continue
-
-                    scan_res = target.get("scan_result", {})
-                    # Parse Heartbleed, Robot, CCS Injection etc
-                    tasks = scan_res.get("scan_commands_results", {})
-                    for task_name, task_data in tasks.items():
-                        if "error" in task_data: continue
-                        
-                        # Example: Heartbleed
-                        if task_name == "heartbleed":
-                            if task_data.get("is_vulnerable"):
-                                results["findings"].append({
-                                    "id": f"ssl-hb-{len(results['findings'])}",
-                                    "title": "SSL: Heartbleed Vulnerability",
-                                    "severity": "Critical",
-                                    "description": "Server is vulnerable to Heartbleed (CVE-2014-0160)."
-                                })
-                        
-                        # Example: Certificate validation
-                        if task_name == "certificate_info":
-                            for cert in task_data.get("certificate_chain", []):
-                                if cert.get("has_expired"):
-                                    results["findings"].append({
-                                        "id": f"ssl-cert-{len(results['findings'])}",
-                                        "title": "SSL: Expired Certificate",
-                                        "severity": "High",
-                                        "description": f"Certificate for {cert.get('subject')} has expired."
-                                    })
-        except Exception as e:
-            logger.error(f"Error parsing SSLyze results: {e}")
-
-    # 8. TestSSL (Common - JSON list)
-    testssl_path = os.path.join(data_dir, "testssl.json")
-    if os.path.exists(testssl_path):
-        try:
-            with open(testssl_path, 'r') as f:
-                data = json.load(f)
-                for item in data:
-                    sev = item.get("severity", "INFO")
-                    # Map TestSSL severity to frontend
-                    sev_map = {
-                        "FATAL": "Critical",
-                        "CRITICAL": "Critical",
-                        "HIGH": "High",
-                        "MEDIUM": "Medium",
-                        "LOW": "Low",
-                        "WARN": "Medium",
-                        "INFO": "Info",
-                        "OK": "Info"
-                    }
-                    mapped_sev = sev_map.get(sev, "Info")
-                    
-                    if sev in ["FATAL", "CRITICAL", "HIGH", "MEDIUM", "LOW", "WARN"]:
-                        results["findings"].append({
-                            "id": f"tssl-{len(results['findings'])}",
-                            "title": f"TestSSL: {item.get('id', 'Issue')}",
-                            "severity": mapped_sev,
-                            "description": item.get("finding", "No description")
-                        })
-        except Exception as e:
-            logger.error(f"Error reading testssl file: {e}")
-
-    # 9. WhatWeb (Common - JSON list)
-    whatweb_path = os.path.join(data_dir, "whatweb.json")
-    if os.path.exists(whatweb_path):
-        try:
-            with open(whatweb_path, 'r') as f:
-                data = json.load(f)
-                for entry in data:
-                    plugins = entry.get("plugins", {})
-                    for p_name, p_val in plugins.items():
-                        # Extract string or version, joining lists if necessary
-                        desc_parts = []
-                        for key in ["string", "version"]:
-                            val = p_val.get(key)
-                            if val:
-                                if isinstance(val, list):
-                                    desc_parts.extend([str(v) for v in val])
-                                else:
-                                    desc_parts.append(str(val))
-                        
-                        desc = ", ".join(desc_parts) if desc_parts else "Detected"
-                        
-                        results["findings"].append({
-                            "id": f"ww-{len(results['findings'])}",
-                            "title": f"Tech Detected: {p_name}",
-                            "severity": "Info",
-                            "description": desc
-                        })
-        except Exception as e:
-            logger.error(f"Error reading whatweb file: {e}")
-
-    # 10. Arjun (Hidden parameter discovery)
-    arjun_path = os.path.join(data_dir, "arjun.json")
-    if os.path.exists(arjun_path):
-        try:
-            with open(arjun_path, 'r') as f:
-                data = json.load(f)
-                # Arjun JSON: {"url": ["param1", "param2"]}
-                for url, params in data.items():
-                    if params:
-                        results["findings"].append({
-                            "id": f"arjun-{len(results['findings'])}",
-                            "title": "Hidden Parameters Found",
-                            "severity": "Medium",
-                            "description": f"Target: {url}\nParameters: {', '.join(params)}"
-                        })
-        except Exception as e:
-            logger.error(f"Error reading arjun file: {e}")
+    # ... (ZAP, WPScan, Nmap, etc. skipped in diff) ...
 
     # 11. Dalfox (XSS Scanner)
     dalfox_path = os.path.join(data_dir, "dalfox.json")
-    if os.path.exists(dalfox_path):
+    if os.path.exists(dalfox_path) and os.path.getsize(dalfox_path) > 0:
         try:
             with open(dalfox_path, 'r') as f:
-                # Dalfox can produce multiple lines of JSON
-                for line in f:
-                    if not line.strip(): continue
-                    item = json.loads(line)
-                    results["findings"].append({
-                        "id": f"dalfox-{len(results['findings'])}",
-                        "title": f"XSS Found: {item.get('type', 'Vulnerability')}",
-                        "severity": "High",
-                        "description": f"URL: {item.get('url', 'N/A')}\nParam: {item.get('param', 'N/A')}\nPoc: {item.get('poc', 'N/A')}"
-                    })
+                content = f.read().strip()
+                if not content:
+                    pass
+                elif content.startswith("["):
+                    # JSON Array format
+                    try:
+                        items = json.loads(content)
+                        for item in items:
+                            results["findings"].append({
+                                "id": f"dalfox-{len(results['findings'])}",
+                                "title": f"XSS Found: {item.get('type', 'Vulnerability')}",
+                                "severity": "High",
+                                "description": f"URL: {item.get('url', 'N/A')}\nParam: {item.get('param', 'N/A')}\nPoc: {item.get('poc', 'N/A')}"
+                            })
+                    except json.JSONDecodeError:
+                        logger.error("Failed to parse Dalfox as JSON Array")
+                else:
+                    # JSON Lines format
+                    for line in content.splitlines():
+                        if not line.strip(): continue
+                        try:
+                            item = json.loads(line)
+                            results["findings"].append({
+                                "id": f"dalfox-{len(results['findings'])}",
+                                "title": f"XSS Found: {item.get('type', 'Vulnerability')}",
+                                "severity": "High",
+                                "description": f"URL: {item.get('url', 'N/A')}\nParam: {item.get('param', 'N/A')}\nPoc: {item.get('poc', 'N/A')}"
+                            })
+                        except json.JSONDecodeError:
+                            pass
         except Exception as e:
             logger.error(f"Error reading dalfox file: {e}")
     
