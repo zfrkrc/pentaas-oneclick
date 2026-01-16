@@ -1,9 +1,16 @@
 import os
 import json
 import uuid
+import xml.etree.ElementTree as ET
+import logging
+from typing import List, Dict, Any
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from engine import run_scan, REPORT_DIR
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -99,7 +106,6 @@ def get_scan_results(scan_id: str):
 
     # Track progress
     expected_tools = PROFILE_TOOLS.get(category, {})
-    for tool_name, filename in expected_tools.items():
         if os.path.exists(os.path.join(data_dir, filename)):
             results["progress"]["completed"].append(tool_name)
         else:
@@ -114,15 +120,20 @@ def get_scan_results(scan_id: str):
             try:
                 with open(nuclei_path, 'r') as f:
                     for line in f:
-                        if not line.strip(): continue
-                        item = json.loads(line)
-                        results["findings"].append({
-                            "id": f"nuclei-{len(results['findings'])}",
-                            "title": item.get("info", {}).get("name", "Nuclei Finding"),
-                            "severity": item.get("info", {}).get("severity", "info").capitalize(),
-                            "description": item.get("info", {}).get("description", "No description provided.")
-                        })
-            except: pass
+                        line = line.strip()
+                        if not line: continue
+                        try:
+                            item = json.loads(line)
+                            results["findings"].append({
+                                "id": f"nuclei-{len(results['findings'])}",
+                                "title": item.get("info", {}).get("name", "Nuclei Finding"),
+                                "severity": item.get("info", {}).get("severity", "info").capitalize(),
+                                "description": item.get("info", {}).get("description", "No description provided.")
+                            })
+                        except json.JSONDecodeError:
+                            logger.error(f"Failed to parse nuclei line: {line[:100]}")
+            except Exception as e:
+                logger.error(f"Error reading nuclei file: {e}")
 
     # 2. Nikto (Common)
     for nikto_file in ["nikto_white.json", "nikto_black.json"]:
@@ -229,10 +240,10 @@ def get_scan_results(scan_id: str):
                                     "severity": "High",
                                     "description": v.get("title", "Vulnerability")
                                 })
-        except: pass
+        except Exception as e:
+            logger.error(f"Error reading wpscan file: {e}")
 
     # 5. Nmap (Common - XML Parsing)
-    import xml.etree.ElementTree as ET
     for nmap_file in ["nmap_white.xml", "nmap_gray.xml", "nmap_black.xml"]:
         nmap_path = os.path.join(data_dir, nmap_file)
         if os.path.exists(nmap_path):
@@ -293,7 +304,33 @@ def get_scan_results(scan_id: str):
                          continue
 
                     scan_res = target.get("scan_result", {})
-        except: pass
+                    # Parse Heartbleed, Robot, CCS Injection etc
+                    tasks = scan_res.get("scan_commands_results", {})
+                    for task_name, task_data in tasks.items():
+                        if "error" in task_data: continue
+                        
+                        # Example: Heartbleed
+                        if task_name == "heartbleed":
+                            if task_data.get("is_vulnerable"):
+                                results["findings"].append({
+                                    "id": f"ssl-hb-{len(results['findings'])}",
+                                    "title": "SSL: Heartbleed Vulnerability",
+                                    "severity": "Critical",
+                                    "description": "Server is vulnerable to Heartbleed (CVE-2014-0160)."
+                                })
+                        
+                        # Example: Certificate validation
+                        if task_name == "certificate_info":
+                            for cert in task_data.get("certificate_chain", []):
+                                if cert.get("has_expired"):
+                                    results["findings"].append({
+                                        "id": f"ssl-cert-{len(results['findings'])}",
+                                        "title": "SSL: Expired Certificate",
+                                        "severity": "High",
+                                        "description": f"Certificate for {cert.get('subject')} has expired."
+                                    })
+        except Exception as e:
+            logger.error(f"Error parsing SSLyze results: {e}")
 
     # 8. TestSSL (Common - JSON list)
     testssl_path = os.path.join(data_dir, "testssl.json")
