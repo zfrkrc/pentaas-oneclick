@@ -11,8 +11,8 @@ function App() {
   const [scanResult, setScanResult] = useState(null);
   const [toolProgress, setToolProgress] = useState({ completed: [], pending: [] });
 
-  // Navigation State
-  const [currentView, setCurrentView] = useState('home');
+  // Tab State: 'new' or 'history'
+  const [activeTab, setActiveTab] = useState('new');
 
   const handleStartScan = async () => {
     setIsScanning(true);
@@ -185,20 +185,41 @@ function App() {
 
   return (
     <>
-      <Navbar onNavigate={setCurrentView} currentView={currentView} />
+      <Navbar />
 
-      {currentView === 'history' ? (
-        <History />
-      ) : (
-        <section data-bs-version="5.1" className="header18 cid-uSrJKo5xsn mbr-fullscreen mbr-parallax-background" id="hero-16-uSrJKo5xsn">
-          <div className="mbr-overlay" style={{ opacity: 0.6, backgroundColor: 'rgb(0, 0, 0)' }}></div>
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-12 col-md-10">
-                <h1 className="mbr-section-title mbr-fonts-style mbr-white mb-4 display-2 text-center">
-                  <strong>Start Security Scan</strong>
-                </h1>
+      <section data-bs-version="5.1" className="header18 cid-uSrJKo5xsn mbr-fullscreen mbr-parallax-background" id="hero-16-uSrJKo5xsn" style={{ minHeight: '100vh' }}>
+        <div className="mbr-overlay" style={{ opacity: 0.6, backgroundColor: 'rgb(0, 0, 0)' }}></div>
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+          <div className="row justify-content-center">
+            <div className="col-12 col-md-10">
+              <h1 className="mbr-section-title mbr-fonts-style mbr-white mb-4 display-2 text-center">
+                <strong>Start Security Scan</strong>
+              </h1>
 
+              {/* TABS */}
+              <div className="d-flex justify-content-center mb-4">
+                <div className="btn-group" role="group">
+                  <button
+                    type="button"
+                    className={`btn ${activeTab === 'new' ? 'btn-primary' : 'btn-light'}`}
+                    onClick={() => setActiveTab('new')}
+                  >
+                    New Scan
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn ${activeTab === 'history' ? 'btn-primary' : 'btn-light'}`}
+                    onClick={() => setActiveTab('history')}
+                  >
+                    Scan History
+                  </button>
+                </div>
+              </div>
+
+
+              {/* CONTENT AREA */}
+              {activeTab === 'new' ? (
+                // NEW SCAN FORM
                 <div className="card p-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '1rem' }}>
                   <div className="row">
                     {/* Target Input */}
@@ -380,13 +401,19 @@ function App() {
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                // HISTORY TAB
+                <div className="card p-0" style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '1rem', overflow: 'hidden' }}>
+                  <History />
+                </div>
+              )}
+
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
-      {currentView !== 'history' && <Footer />}
+      <Footer />
     </>
   );
 }

@@ -11,6 +11,7 @@ function History() {
     const fetchScans = async () => {
         try {
             const res = await fetch('/api/scans');
+            if (!res.ok) throw new Error("API call failed");
             const data = await res.json();
             setScans(data.scans || []);
         } catch (err) {
@@ -23,9 +24,10 @@ function History() {
     const downloadReport = async (scanId, target) => {
         try {
             const res = await fetch(`/api/scan/${scanId}/results`);
+            if (!res.ok) throw new Error("API call failed");
             const data = await res.json();
 
-            // Simple CSV generation (reused from App.jsx logic)
+            // Simple CSV generation
             const csvRows = [
                 "PENTAAS ONECLICK - SCAN REPORT",
                 "",
@@ -39,10 +41,12 @@ function History() {
                 "ID,Title,Severity,Description"
             ];
 
-            data.findings.forEach(f => {
-                const desc = f.description ? f.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/,/g, ";") : "";
-                csvRows.push(`${f.id},${f.title},${f.severity},${desc}`);
-            });
+            if (data.findings) {
+                data.findings.forEach(f => {
+                    const desc = f.description ? f.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/,/g, ";") : "";
+                    csvRows.push(`${f.id},${f.title},${f.severity},${desc}`);
+                });
+            }
 
             const blob = new Blob([csvRows.join("\n")], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
@@ -58,15 +62,56 @@ function History() {
     };
 
     return (
-                                </div >
-                            </div >
-
-                        </div >
-                    </div >
-                </div >
-            </section >
-        <Footer />
-        </>
+        <div className="card shadow-sm">
+            <div className="card-body p-0">
+                <h4 className="p-3 mb-0 bg-light border-bottom">Scan History</h4>
+                <div className="table-responsive">
+                    <table className="table table-hover mb-0">
+                        <thead className="bg-light">
+                            <tr>
+                                <th className="p-3">Date</th>
+                                <th className="p-3">Target</th>
+                                <th className="p-3">Type</th>
+                                <th className="p-3">Status</th>
+                                <th className="p-3 text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loading ? (
+                                <tr><td colSpan="5" className="text-center p-4">Loading...</td></tr>
+                            ) : scans.length === 0 ? (
+                                <tr><td colSpan="5" className="text-center p-4">No scans found.</td></tr>
+                            ) : (
+                                scans.map(scan => (
+                                    <tr key={scan.scan_id}>
+                                        <td className="p-3">{new Date(scan.timestamp).toLocaleString()}</td>
+                                        <td className="p-3 fw-bold">{scan.target}</td>
+                                        <td className="p-3">
+                                            <span className={`badge ${scan.scan_type === 'white' ? 'bg-info' : scan.scan_type === 'gray' ? 'bg-secondary' : 'bg-dark'}`}>
+                                                {scan.scan_type.toUpperCase()}
+                                            </span>
+                                        </td>
+                                        <td className="p-3">
+                                            <span className={`badge ${scan.status === 'completed' ? 'bg-success' : scan.status === 'running' ? 'bg-warning' : 'bg-danger'}`}>
+                                                {scan.status.toUpperCase()}
+                                            </span>
+                                        </td>
+                                        <td className="p-3 text-end">
+                                            <button
+                                                className="btn btn-sm btn-primary"
+                                                onClick={() => downloadReport(scan.scan_id, scan.target)}
+                                            >
+                                                Download CSV
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     );
 }
 
