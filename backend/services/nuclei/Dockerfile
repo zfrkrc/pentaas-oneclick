@@ -1,4 +1,4 @@
-FROM golang:1.23-bookworm AS builder
+FROM golang:1.24-bookworm AS builder
 RUN go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 
 FROM python:3.11-slim

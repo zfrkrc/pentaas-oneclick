@@ -1,4 +1,4 @@
-﻿FROM golang:1.23-bookworm AS builder
+﻿FROM golang:1.24-bookworm AS builder
 RUN go install github.com/hahwul/dalfox/v2@latest
 
 FROM python:3.11-slim
