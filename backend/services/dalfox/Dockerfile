@@ -1,7 +1,8 @@
-﻿FROM python:3.11-slim
+﻿FROM golang:1.23-bookworm AS builder
+RUN go install github.com/hahwul/dalfox/v2@latest
 
-# Copy dalfox binary from official image
-COPY --from=hahwul/dalfox:latest /app/dalfox /usr/local/bin/dalfox
+FROM python:3.11-slim
+COPY --from=builder /go/bin/dalfox /usr/local/bin/dalfox
 
 WORKDIR /app
 COPY requirements.txt .
