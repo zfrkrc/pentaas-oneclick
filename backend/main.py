@@ -518,13 +518,11 @@ def get_scan_results(scan_id: str):
                 # Create findings for each record type
                 for rec_type, records in record_types.items():
                     record_details = []
-                    for rec in records[:10]:  # Limit to 10 per type to avoid clutter
+                    # Show ALL records (no limit)
+                    for rec in records:
                         name = rec.get('name', rec.get('hostname', 'N/A'))
                         address = rec.get('address', rec.get('target', rec.get('exchange', 'N/A')))
                         record_details.append(f"  • {name} → {address}")
-                    
-                    if len(records) > 10:
-                        record_details.append(f"  ... and {len(records) - 10} more")
                     
                     results["findings"].append({
                         "id": f"dns-{rec_type.lower()}-{len(results['findings'])}",
