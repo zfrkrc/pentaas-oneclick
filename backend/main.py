@@ -15,8 +15,15 @@ import xml.etree.ElementTree as ET
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Version
+__version__ = "2.0.0"
+
 # App initialization
-app = FastAPI(title="PentaaS OneClick Scanners")
+app = FastAPI(
+    title="PentaaS OneClick Scanners",
+    version=__version__,
+    description="Automated penetration testing platform with 24+ security tools"
+)
 
 # CORS Middleware
 app.add_middleware(
@@ -52,7 +59,27 @@ class ScanResponse(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"message": "PentaaS OneClick Scanner API is Ready"}
+    return {
+        "message": "PentaaS OneClick Scanner API is Ready",
+        "version": __version__,
+        "tools_count": 24,
+        "profiles": ["white", "gray", "black"]
+    }
+
+
+@app.get("/version")
+def get_version():
+    """Get API version information"""
+    return {
+        "version": __version__,
+        "release_date": "2026-01-17",
+        "tools": {
+            "white_box": 17,
+            "gray_box": 4,
+            "black_box": 3,
+            "total": 24
+        }
+    }
 
 
 @app.post("/scan", response_model=ScanResponse)
