@@ -24,27 +24,58 @@ Tamamen **mikroservis mimarisine** uygun olarak tasarlanan bu proje, her bir gü
     *   Redis üzerinde merkezi loglama ve durum takibi.
     *   Docker Compose ile kolay dağıtım.
 
+### 🆕 Son Güncellemeler (v2.0)
+*   ✅ **7 Yeni Araç Eklendi:** SQLmap, Commix, GitTools, Wapiti, NoSQLMap, Gobuster, Arachni
+*   ✅ **Gelişmiş Rapor Parsing:** XSS ve DNS bulguları artık detaylı gösteriliyor
+*   ✅ **Paralel Execution:** Tüm araçlar eşzamanlı çalışarak tarama süresini azaltıyor
+*   ✅ **Redis-Based Storage:** Tüm sonuçlar ve loglar Redis'te saklanıyor
+*   ✅ **Timeout Yönetimi:** Yavaş araçlar için özel timeout ayarları
+
 ---
 
 ## 🛠️ Entegre Güvenlik Araçları (Services)
 
 Aşağıdaki araçların her biri, kendi izole Docker konteynerinde (%100 Mikroservis) çalışır:
 
+### White Box Araçları (17 Araç)
 | Servis Adı | Açıklama |
 | :--- | :--- |
 | **Nmap** | Ağ keşfi ve port taraması. |
-| **Nuclei** | Şablon tabanlı gelişmiş zafiyet tarayıcısı. |
-| **Nikto** | Web sunucusu güvenlik tarayıcısı. |
-| **ZAP (OWASP)** | Web uygulaması güvenlik tarayıcısı (Proxy). |
-| **WPScan** | WordPress güvenlik tarayıcısı. |
-| **Dirsearch** | Web yolu (path) ve dosya keşfi. |
 | **TestSSL** | SSL/TLS şifreleme ve protokol analizi. |
-| **SSLyze** | Hızlı SSL/TLS kütüphane analizi. |
+| **Dirsearch** | Web yolu (path) ve dosya keşfi. |
+| **Nikto** | Web sunucusu güvenlik tarayıcısı. |
 | **WhatWeb** | Web teknolojilerini tanımlama. |
 | **Arjun** | HTTP parametre keşfi. |
 | **Dalfox** | XSS (Cross-Site Scripting) zafiyet tarayıcısı. |
 | **Wafw00f** | Web Application Firewall (WAF) tespiti. |
 | **DNSRecon** | DNS kayıtları ve alt alan adı keşfi. |
+| **Nuclei** | Şablon tabanlı gelişmiş zafiyet tarayıcısı (tech-detect mode). |
+| **SQLmap** ⭐ | SQL injection tespiti ve exploitation. |
+| **Commix** ⭐ | Command injection zafiyet tarayıcısı. |
+| **GitTools** ⭐ | Açık .git repository tarayıcısı. |
+| **Wapiti** ⭐ | Web zafiyet tarayıcısı (fuzzing). |
+| **NoSQLMap** ⭐ | NoSQL injection test aracı. |
+| **Gobuster** ⭐ | Directory/DNS/vhost bruteforce. |
+| **Arachni** ⭐ | Scriptable web güvenlik tarayıcısı. |
+
+### Gray Box Araçları (4 Araç)
+| Servis Adı | Açıklama |
+| :--- | :--- |
+| **Nmap** | Servis versiyonu tespiti (-sV -sC). |
+| **WPScan** | WordPress güvenlik tarayıcısı. |
+| **ZAP (OWASP)** | Web uygulaması güvenlik tarayıcısı (Baseline). |
+| **SSLyze** | Hızlı SSL/TLS kütüphane analizi. |
+
+### Black Box Araçları (3 Araç)
+| Servis Adı | Açıklama |
+| :--- | :--- |
+| **Nmap** | Agresif tarama (-A). |
+| **Nikto** | Full web sunucu taraması. |
+| **Nuclei** | Tüm şablonlarla zafiyet taraması. |
+
+> ⭐ **Yeni eklenen araçlar** - awesome-pentest listesinden entegre edildi.
+
+**Toplam:** 24 farklı güvenlik aracı
 
 ---
 
