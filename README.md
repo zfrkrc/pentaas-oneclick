@@ -155,25 +155,30 @@ docker compose -f backend/compose/docker-compose.string.yml run --rm sqlmap
 
 ```mermaid
 graph TD
-    Client[Web Browser (React Frontend)]
-    API[Backend API (FastAPI)]
-    Redis[(Redis DB & Queue)]
-    Worker[RQ Worker]
+    Client["Web Browser - React Frontend"]
+    API["Backend API - FastAPI"]
+    Redis[("Redis DB & Queue")]
+    Worker["RQ Worker"]
     
-    subgraph "Microservices (Tools)"
+    subgraph "Microservices - Security Tools"
         Nmap
         Nuclei
         Nikto
         ZAP
         WPScan
-        ...
+        SQLmap
+        Gobuster
     end
 
     Client -->|HTTP/REST| API
     API -->|Enqueue Scan| Redis
     Worker -->|Dequeue Job| Redis
-    Worker -->|Execute| Microservices
-    Microservices -->|Logs & Results| Redis
+    Worker -->|Execute| Nmap
+    Worker -->|Execute| Nuclei
+    Worker -->|Execute| SQLmap
+    Nmap -->|Logs & Results| Redis
+    Nuclei -->|Logs & Results| Redis
+    SQLmap -->|Logs & Results| Redis
     API -->|Fetch Status/Report| Redis
 ```
 
