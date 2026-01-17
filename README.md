@@ -93,7 +93,7 @@ Aşağıdaki araçların her biri, kendi izole Docker konteynerinde (%100 Mikros
     ```
 
 2.  **Servisleri Başlatın:**
-    Bu komut, frontend, backend, redis, worker ve tüm güvenlik araçlarını (13+ servis) derleyip başlatacaktır. İlk kurulumda imajların inmesi ve derlenmesi biraz zaman alabilir.
+    Bu komut, frontend, backend, redis, worker ve tüm güvenlik araçlarını (24+ servis) derleyip başlatacaktır. İlk kurulumda imajların inmesi ve derlenmesi biraz zaman alabilir.
     ```bash
     docker compose up --build -d
     ```
@@ -116,6 +116,38 @@ Aşağıdaki araçların her biri, kendi izole Docker konteynerinde (%100 Mikros
 1.  **"Scan History"** sekmesine geçin.
 2.  Geçmiş taramaların listesini, tarihlerini ve durumlarını (Completed, Running) görebilirisiniz.
 3.  **"View Report"** butonuna tıklayarak, ilgili taramanın detaylı HTML raporunu yeni bir sekmede açabilirsiniz.
+
+### 🔧 Sorun Giderme
+
+**Docker Build Hataları:**
+```bash
+# Önbelleği temizle ve yeniden build et
+docker compose build --no-cache
+```
+
+**Redis Bağlantı Sorunları:**
+```bash
+# Redis durumunu kontrol et
+docker compose ps redis
+docker compose logs redis
+```
+
+**Tarama Sonuçları Görünmüyor:**
+```bash
+# Backend loglarını kontrol et
+docker compose logs backend
+
+# Worker loglarını kontrol et
+docker compose logs worker
+```
+
+**Belirli Bir Aracı Test Etme:**
+```bash
+# Örnek: SQLmap'i manuel test et
+export TARGET_URL="http://testphp.vulnweb.com"
+export HOST_DATA_DIR="$(pwd)/backend/reports/test/data"
+docker compose -f backend/compose/docker-compose.string.yml run --rm sqlmap
+```
 
 ---
 
