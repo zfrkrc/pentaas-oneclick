@@ -428,27 +428,61 @@ def get_scan_results(scan_id: str):
     if content:
         try:
              items = []
+             has_findings = False
+             
+             # Try to parse as JSON array or line-by-line JSON
              if content.strip().startswith("["):
                  try: items = json.loads(content)
                  except: pass
              else:
                  for line in content.splitlines():
-                     try: items.append(json.loads(line))
-                     except: pass
+                     if line.strip():
+                         try: items.append(json.loads(line))
+                         except: pass
              
              for item in items:
-                # Fallback keys for Dalfox JSON
-                url_val = item.get('url') or item.get('target') or item.get('message_str') or "N/A"
-                param_val = item.get('param') or item.get('parameter') or "N/A"
-                poc_val = item.get('poc') or item.get('payload') or "N/A"
-
-                results["findings"].append({
-                    "id": f"dal-{len(results['findings'])}",
-                    "title": f"XSS: {item.get('type', 'Vuln')}",
-                    "severity": "High",
-                    "description": f"Target: {url_val}\nParam: {param_val}\nPayload: {poc_val}"
-                })
-        except: pass
+                # Dalfox JSON structure varies, try multiple key patterns
+                # Common keys: data, message, message_str, url, param, poc, payload, type
+                
+                # Extract URL/Target
+                url_val = (item.get('data') or item.get('url') or 
+                          item.get('target') or item.get('message_str') or "")
+                
+                # Extract Parameter
+                param_val = item.get('param') or item.get('parameter') or ""
+                
+                # Extract Payload/POC
+                poc_val = item.get('poc') or item.get('payload') or item.get('evidence') or ""
+                
+                # Extract vulnerability type
+                vuln_type = item.get('type') or item.get('cwe') or 'XSS'
+                
+                # Only add if we have meaningful data (not all N/A)
+                if url_val or param_val or poc_val:
+                    results["findings"].append({
+                        "id": f"dal-{len(results['findings'])}",
+                        "title": f"XSS Vulnerability: {vuln_type}",
+                        "severity": "High",
+                        "description": f"URL: {url_val if url_val else 'Not specified'}\nParameter: {param_val if param_val else 'Not specified'}\nPayload: {poc_val if poc_val else 'Not specified'}"
+                    })
+                    has_findings = True
+             
+             # If content exists but no valid findings parsed, add info message
+             if not has_findings and content.strip():
+                 results["findings"].append({
+                     "id": "dal-info",
+                     "title": "Dalfox Scan Completed",
+                     "severity": "Info",
+                     "description": f"Dalfox scan completed. Raw output length: {len(content)} bytes. No XSS vulnerabilities detected."
+                 })
+        except Exception as e:
+            logger.error(f"Dalfox parsing error: {e}")
+            results["findings"].append({
+                "id": "err-dalfox",
+                "title": "Dalfox Parse Error",
+                "severity": "Info",
+                "description": f"Failed to parse Dalfox output: {str(e)}"
+            })
 
     # 12. Wafw00f
     content = get_content("wafw00f")
@@ -472,14 +506,40 @@ def get_scan_results(scan_id: str):
     if content:
         try:
             data = json.loads(content)
-            if isinstance(data, list):
-                 results["findings"].append({
-                     "id": f"dns-{len(results['findings'])}",
-                     "title": f"DNS Records Found",
-                     "severity": "Info",
-                     "description": f"Found {len(data)} records"
-                 })
-        except: pass
+            if isinstance(data, list) and len(data) > 0:
+                # Group records by type for better readability
+                record_types = {}
+                for record in data:
+                    rec_type = record.get('type', 'Unknown')
+                    if rec_type not in record_types:
+                        record_types[rec_type] = []
+                    record_types[rec_type].append(record)
+                
+                # Create findings for each record type
+                for rec_type, records in record_types.items():
+                    record_details = []
+                    for rec in records[:10]:  # Limit to 10 per type to avoid clutter
+                        name = rec.get('name', rec.get('hostname', 'N/A'))
+                        address = rec.get('address', rec.get('target', rec.get('exchange', 'N/A')))
+                        record_details.append(f"  • {name} → {address}")
+                    
+                    if len(records) > 10:
+                        record_details.append(f"  ... and {len(records) - 10} more")
+                    
+                    results["findings"].append({
+                        "id": f"dns-{rec_type.lower()}-{len(results['findings'])}",
+                        "title": f"DNS Records: {rec_type} ({len(records)} found)",
+                        "severity": "Info",
+                        "description": "\n".join(record_details) if record_details else f"Found {len(records)} {rec_type} records"
+                    })
+        except Exception as e:
+            logger.error(f"DNSRecon parsing error: {e}")
+            results["findings"].append({
+                "id": "err-dns",
+                "title": "DNSRecon Parse Error",
+                "severity": "Info",
+                "description": f"Failed to parse DNSRecon output: {str(e)}"
+            })
 
     return results
 
