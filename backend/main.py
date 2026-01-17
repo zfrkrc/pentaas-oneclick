@@ -237,8 +237,14 @@ def get_scan_results(scan_id: str):
                         "severity": finding.get("info", {}).get("severity", "Low").capitalize(),
                         "description": f"Template: {finding.get('template-id')}\nMatcher: {finding.get('matcher-name', 'N/A')}\nExtracted: {finding.get('extracted-results', [])}"
                     })
-                except json.JSONDecodeError:
-                    pass
+                except Exception as e:
+                    logger.error(f"Nuclei parsing error: {e}")
+                    results["findings"].append({
+                        "id": "err-nuc",
+                        "title": "Nuclei Parse Error",
+                        "severity": "Info",
+                        "description": f"Failed to parse output: {str(e)}"
+                    })
 
     # 2. Nikto
     for nikto_svc in ["nikto_white", "nikto_black"]:
@@ -260,7 +266,9 @@ def get_scan_results(scan_id: str):
                         "severity": "Medium",
                         "description": item.get("msg", "Unknown finding")
                     })
-            except: pass
+            except Exception as e:
+                logger.error(f"Nikto parsing error: {e}")
+                results["findings"].append({"id": "err-nikto", "title": "Nikto Parse Error", "severity": "Info", "description": str(e)})
 
     # 3. ZAP
     content = get_content("zap")
@@ -278,7 +286,9 @@ def get_scan_results(scan_id: str):
                         "severity": risk,
                         "description": alert.get("desc", "No description provided.")
                     })
-        except: pass
+        except Exception as e:
+            logger.error(f"ZAP parsing error: {e}")
+            results["findings"].append({"id": "err-zap", "title": "ZAP Parse Error", "severity": "Info", "description": str(e)})
 
     # 4. WPScan
     content = get_content("wpscan")
@@ -290,7 +300,9 @@ def get_scan_results(scan_id: str):
             else:
                 # Add parsing if needed
                 pass 
-        except: pass
+        except Exception as e:
+            logger.error(f"WPScan parsing error: {e}")
+            results["findings"].append({"id": "err-wps", "title": "WPScan Parse Error", "severity": "Info", "description": str(e)})
 
     # 5. Nmap
     for nmap_svc in ["nmap_white", "nmap_gray", "nmap_black"]:
@@ -326,7 +338,9 @@ def get_scan_results(scan_id: str):
                         "severity": "Info",
                         "description": f"URL: {entry.get('url')} ({entry.get('status')})"
                     })
-        except: pass
+        except Exception as e:
+            logger.error(f"Dirsearch parsing error: {e}")
+            results["findings"].append({"id": "err-dirsearch", "title": "Dirsearch Parse Error", "severity": "Info", "description": str(e)})
 
     # 7. SSLyze (Simplified)
     content = get_content("sslyze")
