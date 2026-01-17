@@ -224,9 +224,11 @@ def get_scan_results(scan_id: str):
         return redis_conn.get(f"scan:{scan_id}:result:{service_name}")
 
     # 1. Nuclei (Critical)
+    nuclei_found = False
     for nuclei_svc in ["nuclei", "nuclei_white"]:
         content = get_content(nuclei_svc)
         if content:
+            has_findings = False
             for line in content.splitlines():
                 if not line.strip(): continue
                 try:
@@ -237,6 +239,8 @@ def get_scan_results(scan_id: str):
                         "severity": finding.get("info", {}).get("severity", "Low").capitalize(),
                         "description": f"Template: {finding.get('template-id')}\nMatcher: {finding.get('matcher-name', 'N/A')}\nExtracted: {finding.get('extracted-results', [])}"
                     })
+                    has_findings = True
+                    nuclei_found = True
                 except Exception as e:
                     logger.error(f"Nuclei parsing error: {e}")
                     results["findings"].append({
@@ -245,6 +249,16 @@ def get_scan_results(scan_id: str):
                         "severity": "Info",
                         "description": f"Failed to parse output: {str(e)}"
                     })
+            
+            # If content exists but no findings were added
+            if not has_findings and not any(f["id"].startswith("err-nuc") for f in results["findings"]):
+                results["findings"].append({
+                    "id": f"nuc-info",
+                    "title": "Nuclei Scan Completed",
+                    "severity": "Info",
+                    "description": "Nuclei scan completed successfully. No vulnerabilities found."
+                })
+                nuclei_found = True
 
     # 2. Nikto
     for nikto_svc in ["nikto_white", "nikto_black"]:
@@ -387,6 +401,7 @@ def get_scan_results(scan_id: str):
     if content:
         try:
             data = json.loads(content)
+            has_params = False
             for url, params in data.items():
                 if params:
                     results["findings"].append({
@@ -395,7 +410,18 @@ def get_scan_results(scan_id: str):
                         "severity": "Medium",
                         "description": f"Params: {', '.join(params)}"
                     })
-        except: pass
+                    has_params = True
+            
+            if not has_params:
+                results["findings"].append({
+                    "id": "arj-info",
+                    "title": "Arjun Scan Completed",
+                    "severity": "Info",
+                    "description": "Arjun scan completed. No hidden parameters found."
+                })
+        except Exception as e:
+            logger.error(f"Arjun parsing error: {e}")
+            results["findings"].append({"id": "err-arjun", "title": "Arjun Parse Error", "severity": "Info", "description": str(e)})
 
     # 11. Dalfox
     content = get_content("dalfox")

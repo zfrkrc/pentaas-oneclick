@@ -90,7 +90,7 @@ def save_result_to_redis(uid: str, service_name: str, host_data_dir_internal: st
 async def run_service_async(service_name: str, env_vars: dict, uid: str) -> tuple:
     """Run a single service asynchronously using docker compose with timeout and live logging"""
     # Timeout settings: Longer for slow services
-    SLOW_SERVICES = ["nikto_white", "nikto_black", "testssl", "nuclei", "nuclei_white"]
+    SLOW_SERVICES = ["nikto_white", "nikto_black", "testssl", "nuclei", "nuclei_white", "dalfox"]
     SERVICE_TIMEOUT = 300 if service_name in SLOW_SERVICES else 180
     
     log_scan(uid, f"🚀 Starting {service_name} (Timeout: {SERVICE_TIMEOUT}s)...")
@@ -134,6 +134,11 @@ async def run_service_async(service_name: str, env_vars: dict, uid: str) -> tupl
                 # Save result to Redis
                 save_result_to_redis(uid, service_name, f"{REPORT_DIR}/{uid}/data")
                 return (service_name, True, None)
+            elif service_name == "testssl" and process.returncode == 7:
+                # TestSSL exit code 7 = warning (e.g., TLS 1.3 not supported)
+                log_scan(uid, f"⚠️ {service_name} completed with warnings in {duration:.1f}s")
+                save_result_to_redis(uid, service_name, f"{REPORT_DIR}/{uid}/data")
+                return (service_name, True, "Completed with warnings")
             else:
                 log_scan(uid, f"❌ {service_name} failed with code {process.returncode}")
                 return (service_name, False, f"Exit code {process.returncode}")
