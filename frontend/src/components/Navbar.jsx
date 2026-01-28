@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Navbar = () => {
+    const [isOpen, setIsOpen] = useState(false);
     return (
         <section data-bs-version="5.1" className="menu menu6 cid-uV07AC1aCa" once="menu" id="menu06-a">
             <nav className="navbar navbar-dropdown opacityScrollOff navbar-fixed-top navbar-expand-lg">
@@ -38,18 +39,19 @@ const Navbar = () => {
                             <li className="nav-item">
                                 <a className="nav-link link text-black show text-primary display-4" href="https://postaci.zaferkaraca.net">Posta Hizmeti</a>
                             </li>
-                            <li className="nav-item dropdown">
+                            <li className={`nav-item dropdown ${isOpen ? 'open' : ''}`}>
                                 <a
                                     className="nav-link link text-black dropdown-toggle display-4"
-                                    href="https://zaferkaraca.net"
-                                    aria-expanded="false"
-                                    data-toggle="dropdown-submenu"
-                                    data-bs-toggle="dropdown"
-                                    data-bs-auto-close="outside"
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setIsOpen(!isOpen);
+                                    }}
+                                    aria-expanded={isOpen}
                                 >
                                     Araçlar
                                 </a>
-                                <div className="dropdown-menu" aria-labelledby="dropdown-288">
+                                <div className={`dropdown-menu ${isOpen ? 'show' : ''}`} aria-labelledby="dropdown-288">
                                     <a className="text-black dropdown-item text-primary display-4" href="https://pentestone.zaferkaraca.net/">PentestOne</a>
                                     <a className="text-black dropdown-item text-primary display-4" href="https://cyber.zaferkaraca.net/">Cyber Security</a>
                                     <a className="text-black show dropdown-item text-primary display-4" href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
