@@ -50,9 +50,8 @@ const Navbar = () => {
                                     Araçlar
                                 </a>
                                 <div className="dropdown-menu" aria-labelledby="dropdown-288">
-                                    <a className="text-black show dropdown-item text-primary display-4" href="dashboard.html">Dashboard</a>
-                                    <a className="text-black dropdown-item text-primary display-4" href="page1.html">Posta Araçları</a>
-                                    <a className="text-black dropdown-item text-primary display-4" href="https://pentest.zaferkaraca.net/">Pentest</a>
+                                    <a className="text-black dropdown-item text-primary display-4" href="https://pentestone.zaferkaraca.net/">PentestOne</a>
+                                    <a className="text-black dropdown-item text-primary display-4" href="https://cyber.zaferkaraca.net/">Cyber Security</a>
                                     <a className="text-black show dropdown-item text-primary display-4" href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
                                 </div>
                             </li>
