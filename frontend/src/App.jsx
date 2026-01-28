@@ -192,6 +192,24 @@ function App() {
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <div className="row justify-content-center">
             <div className="col-12 col-md-10">
+              <div className="text-center text-white mb-5">
+                <p className="mbr-text mbr-fonts-style display-7">
+                  Pentaas One-Click, sistemlerinizi kapsamlı bir şekilde analiz eden güçlü bir güvenlik tarama aracıdır.
+                </p>
+                <div className="d-flex justify-content-center flex-wrap gap-2 mt-3">
+                  <span className="badge bg-white text-dark p-2">Nmap</span>
+                  <span className="badge bg-white text-dark p-2">Nikto</span>
+                  <span className="badge bg-white text-dark p-2">OWASP ZAP</span>
+                  <span className="badge bg-white text-dark p-2">Nuclei</span>
+                  <span className="badge bg-white text-dark p-2">Dirsearch</span>
+                  <span className="badge bg-white text-dark p-2">TestSSL</span>
+                  <span className="badge bg-white text-dark p-2">Waf00f</span>
+                  <span className="badge bg-white text-dark p-2">Arjun</span>
+                  <span className="badge bg-white text-dark p-2">Dalfox</span>
+                  <span className="badge bg-white text-dark p-2">DNSRecon</span>
+                </div>
+              </div>
+
               <h1 className="mbr-section-title mbr-fonts-style mbr-white mb-4 display-2 text-center">
                 <strong>Start Security Scan</strong>
               </h1>
