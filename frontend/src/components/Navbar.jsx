@@ -39,6 +39,9 @@ const Navbar = () => {
                             <li className="nav-item">
                                 <a className="nav-link link text-black show text-primary display-4" href="https://postaci.zaferkaraca.net">Posta Hizmeti</a>
                             </li>
+                            <li className="nav-item">
+                                <a className="nav-link link text-black show text-primary display-4" href="https://hobby.zaferkaraca.net">Hobby</a>
+                            </li>
                             <li className={`nav-item dropdown ${isOpen ? 'open' : ''}`}>
                                 <a
                                     className="nav-link link text-black dropdown-toggle display-4"
