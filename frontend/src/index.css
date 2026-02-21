@@ -1,1 +1,3 @@
-/* Default styles cleared to avoid conflict with Bootstrap/Mobirise */
+/* Base reset — Bootstrap + JetBrains Mono handles the rest */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: #090b10; }

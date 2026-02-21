@@ -10,71 +10,42 @@ function App() {
   const [progress, setProgress] = useState(0);
   const [scanResult, setScanResult] = useState(null);
   const [toolProgress, setToolProgress] = useState({ completed: [], pending: [] });
-
-  // Tab State: 'new' or 'history'
   const [activeTab, setActiveTab] = useState('new');
 
   const handleStartScan = async () => {
     setIsScanning(true);
-    setProgress(10); // Start with some progress
+    setProgress(10);
     setScanResult(null);
-
     try {
-      // 1. Trigger the scan
       const response = await fetch('/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ip: target, category: mode })
       });
-
       if (!response.ok) throw new Error('Scan starting failed');
       const { scan_id } = await response.json();
-      console.log("Scan started with ID:", scan_id);
 
-      // 2. Poll for status
       const pollInterval = setInterval(async () => {
         try {
           const statusRes = await fetch(`/api/scan/${scan_id}`);
           if (!statusRes.ok) return;
           const statusData = await statusRes.json();
-
-          // Update tool progress from services status
           if (statusData.services) {
-            const completed = [];
-            const pending = [];
-
+            const completed = [], pending = [];
             Object.entries(statusData.services).forEach(([name, info]) => {
-              if (info.completed) {
-                completed.push(name);
-              } else {
-                pending.push(name);
-              }
+              if (info.completed) completed.push(name); else pending.push(name);
             });
-
             setToolProgress({ completed, pending });
-
-            // Calculate progress percentage
             const total = completed.length + pending.length;
-            if (total > 0) {
-              const progressPercent = Math.floor((completed.length / total) * 100);
-              setProgress(progressPercent);
-            }
+            if (total > 0) setProgress(Math.floor((completed.length / total) * 100));
           }
-
-          // Fetch intermediate results to show progress
           fetchResults(scan_id, false);
-
           if (statusData.status === 'completed') {
             clearInterval(pollInterval);
             fetchResults(scan_id, true);
-          } else if (statusData.status === 'running') {
-            // Progress is now calculated from service statuses
           }
-        } catch (pollErr) {
-          console.error("Polling error:", pollErr);
-        }
-      }, 2000); // Poll every 2 seconds for faster updates
-
+        } catch (pollErr) { console.error("Polling error:", pollErr); }
+      }, 2000);
     } catch (err) {
       console.error("Scan Error:", err);
       alert("Hata: Tarama başlatılamadı. Backend servisinin çalıştığından emin olun.");
@@ -87,22 +58,14 @@ function App() {
       const res = await fetch(`/api/scan/${scanId}/results`);
       if (!res.ok) throw new Error('Could not fetch results');
       const data = await res.json();
-
-      // Update tool progress
-      if (data.progress) {
-        setToolProgress(data.progress);
-      }
-
-      // Calculate counts from real findings
+      if (data.progress) setToolProgress(data.progress);
       const counts = { Critical: 0, High: 0, Medium: 0, Low: 0, Info: 0 };
       data.findings.forEach(f => {
         if (counts[f.severity] !== undefined) counts[f.severity]++;
         else if (f.severity === 'Info' || f.severity === 'Informational') counts.Info++;
       });
-
       setScanResult({
-        ip: target,
-        mode: mode,
+        ip: target, mode,
         vulnerabilities: [
           { severity: 'Critical', count: counts.Critical },
           { severity: 'High', count: counts.High },
@@ -113,327 +76,241 @@ function App() {
         findings: data.findings,
         time: new Date().toLocaleString()
       });
-
-      if (isFinal) {
-        setProgress(100);
-        setIsScanning(false);
-      }
+      if (isFinal) { setProgress(100); setIsScanning(false); }
     } catch (err) {
       console.error("Results Fetch Error:", err);
-      if (isFinal) {
-        alert("Sonuçlar alınırken hata oluştu.");
-        setIsScanning(false);
-      }
+      if (isFinal) { alert("Sonuçlar alınırken hata oluştu."); setIsScanning(false); }
     }
   };
 
   const downloadCSV = () => {
-    if (!scanResult) {
-      alert("Hata: Tarama sonucu bulunamadı.");
-      return;
-    }
-
+    if (!scanResult) { alert("Hata: Tarama sonucu bulunamadı."); return; }
     try {
-      console.log("CSV hazırlanalıyor...");
       const totalVulns = scanResult.vulnerabilities.reduce((sum, v) => sum + v.count, 0);
-
       let csvRows = [
-        "PENTAAS ONECLICK - SCAN REPORT",
-        "",
-        "SCAN INFO",
-        `Target,${scanResult.ip}`,
-        `Mode,${scanResult.mode}`,
-        `Time,${scanResult.time}`,
-        `Total Findings,${totalVulns}`,
-        "",
-        "SUMMARY",
-        "Severity,Count"
+        "PENTAAS ONECLICK - SCAN REPORT", "",
+        "SCAN INFO", `Target,${scanResult.ip}`, `Mode,${scanResult.mode}`,
+        `Time,${scanResult.time}`, `Total Findings,${totalVulns}`,
+        "", "SUMMARY", "Severity,Count"
       ];
-
-      scanResult.vulnerabilities.forEach(v => {
-        csvRows.push(`${v.severity},${v.count}`);
-      });
-
+      scanResult.vulnerabilities.forEach(v => csvRows.push(`${v.severity},${v.count}`));
       csvRows.push("", "DETAILED FINDINGS", "ID,Title,Severity,Description");
-
       scanResult.findings.forEach(f => {
         const descToken = f.description.replace(/(\r\n|\n|\r)/gm, " ").replace(/,/g, ';');
         csvRows.push(`${f.id},${f.title},${f.severity},${descToken}`);
       });
-
-      const csvContent = csvRows.join("\n");
-      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const blob = new Blob([csvRows.join("\n")], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
-      const safeIp = scanResult.ip.replace(/[^a-z0-9]/gi, '_');
-
       link.href = url;
-      link.download = `pentaas_${safeIp}.csv`;
+      link.download = `pentaas_${scanResult.ip.replace(/[^a-z0-9]/gi, '_')}.csv`;
       document.body.appendChild(link);
       link.click();
-
-      setTimeout(() => {
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }, 500);
-
-      alert("Rapor indiriliyor: " + link.download + "\nNot: Rapor tarayıcı tarafından oluşturuldu, sunucuya kaydedilmedi.");
-    } catch (err) {
-      alert("Hata oluştu: " + err.message);
-    }
+      setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); }, 500);
+    } catch (err) { alert("Hata oluştu: " + err.message); }
   };
+
+  const sevColor = (s) => ({ Critical: '#ff2d55', High: '#ff6b00', Medium: '#f5c518', Low: '#00c9a7', Info: '#6c757d' }[s] || '#6c757d');
+  const sevBg = (s) => ({ Critical: 'rgba(255,45,85,0.1)', High: 'rgba(255,107,0,0.1)', Medium: 'rgba(245,197,24,0.1)', Low: 'rgba(0,201,167,0.1)', Info: 'rgba(108,117,125,0.1)' }[s] || 'rgba(108,117,125,0.1)');
+  const tools = ['Nmap', 'Nikto', 'OWASP ZAP', 'Nuclei', 'Dirsearch', 'TestSSL', 'Waf00f', 'Arjun', 'Dalfox', 'DNSRecon'];
 
   return (
     <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+        :root{--bg:#090b10;--panel:#0d1117;--card:#111827;--border:rgba(0,212,170,0.15);--border-hi:rgba(0,212,170,0.4);--accent:#00d4aa;--accent-g:rgba(0,212,170,0.12);--t1:#e2e8f0;--t2:#94a3b8;--t3:#475569;--mono:'JetBrains Mono',monospace;}
+        .sh{background:var(--bg);min-height:calc(100vh - 80px);padding:3rem 0 4rem;position:relative;overflow:hidden;font-family:var(--mono);}
+        .sh::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 70% 10%,rgba(0,212,170,.06) 0%,transparent 70%),radial-gradient(ellipse 50% 50% at 10% 80%,rgba(0,122,255,.04) 0%,transparent 60%);pointer-events:none;}
+        .grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,170,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,170,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+        .lbl{font-size:.7rem;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;display:inline-flex;align-items:center;gap:.5rem;margin-bottom:1rem;}
+        .lbl::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pd 2s infinite;}
+        @keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+        h1.ht{font-size:clamp(1.8rem,4vw,3rem);font-weight:700;color:var(--t1);line-height:1.15;margin-bottom:.5rem;letter-spacing:-.02em;}
+        h1.ht .acc{color:var(--accent);}
+        .sub{color:var(--t2);font-size:1rem;margin-bottom:1.5rem;max-width:600px;}
+        .pills{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:2.5rem;}
+        .pill{font-size:.7rem;padding:.25rem .65rem;background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.2);border-radius:4px;color:rgba(0,212,170,.7);letter-spacing:.05em;}
+        .tabs{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;width:fit-content;margin-bottom:2rem;}
+        .tab{padding:.6rem 1.5rem;background:transparent;border:none;color:var(--t3);font-family:var(--mono);font-size:.8rem;letter-spacing:.05em;cursor:pointer;transition:all .2s;}
+        .tab.on{background:var(--accent);color:#000;font-weight:700;}
+        .tab:not(.on):hover{color:var(--accent);background:var(--accent-g);}
+        .panel{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+        .ph{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem;}
+        .pd{width:8px;height:8px;border-radius:50%;}
+        .pt{font-size:.75rem;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-left:.25rem;}
+        .pb{padding:2rem;}
+        .fl{font-size:.7rem;color:var(--t3);text-transform:uppercase;letter-spacing:.15em;display:block;margin-bottom:.6rem;}
+        .inp{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem;color:var(--t1);font-family:var(--mono);font-size:.95rem;outline:none;transition:border-color .2s,box-shadow .2s;}
+        .inp::placeholder{color:var(--t3);}
+        .inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,170,.12);}
+        .inp:disabled{opacity:.5;cursor:not-allowed;}
+        .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
+        @media(max-width:576px){.mgrid{grid-template-columns:1fr}.sgrid{grid-template-columns:repeat(2,1fr)!important;}}
+        .mc{padding:1.2rem;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;background:var(--panel);text-align:center;}
+        .mc:hover:not(.dis){border-color:var(--border-hi);background:var(--accent-g);}
+        .mc.on{border-color:var(--accent);background:rgba(0,212,170,.08);}
+        .mc.dis{opacity:.5;cursor:not-allowed;}
+        .mi{font-size:1.5rem;margin-bottom:.5rem;display:block;}
+        .mn{font-size:.85rem;font-weight:600;color:var(--t1);display:block;margin-bottom:.2rem;}
+        .md{font-size:.72rem;color:var(--t3);display:block;}
+        .mc.on .mn{color:var(--accent);}
+        .btn-s{width:100%;padding:1rem;background:var(--accent);color:#000;border:none;border-radius:8px;font-family:var(--mono);font-size:.95rem;font-weight:700;letter-spacing:.08em;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+        .btn-s:hover:not(:disabled){background:#00f0c0;transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,170,.3);}
+        .btn-s:disabled{opacity:.7;cursor:not-allowed;transform:none;}
+        .psec{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);}
+        .ph2{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;}
+        .plbl{font-size:.75rem;color:var(--t2);}
+        .ppct{font-size:.75rem;color:var(--accent);font-weight:700;}
+        .pwrap{height:4px;background:var(--panel);border-radius:2px;overflow:hidden;margin-bottom:1.2rem;}
+        .pfill{height:100%;background:linear-gradient(90deg,var(--accent),#00f0c0);border-radius:2px;transition:width .4s ease;position:relative;overflow:hidden;}
+        .pfill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:sh 1.5s infinite;}
+        @keyframes sh{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+        .ts{display:flex;flex-wrap:wrap;gap:.4rem;}
+        .tb{font-size:.68rem;padding:.3rem .6rem;border-radius:4px;display:flex;align-items:center;gap:.3rem;border:1px solid;}
+        .tb.d{color:var(--accent);border-color:rgba(0,212,170,.3);background:rgba(0,212,170,.05);}
+        .tb.p{color:var(--t3);border-color:var(--border);background:transparent;}
+        .sp{width:8px;height:8px;border:1px solid var(--t3);border-top-color:var(--accent);border-radius:50%;animation:sp 0.8s linear infinite;}
+        @keyframes sp{to{transform:rotate(360deg)}}
+        .rs{margin-top:2rem;border-top:1px solid var(--border);padding-top:2rem;}
+        .rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:.5rem;}
+        .rt{font-size:1.1rem;font-weight:700;color:var(--t1);margin:0;}
+        .rm{font-size:.7rem;color:var(--t3);background:var(--panel);padding:.3rem .75rem;border-radius:4px;border:1px solid var(--border);}
+        .sgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin-bottom:2rem;}
+        .sc{padding:1rem .5rem;border-radius:8px;text-align:center;border:1px solid;transition:transform .15s;}
+        .sc:hover{transform:translateY(-2px);}
+        .sl{font-size:.65rem;display:block;margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.08em;}
+        .sn{font-size:1.8rem;font-weight:700;display:block;line-height:1;}
+        table.ft{width:100%;border-collapse:separate;border-spacing:0 4px;}
+        table.ft thead th{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);padding:.5rem 1rem;border-bottom:1px solid var(--border);font-weight:500;}
+        table.ft tbody tr{background:var(--panel);transition:background .15s;}
+        table.ft tbody tr:hover{background:#161f2e;}
+        table.ft tbody td{padding:.75rem 1rem;font-size:.82rem;color:var(--t2);vertical-align:top;}
+        table.ft tbody td:first-child{border-radius:6px 0 0 6px;}
+        table.ft tbody td:last-child{border-radius:0 6px 6px 0;}
+        .sb{font-size:.65rem;padding:.2rem .5rem;border-radius:3px;text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
+        .ftt{font-weight:600;color:var(--t1);}
+        .ftd{font-size:.75rem;color:var(--t3);line-height:1.5;}
+        .ra{display:flex;justify-content:flex-end;gap:.75rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border);flex-wrap:wrap;}
+        .ba{padding:.6rem 1.2rem;border-radius:6px;font-family:var(--mono);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem;}
+        .bo{background:transparent;border:1px solid var(--border);color:var(--t2);}
+        .bo:hover{border-color:var(--border-hi);color:var(--t1);}
+        .bp{background:var(--accent);border:none;color:#000;}
+        .bp:hover{background:#00f0c0;box-shadow:0 4px 16px rgba(0,212,170,.25);}
+      `}</style>
+
       <Navbar />
 
-      <section data-bs-version="5.1" className="header18 cid-uSrJKo5xsn mbr-fullscreen mbr-parallax-background" id="hero-16-uSrJKo5xsn" style={{ minHeight: '100vh' }}>
-        <div className="mbr-overlay" style={{ opacity: 0.6, backgroundColor: 'rgb(0, 0, 0)' }}></div>
+      <section className="sh">
+        <div className="grid-bg"></div>
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <div className="row justify-content-center">
             <div className="col-12 col-md-10">
-              <div className="text-center text-white mb-5">
-                <p className="mbr-text mbr-fonts-style display-7">
-                  Pentaas One-Click, sistemlerinizi kapsamlı bir şekilde analiz eden güçlü bir güvenlik tarama aracıdır.
-                </p>
-                <div className="d-flex justify-content-center flex-wrap gap-2 mt-3">
-                  <span className="badge bg-white text-dark p-2">Nmap</span>
-                  <span className="badge bg-white text-dark p-2">Nikto</span>
-                  <span className="badge bg-white text-dark p-2">OWASP ZAP</span>
-                  <span className="badge bg-white text-dark p-2">Nuclei</span>
-                  <span className="badge bg-white text-dark p-2">Dirsearch</span>
-                  <span className="badge bg-white text-dark p-2">TestSSL</span>
-                  <span className="badge bg-white text-dark p-2">Waf00f</span>
-                  <span className="badge bg-white text-dark p-2">Arjun</span>
-                  <span className="badge bg-white text-dark p-2">Dalfox</span>
-                  <span className="badge bg-white text-dark p-2">DNSRecon</span>
-                </div>
+
+              <div className="mb-4">
+                <div className="lbl">Pentaas One-Click · Security Scanner</div>
+                <h1 className="ht">Hedef Tara,<br /><span className="acc">Zaafiyeti Bul.</span></h1>
+                <p className="sub">Sistemlerinizi tek tıkla 10 farklı güvenlik aracıyla kapsamlı biçimde analiz edin.</p>
+                <div className="pills">{tools.map(t => <span key={t} className="pill">{t}</span>)}</div>
               </div>
 
-              <h1 className="mbr-section-title mbr-fonts-style mbr-white mb-4 display-2 text-center">
-                <strong>Start Security Scan</strong>
-              </h1>
-
-              {/* TABS */}
-              <div className="d-flex justify-content-center mb-4">
-                <div className="btn-group" role="group">
-                  <button
-                    type="button"
-                    className={`btn ${activeTab === 'new' ? 'btn-primary' : 'btn-light'}`}
-                    onClick={() => setActiveTab('new')}
-                  >
-                    New Scan
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn ${activeTab === 'history' ? 'btn-primary' : 'btn-light'}`}
-                    onClick={() => setActiveTab('history')}
-                  >
-                    Scan History
-                  </button>
-                </div>
+              <div className="tabs">
+                <button className={`tab ${activeTab === 'new' ? 'on' : ''}`} onClick={() => setActiveTab('new')}>$ new_scan</button>
+                <button className={`tab ${activeTab === 'history' ? 'on' : ''}`} onClick={() => setActiveTab('history')}>$ history</button>
               </div>
 
-
-              {/* CONTENT AREA */}
               {activeTab === 'new' ? (
-                // NEW SCAN FORM
-                <div className="card p-4" style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '1rem' }}>
-                  <div className="row">
-                    {/* Target Input */}
-                    <div className="col-12 mb-4">
-                      <label className="form-label mbr-fonts-style display-7">Target IP / Hostname</label>
-                      <input
-                        type="text"
-                        className="form-control form-control-lg"
-                        placeholder="e.g., 192.168.1.1 or example.com"
-                        value={target}
-                        onChange={(e) => setTarget(e.target.value)}
-                        disabled={isScanning}
-                      />
-
+                <div className="panel">
+                  <div className="ph">
+                    <div className="pd" style={{ background: '#ff5f56' }}></div>
+                    <div className="pd" style={{ background: '#ffbd2e' }}></div>
+                    <div className="pd" style={{ background: '#27c93f' }}></div>
+                    <span className="pt">scan_config.sh</span>
+                  </div>
+                  <div className="pb">
+                    <div className="mb-4">
+                      <label className="fl">// Hedef IP / Hostname</label>
+                      <input type="text" className="inp" placeholder="192.168.1.1 veya example.com" value={target} onChange={(e) => setTarget(e.target.value)} disabled={isScanning} />
                     </div>
 
-                    {/* Scan Mode Selection */}
-                    <div className="col-12 mb-4">
-                      <label className="form-label mbr-fonts-style display-7 w-100">Scan Mode</label>
-                      <div className="d-flex flex-wrap gap-3 justify-content-center">
-
-                        {/* White Box */}
-                        <div
-                          className={`p-3 border rounded cursor-pointer ${mode === 'white' ? 'bg-primary text-white' : 'bg-light'} ${isScanning ? 'opacity-50' : ''}`}
-                          style={{ cursor: isScanning ? 'not-allowed' : 'pointer', flex: '1 1 200px', textAlign: 'center', transition: 'all 0.3s' }}
-                          onClick={() => !isScanning && setMode('white')}
-                        >
-
-                          <h4 className="mbr-fonts-style display-7"><strong>White Box</strong></h4>
-                          <small>Full Access / Auth Scan</small>
-                        </div>
-
-                        {/* Gray Box */}
-                        <div
-                          className={`p-3 border rounded cursor-pointer ${mode === 'gray' ? 'bg-primary text-white' : 'bg-light'} ${isScanning ? 'opacity-50' : ''}`}
-                          style={{ cursor: isScanning ? 'not-allowed' : 'pointer', flex: '1 1 200px', textAlign: 'center', transition: 'all 0.3s' }}
-                          onClick={() => !isScanning && setMode('gray')}
-                        >
-
-                          <h4 className="mbr-fonts-style display-7"><strong>Gray Box</strong></h4>
-                          <small>Partial Access</small>
-                        </div>
-
-                        {/* Black Box */}
-                        <div
-                          className={`p-3 border rounded cursor-pointer ${mode === 'black' ? 'bg-primary text-white' : 'bg-light'} ${isScanning ? 'opacity-50' : ''}`}
-                          style={{ cursor: isScanning ? 'not-allowed' : 'pointer', flex: '1 1 200px', textAlign: 'center', transition: 'all 0.3s' }}
-                          onClick={() => !isScanning && setMode('black')}
-                        >
-
-                          <h4 className="mbr-fonts-style display-7"><strong>Black Box</strong></h4>
-                          <small>No Access / External</small>
-                        </div>
-
+                    <div className="mb-4">
+                      <label className="fl">// Tarama Modu</label>
+                      <div className="mgrid">
+                        {[['white','⬜','White Box','Tam Erişim / Auth Tarama'],['gray','🔲','Gray Box','Kısmi Erişim'],['black','⬛','Black Box','Erişimsiz / Harici']].map(([m,icon,name,desc]) => (
+                          <div key={m} className={`mc ${mode === m ? 'on' : ''} ${isScanning ? 'dis' : ''}`} onClick={() => !isScanning && setMode(m)}>
+                            <span className="mi">{icon}</span>
+                            <span className="mn">{name}</span>
+                            <span className="md">{desc}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
-                    {/* Start Button */}
-                    <div className="col-12 text-center">
-                      <button
-                        className={`btn btn-primary display-4 w-100 ${isScanning ? 'disabled' : ''}`}
-                        onClick={handleStartScan}
-                        disabled={!target || isScanning}
-                      >
-                        {isScanning ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Scanning... {progress}%
-                          </>
-                        ) : (
-                          <>
-                            <span className="mobi-mbri mobi-mbri-play mbr-iconfont mbr-iconfont-btn"></span>
-                            Start Scan
-                          </>
-                        )}
-                      </button>
+                    <button className="btn-s" onClick={handleStartScan} disabled={!target || isScanning}>
+                      {isScanning ? (
+                        <><div className="sp" style={{ width: '14px', height: '14px', borderWidth: '2px' }}></div>Taranıyor... {progress}%</>
+                      ) : <>▶ TARAMAYI BAŞLAT</>}
+                    </button>
 
-                      {isScanning && (
-                        <div className="mt-4">
-                          <div className="progress" style={{ height: '20px', borderRadius: '10px', backgroundColor: '#e9ecef' }}>
-                            <div
-                              className="progress-bar progress-bar-striped progress-bar-animated"
-                              role="progressbar"
-                              style={{ width: `${progress}%`, backgroundColor: '#232323' }}
-                              aria-valuenow={progress}
-                              aria-valuemin="0"
-                              aria-valuemax="100"
-                            ></div>
-                          </div>
-                          <p className="text-center mt-2 mbr-fonts-style display-7" style={{ color: '#232323' }}>
-                            Scanning <strong>{target}</strong>... {progress}%
-                          </p>
-
-                          <div className="mt-3 p-3 bg-white rounded shadow-sm border" style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                            <h6 className="mbr-fonts-style display-7 mb-3 text-start"><strong>Tool Status:</strong></h6>
-                            <div className="d-flex flex-wrap gap-2">
-                              {toolProgress.completed.map((t, idx) => (
-                                <span key={idx} className="badge bg-success p-2">
-                                  <span className="mobi-mbri mobi-mbri-success mbr-iconfont me-1" style={{ fontSize: '1rem' }}></span>
-                                  {t}
-                                </span>
-                              ))}
-                              {toolProgress.pending.map((t, idx) => (
-                                <span key={idx} className="badge bg-light text-dark border p-2">
-                                  <span className="spinner-border spinner-border-sm me-1" role="status" style={{ width: '0.8rem', height: '0.8rem' }}></span>
-                                  {t}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
+                    {isScanning && (
+                      <div className="psec">
+                        <div className="ph2">
+                          <span className="plbl">⬡ {target} taranıyor</span>
+                          <span className="ppct">{progress}%</span>
                         </div>
-                      )}
-
-
-                      {!isScanning && scanResult && (
-                        <div id="scan-results" className="mt-5 p-4 border rounded shadow-sm" style={{ backgroundColor: '#fff', borderLeft: '5px solid #232323' }}>
-                          <div className="d-flex justify-content-between align-items-center mb-3">
-                            <h3 className="mbr-fonts-style display-5 mb-0"><strong>Scan Results</strong></h3>
-                            <span className="badge bg-dark p-2">{scanResult.time}</span>
-                          </div>
-                          <p className="mbr-fonts-style display-7 mb-4">
-                            Target: <strong>{scanResult.ip}</strong> | Mode: <strong>{scanResult.mode.toUpperCase()}</strong>
-                          </p>
-
-                          <div className="row g-3">
-                            {scanResult.vulnerabilities.map((v, i) => (
-                              <div key={i} className="col">
-                                <div className="p-3 text-center border rounded bg-light" style={{ minWidth: '100px' }}>
-                                  <h4 className={`mbr-fonts-style display-7 mb-1 ${v.severity === 'Critical' ? 'text-danger' : v.severity === 'High' ? 'text-warning' : v.severity === 'Medium' ? 'text-primary' : 'text-muted'}`}>
-                                    <strong>{v.severity}</strong>
-                                  </h4>
-                                  <span className="display-5"><strong>{v.count}</strong></span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Detailed Findings Section */}
-                          <div className="mt-5">
-                            <h4 className="mbr-fonts-style display-6 mb-4"><strong>Detailed Findings</strong></h4>
-                            <div className="table-responsive">
-                              <table className="table table-hover">
-                                <thead className="table-dark">
-                                  <tr>
-                                    <th>Severity</th>
-                                    <th>Finding</th>
-                                    <th>Description</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {scanResult.findings.map((f) => (
-                                    <tr key={f.id}>
-                                      <td>
-                                        <span className={`badge ${f.severity === 'Critical' ? 'bg-danger' : f.severity === 'High' ? 'bg-warning text-dark' : 'bg-info'}`}>
-                                          {f.severity}
-                                        </span>
-                                      </td>
-                                      <td><strong>{f.title}</strong></td>
-                                      <td><small>{f.description}</small></td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-
-                          <div className="mt-4 pt-3 border-top text-end">
-                            <button className="btn btn-outline-dark display-4 me-2" onClick={() => window.print()}>
-                              <span className="mobi-mbri mobi-mbri-print mbr-iconfont mbr-iconfont-btn"></span>
-                              Print PDF
-                            </button>
-                            <button className="btn btn-primary display-4" onClick={downloadCSV}>
-                              <span className="mobi-mbri mobi-mbri-download mbr-iconfont mbr-iconfont-btn"></span>
-                              Download CSV
-                            </button>
-                          </div>
+                        <div className="pwrap"><div className="pfill" style={{ width: `${progress}%` }}></div></div>
+                        <div className="ts">
+                          {toolProgress.completed.map((t, i) => <span key={i} className="tb d">✓ {t}</span>)}
+                          {toolProgress.pending.map((t, i) => <span key={i} className="tb p"><div className="sp"></div>{t}</span>)}
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
+
+                    {!isScanning && scanResult && (
+                      <div className="rs">
+                        <div className="rh">
+                          <h3 className="rt">// Tarama Sonuçları</h3>
+                          <span className="rm">{scanResult.time} · {scanResult.mode.toUpperCase()}</span>
+                        </div>
+                        <div className="sgrid">
+                          {scanResult.vulnerabilities.map((v, i) => (
+                            <div key={i} className="sc" style={{ borderColor: `${sevColor(v.severity)}30`, backgroundColor: sevBg(v.severity) }}>
+                              <span className="sl" style={{ color: sevColor(v.severity) }}>{v.severity}</span>
+                              <span className="sn" style={{ color: v.count > 0 ? sevColor(v.severity) : 'var(--t3)' }}>{v.count}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div style={{ overflowX: 'auto' }}>
+                          <table className="ft">
+                            <thead><tr><th>Severity</th><th>Finding</th><th>Description</th></tr></thead>
+                            <tbody>
+                              {scanResult.findings.map((f) => (
+                                <tr key={f.id}>
+                                  <td><span className="sb" style={{ color: sevColor(f.severity), background: sevBg(f.severity), border: `1px solid ${sevColor(f.severity)}30` }}>{f.severity}</span></td>
+                                  <td className="ftt">{f.title}</td>
+                                  <td className="ftd">{f.description}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className="ra">
+                          <button className="ba bo" onClick={() => window.print()}>⎙ PDF Yazdır</button>
+                          <button className="ba bp" onClick={downloadCSV}>↓ CSV İndir</button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
-                // HISTORY TAB
-                <div className="card p-0" style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '1rem', overflow: 'hidden' }}>
-                  <History />
-                </div>
+                <History />
               )}
-
             </div>
           </div>
         </div>
       </section>
-
       <Footer />
     </>
   );
 }
 
-export default App
+export default App;
