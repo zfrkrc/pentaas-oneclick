@@ -256,7 +256,7 @@ function App() {
                     <div className="mb-4" style={{ display: 'flex', justifyContent: 'center' }}>
                       <div 
                         className="cf-turnstile" 
-                        data-sitekey="1x00000000000000000000AA" 
+                        data-sitekey="0x4AAAAAACgfib7XhvjvFxJX" 
                         data-callback="onTurnstileSuccess"
                         data-theme="dark"
                         ref={(el) => {

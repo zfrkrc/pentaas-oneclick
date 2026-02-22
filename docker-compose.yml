@@ -13,6 +13,7 @@ services:
     env_file: .env
     environment:
       - HOST_REPORTS_PATH=${PWD}/reports
+      - TURNSTILE_SECRET_KEY=0x4AAAAAACgficT-CDwiOh1QoNmv-YjobnA
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./reports:/app/reports
