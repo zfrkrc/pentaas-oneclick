@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import History from './components/History'
@@ -12,6 +12,36 @@ function App() {
   const [toolProgress, setToolProgress] = useState({ completed: [], pending: [] });
   const [activeTab, setActiveTab] = useState('new');
   const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileRef = useRef(null);
+  const turnstileWidgetId = useRef(null);
+
+  // Turnstile widget'ını render et
+  useEffect(() => {
+    const renderTurnstile = () => {
+      if (window.turnstile && turnstileRef.current && !turnstileWidgetId.current) {
+        turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
+          sitekey: '0x4AAAAAACgfib7XhvjvFxJX',
+          theme: 'dark',
+          callback: (token) => setTurnstileToken(token),
+          'expired-callback': () => setTurnstileToken(''),
+        });
+      }
+    };
+
+    // Turnstile script yüklenmişse hemen render et
+    if (window.turnstile) {
+      renderTurnstile();
+    } else {
+      // Script yüklenmemişse bekle
+      const interval = setInterval(() => {
+        if (window.turnstile) {
+          clearInterval(interval);
+          renderTurnstile();
+        }
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab]);
 
   const handleStartScan = async () => {
     // Turnstile token kontrolü
@@ -254,18 +284,7 @@ function App() {
 
                     {/* Cloudflare Turnstile Captcha */}
                     <div className="mb-4" style={{ display: 'flex', justifyContent: 'center' }}>
-                      <div 
-                        className="cf-turnstile" 
-                        data-sitekey="0x4AAAAAACgfib7XhvjvFxJX" 
-                        data-callback="onTurnstileSuccess"
-                        data-theme="dark"
-                        ref={(el) => {
-                          if (el && !el.dataset.rendered) {
-                            el.dataset.rendered = 'true';
-                            window.onTurnstileSuccess = (token) => setTurnstileToken(token);
-                          }
-                        }}
-                      ></div>
+                      <div ref={turnstileRef}></div>
                     </div>
 
                     <button className="btn-s" onClick={handleStartScan} disabled={!target || isScanning || !turnstileToken}>
