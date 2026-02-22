@@ -55,8 +55,8 @@ const Navbar = () => {
 
                     <ul className="pnav-links">
                         <li><a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Hakkımızda</a></li>
-                        <li><a href="https://postaci.zaferkaraca.net">Posta Hizmeti</a></li>
-                        <li><a href="https://hobby.zaferkaraca.net">Hobby</a></li>
+                            @import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&display=swap');
+                            .pnav{position:sticky;top:0;z-index:1000;transition:all .3s;font-family:'Golos Text',sans-serif;border-bottom:1px solid transparent;}
                         <li className={`pnav-dd ${isOpen ? 'open' : ''}`}>
                             <button className="pnav-dd-btn" onClick={() => setIsOpen(!isOpen)}>Araçlar</button>
                             <div className="pnav-menu">
@@ -68,7 +68,7 @@ const Navbar = () => {
                         <li><a href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a></li>
                     </ul>
 
-                    <div className="pnav-icons">
+                            .pnav-dd-btn{font-size:.75rem;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'Golos Text',sans-serif;letter-spacing:.08em;text-transform:uppercase;transition:color .2s;padding:0;display:flex;align-items:center;gap:.35rem;}
                         <a href="tel:05346636464" className="pnav-icon" title="Telefon">📞</a>
                         <a href="mailto:zafer@zaferkaraca.net" className="pnav-icon" title="E-posta">✉</a>
                         <a href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl" className="pnav-icon" title="Konum">📍</a>
@@ -91,6 +91,6 @@ const Navbar = () => {
             </nav>
         </>
     );
-};
+                                    <img src="/assets/images/zk_logo.webp" alt="Logo" className="pnav-logo" />
 
 export default Navbar;
