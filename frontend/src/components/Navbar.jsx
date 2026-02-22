@@ -56,6 +56,7 @@ const Navbar = () => {
                     <ul className="pnav-links">
                         <li><a className="nav-link link text-black show text-primary display-4" href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4" aria-expanded="false">Hakkımızda</a></li>
                         <li><a className="nav-link link text-black show text-primary display-4" href="https://postaci.zaferkaraca.net">Posta Hizmeti</a></li>
+                        <li><a className="nav-link link text-black show text-primary display-4" href="https://zaferkaraca.net/posta.html">Posta Hizmetleri</a></li>
                         <li><a className="nav-link link text-black show text-primary display-4" href="https://hobby.zaferkaraca.net">Hobby</a></li>
                         <li className={`pnav-dd ${isOpen ? 'open' : ''}`}>
                             <button className="pnav-dd-btn" onClick={() => setIsOpen(!isOpen)}>Araçlar</button>
@@ -81,6 +82,7 @@ const Navbar = () => {
                     <div className="pnav-mobile">
                         <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Hakkımızda</a>
                         <a href="https://postaci.zaferkaraca.net">Posta Hizmeti</a>
+                        <a href="https://zaferkaraca.net/posta.html">Posta Hizmetleri</a>
                         <a href="https://hobby.zaferkaraca.net">Hobby</a>
                         <a href="https://pentestone.zaferkaraca.net/">PentestOne</a>
                         <a href="https://cyber.zaferkaraca.net/">Cyber Security</a>
