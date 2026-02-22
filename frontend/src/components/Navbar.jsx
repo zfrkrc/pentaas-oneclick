@@ -13,8 +13,8 @@ const Navbar = () => {
     return (
         <>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
-                .pnav{position:sticky;top:0;z-index:1000;transition:all .3s;font-family:'JetBrains Mono',monospace;border-bottom:1px solid transparent;}
+                @import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;700&display=swap');
+                .pnav{position:sticky;top:0;z-index:1000;transition:all .3s;font-family:'Golos Text',sans-serif;border-bottom:1px solid transparent;}
                 .pnav.s{background:rgba(9,11,16,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,212,170,.12);}
                 .pnav:not(.s){background:rgba(9,11,16,.8);backdrop-filter:blur(8px);}
                 .pnav-inner{max-width:1200px;margin:0 auto;padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
@@ -49,23 +49,23 @@ const Navbar = () => {
             <nav className={`pnav ${scrolled ? 's' : ''}`}>
                 <div className="pnav-inner">
                     <a href="/" className="pnav-brand">
-                        <img src="/assets/images/capture-206x207.jpg" alt="Logo" className="pnav-logo" />
+                        <img src="/assets/images/zk_logo.webp" alt="Zafer Karaca Logo" style={{height:'3rem', width:'auto'}} />
                         <span className="pnav-name">Pentest<span>One</span></span>
                     </a>
 
                     <ul className="pnav-links">
-                        <li><a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Hakkımızda</a></li>
+                        <li><a className="nav-link link text-black show text-primary display-4" href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4" aria-expanded="false">Hakkımızda</a></li>
                             @import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&display=swap');
                             .pnav{position:sticky;top:0;z-index:1000;transition:all .3s;font-family:'Golos Text',sans-serif;border-bottom:1px solid transparent;}
                         <li className={`pnav-dd ${isOpen ? 'open' : ''}`}>
                             <button className="pnav-dd-btn" onClick={() => setIsOpen(!isOpen)}>Araçlar</button>
                             <div className="pnav-menu">
-                                <a href="https://pentestone.zaferkaraca.net/">PentestOne</a>
-                                <a href="https://cyber.zaferkaraca.net/">Cyber Security</a>
-                                <a href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
+                                <a className="text-black dropdown-item text-primary display-4" href="https://pentestone.zaferkaraca.net/">PentestOne</a>
+                                <a className="text-black dropdown-item text-primary display-4" href="https://cyber.zaferkaraca.net/">Cyber Security</a>
+                                <a className="text-black show dropdown-item text-primary display-4" href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
                             </div>
                         </li>
-                        <li><a href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a></li>
+                        <li><a className="nav-link link text-black text-primary display-4" href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a></li>
                     </ul>
 
                             .pnav-dd-btn{font-size:.75rem;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'Golos Text',sans-serif;letter-spacing:.08em;text-transform:uppercase;transition:color .2s;padding:0;display:flex;align-items:center;gap:.35rem;}
