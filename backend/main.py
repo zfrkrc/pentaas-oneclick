@@ -1,4 +1,4 @@
-from fastapi import FastAPI, BackgroundTasks, HTTPException
+from fastapi import FastAPI, BackgroundTasks, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -7,6 +7,7 @@ import os
 import uuid
 import json
 import logging
+import httpx
 from redis import Redis
 from datetime import datetime
 import xml.etree.ElementTree as ET
@@ -50,6 +51,7 @@ REPORT_DIR = f"{BASE_DIR}/reports"
 class ScanRequest(BaseModel):
     ip: str
     category: str  # white, gray, black
+    turnstileToken: Optional[str] = None
 
 class ScanResponse(BaseModel):
     message: str
@@ -83,12 +85,35 @@ def get_version():
 
 
 @app.post("/scan", response_model=ScanResponse)
-async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks):
+async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks, request: Request):
     """
     Start a new scan.
     Enqueues the scan task to RQ worker.
     """
     from worker import queue_scan  # Deferred import to avoid circular dependency
+    
+    # Turnstile token doğrulama
+    turnstile_secret = os.getenv("TURNSTILE_SECRET_KEY")
+    if turnstile_secret:
+        client_ip = request.client.host if request.client else None
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+                    data={
+                        "secret": turnstile_secret,
+                        "response": scan.turnstileToken or "",
+                        "remoteip": client_ip
+                    }
+                )
+                result = response.json()
+                if not result.get("success"):
+                    raise HTTPException(status_code=400, detail="Bot doğrulaması başarısız. Lütfen sayfayı yenileyip tekrar deneyin.")
+        except httpx.RequestError as e:
+            logger.error(f"Turnstile verification error: {e}")
+            # Ağ hatasında geç (veya isteğe göre reddet)
+    else:
+        logger.warning("⚠️ TURNSTILE_SECRET_KEY tanımlanmamış, captcha doğrulaması atlanıyor")
     
     # Map frontend fields to backend variables
     target = scan.ip

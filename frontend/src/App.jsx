@@ -11,8 +11,15 @@ function App() {
   const [scanResult, setScanResult] = useState(null);
   const [toolProgress, setToolProgress] = useState({ completed: [], pending: [] });
   const [activeTab, setActiveTab] = useState('new');
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   const handleStartScan = async () => {
+    // Turnstile token kontrolü
+    if (!turnstileToken) {
+      alert('Lütfen "Ben robot değilim" doğrulamasını tamamlayın.');
+      return;
+    }
+    
     setIsScanning(true);
     setProgress(10);
     setScanResult(null);
@@ -20,7 +27,7 @@ function App() {
       const response = await fetch('/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ip: target, category: mode })
+        body: JSON.stringify({ ip: target, category: mode, turnstileToken })
       });
       if (!response.ok) throw new Error('Scan starting failed');
       const { scan_id } = await response.json();
@@ -245,7 +252,23 @@ function App() {
                       </div>
                     </div>
 
-                    <button className="btn-s" onClick={handleStartScan} disabled={!target || isScanning}>
+                    {/* Cloudflare Turnstile Captcha */}
+                    <div className="mb-4" style={{ display: 'flex', justifyContent: 'center' }}>
+                      <div 
+                        className="cf-turnstile" 
+                        data-sitekey="1x00000000000000000000AA" 
+                        data-callback="onTurnstileSuccess"
+                        data-theme="dark"
+                        ref={(el) => {
+                          if (el && !el.dataset.rendered) {
+                            el.dataset.rendered = 'true';
+                            window.onTurnstileSuccess = (token) => setTurnstileToken(token);
+                          }
+                        }}
+                      ></div>
+                    </div>
+
+                    <button className="btn-s" onClick={handleStartScan} disabled={!target || isScanning || !turnstileToken}>
                       {isScanning ? (
                         <><div className="sp" style={{ width: '14px', height: '14px', borderWidth: '2px' }}></div>Taranıyor... {progress}%</>
                       ) : <>▶ TARAMAYI BAŞLAT</>}
