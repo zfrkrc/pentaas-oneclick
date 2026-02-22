@@ -54,7 +54,7 @@ const Navbar = () => {
                     </a>
 
                     <ul className="pnav-links">
-                        <li><a className="nav-link link text-black show text-primary display-4" href="/" aria-expanded="false">Hakkımızda</a></li>
+                        <li><a className="nav-link link text-black show text-primary display-4" href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4" aria-expanded="false">Hakkımızda</a></li>
                         <li><a className="nav-link link text-black show text-primary display-4" href="https://postaci.zaferkaraca.net">Posta Hizmeti</a></li>
                         <li><a className="nav-link link text-black show text-primary display-4" href="https://hobby.zaferkaraca.net">Hobby</a></li>
                         <li className={`pnav-dd ${isOpen ? 'open' : ''}`}>
@@ -65,7 +65,7 @@ const Navbar = () => {
                                 <a className="text-black show dropdown-item text-primary display-4" href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
                             </div>
                         </li>
-                        <li><a className="nav-link link text-black text-primary display-4" href="/">İletişim</a></li>
+                        <li><a className="nav-link link text-black text-primary display-4" href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a></li>
                     </ul>
 
                             .pnav-dd-btn{font-size:.75rem;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'Golos Text',sans-serif;letter-spacing:.08em;text-transform:uppercase;transition:color .2s;padding:0;display:flex;align-items:center;gap:.35rem;}
