@@ -26,7 +26,7 @@ const Navbar = () => {
                 .pnav-links a{font-size:.75rem;color:#94a3b8;text-decoration:none;letter-spacing:.08em;transition:color .2s;text-transform:uppercase;}
                 .pnav-links a:hover{color:#00d4aa;}
                 .pnav-dd{position:relative;}
-                .pnav-dd-btn{font-size:.75rem;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;transition:color .2s;padding:0;display:flex;align-items:center;gap:.35rem;}
+                .pnav-dd-btn{font-size:.75rem;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'Golos Text',sans-serif;letter-spacing:.08em;text-transform:uppercase;transition:color .2s;padding:0;display:flex;align-items:center;gap:.35rem;}
                 .pnav-dd-btn:hover{color:#00d4aa;}
                 .pnav-dd-btn::after{content:'▾';font-size:.6rem;}
                 .pnav-menu{position:absolute;top:calc(100% + .75rem);right:0;background:#0d1117;border:1px solid rgba(0,212,170,.2);border-radius:8px;padding:.4rem;min-width:180px;display:none;box-shadow:0 16px 40px rgba(0,0,0,.6);}
@@ -54,22 +54,22 @@ const Navbar = () => {
                     </a>
 
                     <ul className="pnav-links">
-                        <li><a className="nav-link link text-black show text-primary display-4" href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4" aria-expanded="false">Hakkımızda</a></li>
-                        <li><a className="nav-link link text-black show text-primary display-4" href="https://zaferkaraca.net/posta.html">Posta Hizmetleri</a></li>
-                        <li><a className="nav-link link text-black show text-primary display-4" href="https://hobby.zaferkaraca.net">Hobby</a></li>
+                        <li><a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Hakkımızda</a></li>
+                        <li><a href="https://zaferkaraca.net/posta.html">Posta Hizmetleri</a></li>
+                        <li><a href="https://hobby.zaferkaraca.net">Hobby</a></li>
                         <li className={`pnav-dd ${isOpen ? 'open' : ''}`}>
                             <button className="pnav-dd-btn" onClick={() => setIsOpen(!isOpen)}>Araçlar</button>
                             <div className="pnav-menu">
-                                <a className="text-black dropdown-item text-primary display-4" href="https://pentestone.zaferkaraca.net/">PentestOne</a>
-                                <a className="text-black dropdown-item text-primary display-4" href="https://cyber.zaferkaraca.net/">Cyber Security</a>
-                                <a className="text-black show dropdown-item text-primary display-4" href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
+                                <a href="https://pentestone.zaferkaraca.net/">PentestOne</a>
+                                <a href="https://cyber.zaferkaraca.net/">Cyber Security</a>
+                                <a href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
                             </div>
                         </li>
-                        <li><a className="nav-link link text-black text-primary display-4" href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a></li>
+                        <li><a href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a></li>
                     </ul>
 
-                            .pnav-dd-btn{font-size:.75rem;color:#94a3b8;background:none;border:none;cursor:pointer;font-family:'Golos Text',sans-serif;letter-spacing:.08em;text-transform:uppercase;transition:color .2s;padding:0;display:flex;align-items:center;gap:.35rem;}
-                        <a href="tel:05346636464" className="pnav-icon" title="Telefon">📞</a>
+                    <div className="pnav-icons">
+                        <a href="tel:+905346636464" className="pnav-icon" title="Telefon">📞</a>
                         <a href="mailto:zafer@zaferkaraca.net" className="pnav-icon" title="E-posta">✉</a>
                         <a href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl" className="pnav-icon" title="Konum">📍</a>
                     </div>
@@ -91,6 +91,6 @@ const Navbar = () => {
             </nav>
         </>
     );
-                                    <img src="/assets/images/zk_logo.webp" alt="Logo" className="pnav-logo" />
+};
 
 export default Navbar;
