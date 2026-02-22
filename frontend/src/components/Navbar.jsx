@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [hakkimizdaOpen, setHakkimizdaOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -199,8 +200,12 @@ const Navbar = () => {
                     </div>
                     
                     <ul className="nav-dropdown">
-                        <li className="nav-item">
-                            <a className="nav-link" href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Hakkımızda</a>
+                        <li className={`nav-item dropdown ${hakkimizdaOpen ? 'open' : ''}`}>
+                            <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setHakkimizdaOpen(!hakkimizdaOpen); }}>Hakkımızda</a>
+                            <div className="dropdown-menu">
+                                <a className="dropdown-item" href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Şirket</a>
+                                <a className="dropdown-item" href="https://zaferkaraca.net/hakkimda.html">Zafer Karaca</a>
+                            </div>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="https://zaferkaraca.net/posta.html">Posta Hizmetleri</a>
@@ -240,7 +245,8 @@ const Navbar = () => {
                 </div>
                 
                 <div className={`mobile-menu ${isOpen ? 'open' : ''}`}>
-                    <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Hakkımızda</a>
+                    <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Şirket</a>
+                    <a href="https://zaferkaraca.net/hakkimda.html">Zafer Karaca</a>
                     <a href="https://zaferkaraca.net/posta.html">Posta Hizmetleri</a>
                     <a href="https://hobby.zaferkaraca.net">Hobby</a>
                     <a href="https://zaferkaraca.net/referanslar.html">Referanslar</a>
