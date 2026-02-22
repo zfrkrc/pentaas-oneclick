@@ -211,14 +211,12 @@ const Navbar = () => {
                             <a className="nav-link" href="https://zaferkaraca.net/posta.html">Posta Hizmetleri</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="https://hobby.zaferkaraca.net">Hobby</a>
-                        </li>
-                        <li className="nav-item">
                             <a className="nav-link" href="https://zaferkaraca.net/referanslar.html">Referanslar</a>
                         </li>
                         <li className={`nav-item dropdown ${dropdownOpen ? 'open' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setDropdownOpen(!dropdownOpen); }}>Araçlar</a>
                             <div className="dropdown-menu">
+                                <a className="dropdown-item" href="https://hobby.zaferkaraca.net">Hobby</a>
                                 <a className="dropdown-item" href="https://pentestone.zaferkaraca.net/">PentestOne</a>
                                 <a className="dropdown-item" href="https://cyber.zaferkaraca.net/">Cyber Security</a>
                                 <a className="dropdown-item" href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
@@ -248,8 +246,8 @@ const Navbar = () => {
                     <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Şirket</a>
                     <a href="https://zaferkaraca.net/hakkimda.html">Zafer Karaca</a>
                     <a href="https://zaferkaraca.net/posta.html">Posta Hizmetleri</a>
-                    <a href="https://hobby.zaferkaraca.net">Hobby</a>
                     <a href="https://zaferkaraca.net/referanslar.html">Referanslar</a>
+                    <a href="https://hobby.zaferkaraca.net">Hobby</a>
                     <a href="https://pentestone.zaferkaraca.net/">PentestOne</a>
                     <a href="https://cyber.zaferkaraca.net/">Cyber Security</a>
                     <a href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
