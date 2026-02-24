@@ -190,6 +190,7 @@ const Navbar = () => {
             
             <nav className="navbar-dropdown">
                 <div className="container">
+                    <a href="https://zaferkaraca.net/html/teklif-sihirbazi.html" className="nav-link" style={{color:'#4F8EF7',fontWeight:600,marginLeft:16}}>Teklif Sihirbazı</a>
                     <div className="navbar-brand">
                         <span className="navbar-logo">
                             <a href="https://zaferkaraca.net/">
