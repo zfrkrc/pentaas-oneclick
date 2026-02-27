@@ -9,7 +9,7 @@ class DalfoxService(BaseToolService):
         super().__init__(service_name='dalfox', version='1.0.0')
     
     async def scan(self, target: str, options: Dict[str, Any]) -> Dict[str, Any]:
-        cmd = ['dalfox', target]
+        cmd = ['dalfox', 'url', target, '--format', 'json']
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
         return {'findings': [], 'raw_output': result.stdout, 'metadata': {'command': ' '.join(cmd)}}
 
