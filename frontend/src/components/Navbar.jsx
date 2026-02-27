@@ -26,7 +26,10 @@ const Navbar = () => {
                     top: 0;
                     transition: all 0.45s ease;
                     z-index: 1030;
-                    background: #282828;
+                    background: rgba(10, 14, 26, 0.92);
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
                 }
                 .navbar-dropdown .container {
                     max-width: 1200px;
@@ -71,7 +74,7 @@ const Navbar = () => {
                 }
                 .nav-dropdown .nav-link {
                     font-family: 'Golos Text', sans-serif;
-                    font-size: 0.95rem;
+                    font-size: 0.85rem;
                     font-weight: 500;
                     color: #ffffff;
                     text-decoration: none;
@@ -162,8 +165,8 @@ const Navbar = () => {
                 .mobile-menu {
                     display: none;
                     padding: 1rem 1.5rem;
-                    border-top: 1px solid rgba(117, 230, 218, 0.1);
-                    background: #282828;
+                    border-top: 1px solid rgba(255, 255, 255, 0.07);
+                    background: rgba(10, 14, 26, 0.95);
                 }
                 .mobile-menu.open {
                     display: block;
@@ -172,7 +175,7 @@ const Navbar = () => {
                     display: block;
                     padding: 0.6rem 0;
                     font-family: 'Golos Text', sans-serif;
-                    font-size: 0.95rem;
+                    font-size: 0.85rem;
                     color: #cccccc;
                     text-decoration: none;
                     border-bottom: 1px solid rgba(255,255,255,.06);
@@ -187,10 +190,10 @@ const Navbar = () => {
                     padding-top: 70px;
                 }
             `}</style>
-            
+
             <nav className="navbar-dropdown">
                 <div className="container">
-                    <a href="https://zaferkaraca.net/html/teklif-sihirbazi.html" className="nav-link" style={{color:'#4F8EF7',fontWeight:600,marginLeft:16}}>Teklif Sihirbazı</a>
+                    <a href="https://zaferkaraca.net/html/teklif-sihirbazi.html" className="nav-link" style={{ color: '#4F8EF7', fontWeight: 600, marginLeft: 16 }}>Teklif Sihirbazı</a>
                     <div className="navbar-brand">
                         <span className="navbar-logo">
                             <a href="https://zaferkaraca.net/">
@@ -199,7 +202,7 @@ const Navbar = () => {
                         </span>
                         <span className="navbar-caption">Pentest<span>One</span></span>
                     </div>
-                    
+
                     <ul className="nav-dropdown">
                         <li className={`nav-item dropdown ${hakkimizdaOpen ? 'open' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setHakkimizdaOpen(!hakkimizdaOpen); }}>Hakkımızda</a>
@@ -209,7 +212,7 @@ const Navbar = () => {
                             </div>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="https://zaferkaraca.net/posta.html">Posta Hizmetleri</a>
+                            <a className="nav-link" href="https://zaferkaraca.net/posta.html">POSTA</a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="https://zaferkaraca.net/referanslar.html">Referanslar</a>
@@ -217,9 +220,9 @@ const Navbar = () => {
                         <li className={`nav-item dropdown ${dropdownOpen ? 'open' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setDropdownOpen(!dropdownOpen); }}>Araçlar</a>
                             <div className="dropdown-menu">
-                                <a className="dropdown-item" href="https://hobby.zaferkaraca.net">Hobby</a>
-                                <a className="dropdown-item" href="https://pentestone.zaferkaraca.net/">PentestOne</a>
-                                <a className="dropdown-item" href="https://cyber.zaferkaraca.net/">Cyber Security</a>
+                                <a className="dropdown-item" href="https://hobby.zaferkaraca.net">HOBBY</a>
+                                <a className="dropdown-item" href="https://pentestone.zaferkaraca.net/">PENTEST</a>
+                                <a className="dropdown-item" href="https://cyber.zaferkaraca.net/">ESP Live</a>
                                 <a className="dropdown-item" href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
                             </div>
                         </li>
@@ -227,13 +230,13 @@ const Navbar = () => {
                             <a className="nav-link" href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a>
                         </li>
                     </ul>
-                    
+
                     <div className="icons-menu">
                         <a className="iconfont-wrapper" href="tel:+905346636464" title="Telefon">📞</a>
                         <a className="iconfont-wrapper" href="mailto:zafer@zaferkaraca.net" title="E-posta">✉️</a>
                         <a className="iconfont-wrapper" href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl" title="Konum">📍</a>
                     </div>
-                    
+
                     <button className="navbar-toggler" onClick={() => setIsOpen(!isOpen)}>
                         <div className="hamburger">
                             <span></span>
@@ -242,15 +245,15 @@ const Navbar = () => {
                         </div>
                     </button>
                 </div>
-                
+
                 <div className={`mobile-menu ${isOpen ? 'open' : ''}`}>
                     <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Şirket</a>
                     <a href="https://zaferkaraca.net/hakkimda.html">Zafer Karaca</a>
-                    <a href="https://zaferkaraca.net/posta.html">Posta Hizmetleri</a>
+                    <a href="https://zaferkaraca.net/posta.html">POSTA</a>
                     <a href="https://zaferkaraca.net/referanslar.html">Referanslar</a>
-                    <a href="https://hobby.zaferkaraca.net">Hobby</a>
-                    <a href="https://pentestone.zaferkaraca.net/">PentestOne</a>
-                    <a href="https://cyber.zaferkaraca.net/">Cyber Security</a>
+                    <a href="https://hobby.zaferkaraca.net">HOBBY</a>
+                    <a href="https://pentestone.zaferkaraca.net/">PENTEST</a>
+                    <a href="https://cyber.zaferkaraca.net/">ESP Live</a>
                     <a href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
                     <a href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a>
                 </div>

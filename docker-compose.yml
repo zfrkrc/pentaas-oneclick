@@ -2,7 +2,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "80:80"
+      - "${HOST_IP:-127.0.0.1}:${NGINX_PORT:-80}:80"
     volumes:
       - ./reports:/reports:ro
     depends_on:
