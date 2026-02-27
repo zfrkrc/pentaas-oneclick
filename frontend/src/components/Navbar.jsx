@@ -216,10 +216,10 @@ const Navbar = () => {
                             <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setDropdownOpen(!dropdownOpen); }}>Ürünler</a>
                             <div className="dropdown-menu">
                                 <a className="dropdown-item" href="https://zaferkaraca.net/posta">POSTA</a>
-                                <a className="dropdown-item" href="https://hobby.zaferkaraca.net">HOBBY</a>
+                                <a className="dropdown-item" href="https://zaferkaraca.net/hobby">HOBBY</a>
                                 <a className="dropdown-item" href="https://pentestone.zaferkaraca.net/">PENTEST</a>
-                                <a className="dropdown-item" href="https://cyber.zaferkaraca.net/">ESP Live</a>
-                                <a className="dropdown-item" href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
+                                <a className="dropdown-item" href="https://zaferkaraca.net/cyber/">ESP Live</a>
+                                <a className="dropdown-item" href="https://zaferkaraca.net/kitap/">PDF OKU</a>
                             </div>
                         </li>
                         <li className="nav-item">
@@ -244,13 +244,13 @@ const Navbar = () => {
 
                 <div className={`mobile-menu ${isOpen ? 'open' : ''}`}>
                     <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Şirket</a>
-                    <a href="https://zaferkaraca.net/hakkimda.html">Zafer Karaca</a>
-                    <a href="https://zaferkaraca.net/posta.html">POSTA</a>
-                    <a href="https://zaferkaraca.net/referanslar.html">Referanslar</a>
-                    <a href="https://hobby.zaferkaraca.net">HOBBY</a>
+                    <a href="https://zaferkaraca.net/hakkimda">Zafer Karaca</a>
+                    <a href="https://zaferkaraca.net/posta">POSTA</a>
+                    <a href="https://zaferkaraca.net/referanslar">Referanslar</a>
+                    <a href="https://zaferkaraca.net/hobby">HOBBY</a>
                     <a href="https://pentestone.zaferkaraca.net/">PENTEST</a>
-                    <a href="https://cyber.zaferkaraca.net/">ESP Live</a>
-                    <a href="https://pdfoku.zaferkaraca.net/">PDF OKU</a>
+                    <a href="https://zaferkaraca.net/cyber/">ESP Live</a>
+                    <a href="https://zaferkaraca.net/kitap/">PDF OKU</a>
                     <a href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a>
                 </div>
             </nav>
