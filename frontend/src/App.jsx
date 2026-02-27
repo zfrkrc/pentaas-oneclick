@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import History from './components/History'
+import { authClient } from './lib/auth'
 
 function App() {
   const [target, setTarget] = useState('');
@@ -14,6 +15,22 @@ function App() {
   const [turnstileToken, setTurnstileToken] = useState('');
   const turnstileRef = useRef(null);
   const turnstileWidgetId = useRef(null);
+
+  // Auth session
+  const { data: session } = authClient.useSession();
+
+  // Günlük kota bilgisi
+  const [quota, setQuota] = useState({ used: 0, limit: 2, remaining: 2 });
+
+  // Session değiştiğinde kotayı sorgula
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch(`/api/scan-quota?user_id=${session.user.id}`)
+        .then(r => r.json())
+        .then(data => setQuota(data))
+        .catch(() => { });
+    }
+  }, [session]);
 
   // Turnstile widget'ını render et
   useEffect(() => {
@@ -44,12 +61,22 @@ function App() {
   }, [activeTab]);
 
   const handleStartScan = async () => {
+    // Üyelik kontrolü
+    if (!session?.user) {
+      alert('Tarama başlatmak için giriş yapmanız gerekiyor.');
+      return;
+    }
+    // Kota kontrolü
+    if (quota.remaining <= 0) {
+      alert('Günlük tarama limitinize ulaştınız. Yarın tekrar deneyin.');
+      return;
+    }
     // Turnstile token kontrolü
     if (!turnstileToken) {
       alert('Lütfen "Ben robot değilim" doğrulamasını tamamlayın.');
       return;
     }
-    
+
     setIsScanning(true);
     setProgress(10);
     setScanResult(null);
@@ -57,10 +84,22 @@ function App() {
       const response = await fetch('/api/scan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ip: target, category: mode, turnstileToken })
+        body: JSON.stringify({
+          ip: target,
+          category: mode,
+          turnstileToken,
+          userId: session.user.id,
+          userName: session.user.name || session.user.email
+        })
       });
-      if (!response.ok) throw new Error('Scan starting failed');
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.detail || 'Scan starting failed');
+      }
       const { scan_id } = await response.json();
+
+      // Kotayı güncelle (lokal)
+      setQuota(prev => ({ ...prev, used: prev.used + 1, remaining: Math.max(0, prev.remaining - 1) }));
 
       const pollInterval = setInterval(async () => {
         try {
@@ -85,7 +124,7 @@ function App() {
       }, 2000);
     } catch (err) {
       console.error("Scan Error:", err);
-      alert("Hata: Tarama başlatılamadı. Backend servisinin çalıştığından emin olun.");
+      alert("Hata: " + err.message);
       setIsScanning(false);
     }
   };
@@ -272,7 +311,7 @@ function App() {
                     <div className="mb-4">
                       <label className="fl">// Tarama Modu</label>
                       <div className="mgrid">
-                        {[['white','⬜','White Box','Tam Erişim / Auth Tarama'],['gray','🔲','Gray Box','Kısmi Erişim'],['black','⬛','Black Box','Erişimsiz / Harici']].map(([m,icon,name,desc]) => (
+                        {[['white', '⬜', 'White Box', 'Tam Erişim / Auth Tarama'], ['gray', '🔲', 'Gray Box', 'Kısmi Erişim'], ['black', '⬛', 'Black Box', 'Erişimsiz / Harici']].map(([m, icon, name, desc]) => (
                           <div key={m} className={`mc ${mode === m ? 'on' : ''} ${isScanning ? 'dis' : ''}`} onClick={() => !isScanning && setMode(m)}>
                             <span className="mi">{icon}</span>
                             <span className="mn">{name}</span>
@@ -282,14 +321,98 @@ function App() {
                       </div>
                     </div>
 
-                    {/* Cloudflare Turnstile Captcha */}
-                    <div className="mb-4" style={{ display: 'flex', justifyContent: 'center' }}>
-                      <div ref={turnstileRef}></div>
-                    </div>
+                    {/* ── Auth & Kota Bilgi Paneli ── */}
+                    {!session?.user ? (
+                      <div className="mb-4" style={{
+                        background: 'rgba(255,107,0,0.08)',
+                        border: '1px solid rgba(255,107,0,0.3)',
+                        borderRadius: '8px',
+                        padding: '1.2rem 1.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem'
+                      }}>
+                        <span style={{ fontSize: '1.5rem' }}>🔒</span>
+                        <div>
+                          <div style={{ color: '#ff6b00', fontWeight: 700, fontSize: '.9rem', marginBottom: '.2rem' }}>
+                            Giriş Gerekli
+                          </div>
+                          <div style={{ color: 'var(--t2)', fontSize: '.78rem' }}>
+                            Tarama başlatmak için üye girişi yapmalısınız. Sağ üstteki <strong style={{ color: '#75E6DA' }}>G Giriş Yap</strong> butonunu kullanın.
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mb-4" style={{
+                        background: quota.remaining > 0 ? 'rgba(0,212,170,0.06)' : 'rgba(255,45,85,0.08)',
+                        border: `1px solid ${quota.remaining > 0 ? 'rgba(0,212,170,0.25)' : 'rgba(255,45,85,0.3)'}`,
+                        borderRadius: '8px',
+                        padding: '1rem 1.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '.5rem'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem' }}>
+                          <span style={{ fontSize: '1.3rem' }}>{quota.remaining > 0 ? '🛡️' : '⛔'}</span>
+                          <div>
+                            <div style={{ color: 'var(--t1)', fontWeight: 600, fontSize: '.85rem' }}>
+                              Hoş geldin, {session.user?.name?.split(' ')[0] || 'Üye'}
+                            </div>
+                            <div style={{ color: 'var(--t2)', fontSize: '.72rem' }}>
+                              {quota.remaining > 0
+                                ? `Bugün ${quota.remaining} tarama hakkınız kaldı`
+                                : 'Günlük tarama limitinize ulaştınız. Yarın tekrar deneyin.'}
+                            </div>
+                          </div>
+                        </div>
+                        <div style={{
+                          display: 'flex',
+                          gap: '.4rem',
+                          alignItems: 'center'
+                        }}>
+                          {[...Array(quota.limit)].map((_, i) => (
+                            <div key={i} style={{
+                              width: '28px',
+                              height: '28px',
+                              borderRadius: '6px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '.75rem',
+                              fontWeight: 700,
+                              background: i < quota.used
+                                ? 'rgba(255,45,85,0.15)'
+                                : 'rgba(0,212,170,0.15)',
+                              border: `1px solid ${i < quota.used ? 'rgba(255,45,85,0.3)' : 'rgba(0,212,170,0.3)'}`,
+                              color: i < quota.used ? '#ff2d55' : 'var(--accent)'
+                            }}>
+                              {i < quota.used ? '✕' : '✓'}
+                            </div>
+                          ))}
+                          <span style={{ color: 'var(--t3)', fontSize: '.7rem', marginLeft: '.4rem' }}>
+                            {quota.used}/{quota.limit}
+                          </span>
+                        </div>
+                      </div>
+                    )}
 
-                    <button className="btn-s" onClick={handleStartScan} disabled={!target || isScanning || !turnstileToken}>
+                    {/* Cloudflare Turnstile Captcha */}
+                    {session?.user && quota.remaining > 0 && (
+                      <div className="mb-4" style={{ display: 'flex', justifyContent: 'center' }}>
+                        <div ref={turnstileRef}></div>
+                      </div>
+                    )}
+
+                    <button className="btn-s" onClick={handleStartScan}
+                      disabled={!target || isScanning || !session?.user || quota.remaining <= 0 || !turnstileToken}>
                       {isScanning ? (
                         <><div className="sp" style={{ width: '14px', height: '14px', borderWidth: '2px' }}></div>Taranıyor... {progress}%</>
+                      ) : !session?.user ? (
+                        <>🔒 GİRİŞ YAPARAK TARAMA BAŞLATIN</>
+                      ) : quota.remaining <= 0 ? (
+                        <>⛔ GÜNLÜK LİMİT DOLDU</>
                       ) : <>▶ TARAMAYI BAŞLAT</>}
                     </button>
 

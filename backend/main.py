@@ -9,8 +9,11 @@ import json
 import logging
 import httpx
 from redis import Redis
-from datetime import datetime
+from datetime import datetime, date
 import xml.etree.ElementTree as ET
+
+# ── Günlük tarama limiti ──────────────────────────────────────────────────────
+DAILY_SCAN_LIMIT = 2
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -52,6 +55,8 @@ class ScanRequest(BaseModel):
     ip: str
     category: str  # white, gray, black
     turnstileToken: Optional[str] = None
+    userId: Optional[str] = None        # better-auth user id
+    userName: Optional[str] = None      # display name (for logging)
 
 class ScanResponse(BaseModel):
     message: str
@@ -84,6 +89,25 @@ def get_version():
     }
 
 
+# ── Kota sorgulama endpoint'i ──────────────────────────────────────────────────
+@app.get("/scan-quota")
+def get_scan_quota(user_id: str):
+    """Return how many scans the user has left today"""
+    if not user_id:
+        raise HTTPException(status_code=400, detail="user_id gerekli")
+    if not redis_conn:
+        return {"used": 0, "limit": DAILY_SCAN_LIMIT, "remaining": DAILY_SCAN_LIMIT}
+
+    today = date.today().isoformat()          # e.g. 2026-02-28
+    key = f"quota:{user_id}:{today}"
+    used = int(redis_conn.get(key) or 0)
+    return {
+        "used": used,
+        "limit": DAILY_SCAN_LIMIT,
+        "remaining": max(0, DAILY_SCAN_LIMIT - used)
+    }
+
+
 @app.post("/scan", response_model=ScanResponse)
 async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks, request: Request):
     """
@@ -91,7 +115,22 @@ async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks, requ
     Enqueues the scan task to RQ worker.
     """
     from worker import queue_scan  # Deferred import to avoid circular dependency
-    
+
+    # ── Kullanıcı kimlik kontrolü ──────────────────────────────────────────────
+    if not scan.userId:
+        raise HTTPException(status_code=401, detail="Tarama başlatmak için giriş yapmalısınız.")
+
+    # ── Günlük kota kontrolü ───────────────────────────────────────────────────
+    if redis_conn:
+        today = date.today().isoformat()
+        quota_key = f"quota:{scan.userId}:{today}"
+        used = int(redis_conn.get(quota_key) or 0)
+        if used >= DAILY_SCAN_LIMIT:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Günlük tarama limitinize ({DAILY_SCAN_LIMIT}) ulaştınız. Yarın tekrar deneyin."
+            )
+
     # Turnstile token doğrulama
     turnstile_secret = os.getenv("TURNSTILE_SECRET_KEY")
     if turnstile_secret:
@@ -127,10 +166,18 @@ async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks, requ
             "target": target,
             "category": scan_type,
             "uid": scan_id,
+            "user_id": scan.userId or "anonymous",
+            "user_name": scan.userName or "unknown",
             "status": "queued",
             "started_at": datetime.now().isoformat()
         })
         redis_conn.expire(f"scan:{scan_id}:meta", 3600)
+
+        # ── Kotayı artır ───────────────────────────────────────────────────────
+        today = date.today().isoformat()
+        quota_key = f"quota:{scan.userId}:{today}"
+        redis_conn.incr(quota_key)
+        redis_conn.expire(quota_key, 86400)  # 24 saat sonra otomatik sil
 
     try:
         # Enqueue task
