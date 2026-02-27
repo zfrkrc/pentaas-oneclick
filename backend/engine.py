@@ -76,20 +76,82 @@ def _svc_url(service: str) -> str:
     return f"http://{svc_name}:8000"
 
 
-async def call_service(service: str, target: str, uid: str, category: str) -> tuple:
-    """Call a tool microservice: POST /scan, then poll /status until done"""
+import socket
+import re
+
+def is_ip(target: str) -> bool:
+    """Check if target is an IPv4 or IPv6 address"""
+    try:
+        socket.inet_aton(target)
+        return True
+    except socket.error:
+        return ":" in target # Basic IPv6 check
+
+def resolve_target(target: str) -> dict:
+    """Analyze target and resolve DNS if needed"""
+    info = {
+        "original": target,
+        "ip": None,
+        "fqdn": None,
+        "url": None,
+        "type": "unknown"
+    }
+    
+    # Detect protocol if present
+    protocol_match = re.match(r'^(https?://)', target)
+    protocol = protocol_match.group(1) if protocol_match else "http://"
+    
+    # Remove http/https and paths for analysis
+    clean_target = re.sub(r'^https?://', '', target).split('/')[0]
+    
+    if is_ip(clean_target):
+        info["ip"] = clean_target
+        info["type"] = "ip"
+        # Try reverse DNS
+        try:
+            info["fqdn"] = socket.gethostbyaddr(clean_target)[0]
+        except:
+            info["fqdn"] = clean_target
+    else:
+        info["fqdn"] = clean_target
+        info["type"] = "fqdn"
+        # Resolve to IP
+        try:
+            info["ip"] = socket.gethostbyname(clean_target)
+        except:
+            pass
+            
+    # Prepare URL with preserved or default protocol
+    info["url"] = f"{protocol}{info['fqdn']}"
+    return info
+
+async def call_service(service: str, target_info: dict, uid: str, category: str) -> tuple:
+    """Call a tool microservice with the appropriate target format"""
     url = _svc_url(service)
     timeout = SERVICE_TIMEOUT if service in SLOW_SERVICES else 300
     start_time = time.time()
 
-    log_scan(uid, f"🚀 Starting {service}...")
+    # Determine what to send to this specific service
+    # Network layer tools prefer IP
+    if service in ["nmap"]:
+        svc_target = target_info["ip"] or target_info["fqdn"]
+    # DNS and SSL tools prefer FQDN/Host
+    elif service in ["dnsrecon", "testssl", "sslyze"]:
+        svc_target = target_info["fqdn"]
+    # Web tools prefer URL
+    elif service in ["nuclei", "dirsearch", "nikto", "whatweb", "arjun", "dalfox", "wafw00f", "wpscan", "zap"]:
+        svc_target = target_info["url"]
+    else:
+        svc_target = target_info["original"]
+
+    log_scan(uid, f"🚀 Starting {service} on {svc_target}...")
 
     try:
         async with httpx.AsyncClient(timeout=30) as client:
             # 1. Trigger scan
             options = {"category": category}
             resp = await client.post(f"{url}/scan", json={
-                "target": target,
+                "target": svc_target,
                 "options": options,
             })
             if resp.status_code != 200:
@@ -130,7 +192,6 @@ async def call_service(service: str, target: str, uid: str, category: str) -> tu
             # Timeout
             duration = time.time() - start_time
             log_scan(uid, f"⏱️ {service} timed out after {duration:.1f}s")
-            # Try to grab partial results anyway
             try:
                 await _fetch_and_store_results(client, url, svc_scan_id, service, uid)
             except Exception:
@@ -156,7 +217,7 @@ async def _fetch_and_store_results(client, url, svc_scan_id, service, uid):
         log_scan(uid, f"⚠️ Failed to save {service} results: {e}")
 
 
-async def run_all_services(services: list, target: str, uid: str, category: str):
+async def run_all_services(services: list, target_info: dict, uid: str, category: str):
     """Run all tool services in parallel via HTTP"""
     # Separate nuclei (run last)
     nuclei_svcs = [s for s in services if "nuclei" in s]
@@ -167,13 +228,13 @@ async def run_all_services(services: list, target: str, uid: str, category: str)
     # 1. Run non-nuclei in parallel
     if other_svcs:
         log_scan(uid, f"📋 Running {len(other_svcs)} services in parallel...")
-        tasks = [call_service(svc, target, uid, category) for svc in other_svcs]
+        tasks = [call_service(svc, target_info, uid, category) for svc in other_svcs]
         results.extend(await asyncio.gather(*tasks, return_exceptions=True))
 
     # 2. Run nuclei last
     if nuclei_svcs:
         log_scan(uid, f"📋 Running Nuclei ({len(nuclei_svcs)}) — last step...")
-        tasks = [call_service(svc, target, uid, category) for svc in nuclei_svcs]
+        tasks = [call_service(svc, target_info, uid, category) for svc in nuclei_svcs]
         results.extend(await asyncio.gather(*tasks, return_exceptions=True))
 
     successful = sum(1 for r in results if isinstance(r, tuple) and r[1])
@@ -190,9 +251,14 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
     if not uid:
         uid = uuid.uuid4().hex
 
+    # 1. Resolve and analyze target
+    target_info = resolve_target(target)
+    
     # Update meta
     redis_client.hmset(f"scan:{uid}:meta", {
         "target": target,
+        "target_ip": target_info["ip"] or "",
+        "target_fqdn": target_info["fqdn"] or "",
         "category": category,
         "uid": uid,
         "status": "running",
@@ -203,6 +269,7 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
     services = PROFILE_SERVICES.get(category, [])
 
     log_scan(uid, f"🎯 Starting {category.upper()} scan for {target}")
+    log_scan(uid, f"📄 Target Strategy: IP={target_info['ip']}, FQDN={target_info['fqdn']}")
     log_scan(uid, f"📦 Services: {', '.join(services)}")
 
     for svc in services:
@@ -210,10 +277,11 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
 
     # Run all services via HTTP
     try:
-        asyncio.run(run_all_services(services, target, uid, category))
+        asyncio.run(run_all_services(services, target_info, uid, category))
     except Exception as e:
         log_scan(uid, f"💥 Scan execution failed: {e}")
         raise RuntimeError(f"Scan failed: {e}")
+
 
     # Mark completed
     log_scan(uid, f"✅ Scan completed for {target}")
