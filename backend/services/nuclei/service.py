@@ -16,7 +16,7 @@ class NucleiService(BaseToolService):
     async def scan(self, target: str, options: Dict[str, Any]) -> Dict[str, Any]:
         # Use a simple temp file name
         output_file = "/tmp/nuclei_output.json"
-        cmd = ["nuclei", "-u", target, "-json", "-o", output_file, "-silent"]
+        cmd = ["nuclei", "-u", target, "-j", "-o", output_file, "-silent"]
         
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
         

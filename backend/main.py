@@ -307,14 +307,198 @@ def get_scan_logs(scan_id: str):
 
 @app.get("/scan/{scan_id}/results")
 def get_scan_results(scan_id: str):
-    """Get scan results from Redis"""
+    """Get scan results from Redis — supports microservice JSON format"""
     if not redis_conn:
         raise HTTPException(status_code=500, detail="Redis unavailable")
 
-    # Get metadata for target info
     meta = redis_conn.hgetall(f"scan:{scan_id}:meta")
-    target = meta.get("target", "unknown")
+    target   = meta.get("target", "unknown")
     category = meta.get("category", "unknown")
+
+    results = {
+        "scan_id": scan_id,
+        "target": target,
+        "scan_type": category,
+        "timestamp": meta.get("started_at", datetime.now().isoformat()),
+        "findings": []
+    }
+
+    # All service names (new + legacy compat)
+    all_services = [
+        "nmap", "nuclei", "testssl", "dirsearch", "nikto",
+        "whatweb", "arjun", "dalfox", "wafw00f", "dnsrecon",
+        "wpscan", "zap", "sslyze",
+        "nmap_white", "nmap_gray", "nmap_black",
+        "nikto_white", "nikto_black", "nuclei_white"
+    ]
+
+    for svc in all_services:
+        raw = redis_conn.get(f"scan:{scan_id}:result:{svc}")
+        if not raw:
+            continue
+
+        try:
+            data = json.loads(raw)
+        except Exception:
+            results["findings"].append({
+                "id": f"{svc}-raw", "title": f"{svc.capitalize()} Output",
+                "severity": "Info", "description": raw[:500]
+            })
+            continue
+
+        # Microservice format: {scan_id, status, findings, raw_output, metadata}
+        svc_findings = data.get("findings", [])
+        raw_output   = data.get("raw_output", "")
+        base = svc.split("_")[0]
+
+        # 1. Use service's own findings if available
+        if svc_findings:
+            for f in svc_findings:
+                results["findings"].append({
+                    "id": f"{base}-{len(results['findings'])}",
+                    "title": f.get("title", f"{base.capitalize()} Finding"),
+                    "severity": f.get("severity", "Info").capitalize(),
+                    "description": f.get("description", "")
+                })
+            continue
+
+        # 2. Parse raw_output based on tool type
+        if not raw_output:
+            results["findings"].append({
+                "id": f"{base}-info", "title": f"{base.capitalize()} Completed",
+                "severity": "Info", "description": f"{base.capitalize()} scan completed — no findings."
+            })
+            continue
+
+        # ── Nmap ──────────────────────────────────────────────────────────
+        if base == "nmap":
+            found = False
+            if raw_output.strip().startswith("<?xml"):
+                try:
+                    root = ET.fromstring(raw_output)
+                    for port in root.findall(".//port"):
+                        portid = port.get("portid")
+                        state = port.find("state")
+                        if state is not None and state.get("state") == "open":
+                            service = port.find("service")
+                            sn = service.get("name") if service is not None else "unknown"
+                            results["findings"].append({
+                                "id": f"nmap-{len(results['findings'])}",
+                                "title": f"Open Port: {portid} ({sn})",
+                                "severity": "Low",
+                                "description": f"Port {portid} is open running {sn}."
+                            })
+                            found = True
+                except Exception:
+                    pass
+            else:
+                for line in raw_output.splitlines():
+                    parts = line.strip().split()
+                    if len(parts) >= 2 and parts[1] == "open":
+                        results["findings"].append({
+                            "id": f"nmap-{len(results['findings'])}",
+                            "title": f"Open Port: {parts[0]} ({parts[2] if len(parts)>2 else 'unknown'})",
+                            "severity": "Low",
+                            "description": " ".join(parts)
+                        })
+                        found = True
+            if not found:
+                results["findings"].append({
+                    "id": "nmap-info", "title": "Nmap Completed", "severity": "Info",
+                    "description": raw_output[:500]
+                })
+
+        # ── Nuclei ────────────────────────────────────────────────────────
+        elif base == "nuclei":
+            found = False
+            for line in raw_output.splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    finding = json.loads(line)
+                    results["findings"].append({
+                        "id": f"nuc-{len(results['findings'])}",
+                        "title": finding.get("info", {}).get("name", "Nuclei Finding"),
+                        "severity": finding.get("info", {}).get("severity", "Low").capitalize(),
+                        "description": f"Template: {finding.get('template-id')}\nMatcher: {finding.get('matcher-name','N/A')}"
+                    })
+                    found = True
+                except Exception:
+                    pass
+            if not found:
+                results["findings"].append({
+                    "id": "nuc-info", "title": "Nuclei Completed", "severity": "Info",
+                    "description": raw_output[:500] or "No vulnerabilities found."
+                })
+
+        # ── Nikto ─────────────────────────────────────────────────────────
+        elif base == "nikto":
+            try:
+                ndata = json.loads(raw_output)
+                items = []
+                if isinstance(ndata, list):
+                    for entry in ndata:
+                        items.extend(entry.get("vulnerabilities", []))
+                else:
+                    items = ndata.get("vulnerabilities", [])
+                for item in items:
+                    results["findings"].append({
+                        "id": f"nikto-{len(results['findings'])}",
+                        "title": "Nikto Finding", "severity": "Medium",
+                        "description": item.get("msg", str(item))
+                    })
+                if not items:
+                    results["findings"].append({
+                        "id": "nikto-info", "title": "Nikto Completed", "severity": "Info",
+                        "description": raw_output[:500] or "No findings."
+                    })
+            except Exception:
+                results["findings"].append({
+                    "id": "nikto-info", "title": "Nikto Completed", "severity": "Info",
+                    "description": raw_output[:500]
+                })
+
+        # ── TestSSL ───────────────────────────────────────────────────────
+        elif base == "testssl":
+            try:
+                tdata = json.loads(raw_output)
+                if isinstance(tdata, list):
+                    for item in tdata:
+                        sev = item.get("severity", "INFO")
+                        if sev in ["FATAL","CRITICAL","HIGH","MEDIUM","LOW"]:
+                            results["findings"].append({
+                                "id": f"tssl-{len(results['findings'])}",
+                                "title": f"TestSSL: {item.get('id')}",
+                                "severity": sev.capitalize(),
+                                "description": item.get("finding","")
+                            })
+            except Exception:
+                results["findings"].append({
+                    "id": "tssl-info", "title": "TestSSL Completed", "severity": "Info",
+                    "description": raw_output[:500]
+                })
+
+        # ── WAF detection ─────────────────────────────────────────────────
+        elif base in ("wafw00f", "waf"):
+            results["findings"].append({
+                "id": f"waf-{len(results['findings'])}", "title": "WAF Detection",
+                "severity": "Info", "description": raw_output[:500]
+            })
+
+        # ── Everything else (dirsearch, whatweb, arjun, dalfox, dnsrecon, zap, sslyze, wpscan) ──
+        else:
+            label = {"dirsearch": "Directory Scan", "whatweb": "Technology Detection",
+                     "arjun": "Parameter Discovery", "dalfox": "XSS Scan",
+                     "dnsrecon": "DNS Reconnaissance", "zap": "ZAP Scan",
+                     "sslyze": "SSL Analysis", "wpscan": "WordPress Scan"}.get(base, f"{base.capitalize()} Scan")
+            results["findings"].append({
+                "id": f"{base}-{len(results['findings'])}", "title": label,
+                "severity": "Info", "description": raw_output[:500]
+            })
+
+    return results
+
+
     
     results = {
         "scan_id": scan_id,
