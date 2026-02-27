@@ -18,6 +18,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./reports:/app/reports
       - ./backend/compose:/app/compose:ro
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
     restart: unless-stopped
 
   worker:
