@@ -350,9 +350,6 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
         vpn.stop()
 
     # Mark completed
-
-
-    # Mark completed
     log_scan(uid, f"✅ Scan completed for {target}")
     redis_client.hset(f"scan:{uid}:meta", "status", "completed")
     redis_client.hset(f"scan:{uid}:meta", "completed_at", datetime.now().isoformat())

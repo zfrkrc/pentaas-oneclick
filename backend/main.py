@@ -174,7 +174,7 @@ async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks, requ
             "uid": scan_id,
             "user_id": scan.userId or "anonymous",
             "user_name": scan.userName or "unknown",
-            "userEmail": scan.userEmail or "",
+            "user_email": scan.userEmail or "",
             "vpn_config": scan.vpnConfig or "",
             "status": "queued",
             "started_at": datetime.now().isoformat()
