@@ -26,19 +26,12 @@ services:
     env_file: .env
     environment:
       - HOST_REPORTS_PATH=${PWD}/reports
-      - REDIS_URL=redis://redis:6379
+      - REDIS_URL=${REDIS_URL:-redis://172.16.16.80:6379}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./reports:/app/reports
       - ./backend/compose:/app/compose:ro
-    depends_on:
-      - redis
     restart: unless-stopped
-
-  redis:
-    image: redis:7-alpine
-    volumes:
-      - redis_data:/data
 
   # Tool Microservices
   nmap-service:
@@ -197,6 +190,3 @@ services:
     volumes:
       - ./reports:/data/results
     restart: unless-stopped
-
-volumes:
-  redis_data:

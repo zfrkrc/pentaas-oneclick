@@ -38,10 +38,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Redis Connection
+# Redis Connection – REDIS_URL varsa onu kullan, yoksa REDIS_HOST'a bak
+REDIS_URL = os.getenv("REDIS_URL")
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 try:
-    redis_conn = Redis(host=REDIS_HOST, port=6379, db=0, decode_responses=True)
+    if REDIS_URL:
+        redis_conn = Redis.from_url(REDIS_URL, decode_responses=True)
+    else:
+        redis_conn = Redis(host=REDIS_HOST, port=6379, db=0, decode_responses=True)
 except Exception as e:
     logger.error(f"Failed to connect to Redis: {e}")
     redis_conn = None

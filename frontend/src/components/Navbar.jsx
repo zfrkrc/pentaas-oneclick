@@ -18,12 +18,18 @@ const Navbar = () => {
 
     const signInWithGoogle = async () => {
         await authClient.signIn.social({
-            provider: "google"
+            provider: "google",
+            callbackURL: window.location.origin,  // pentestone.zaferkaraca.net'e geri dön
         });
     };
 
     const signOut = async () => {
-        await authClient.signOut();
+        await authClient.signOut({
+            fetchOptions: {
+                credentials: "include",
+            },
+        });
+        window.location.reload();
     };
 
     return (

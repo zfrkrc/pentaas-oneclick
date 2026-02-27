@@ -5,6 +5,10 @@ export const authClient = createAuthClient({
     advanced: {
         crossSubDomainCookies: {
             enabled: true,
+            domain: ".zaferkaraca.net",
         },
+    },
+    fetchOptions: {
+        credentials: "include",
     },
 });
