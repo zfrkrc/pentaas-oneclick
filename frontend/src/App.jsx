@@ -89,7 +89,8 @@ function App() {
           category: mode,
           turnstileToken,
           userId: session.user.id,
-          userName: session.user.name || session.user.email
+          userName: session.user.name || session.user.email,
+          userEmail: session.user.email
         })
       });
       if (!response.ok) {

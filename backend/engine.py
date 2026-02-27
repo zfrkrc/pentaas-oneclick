@@ -8,15 +8,23 @@ import os
 import json
 import asyncio
 import time
+import smtplib
+import ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import logging
 from redis import Redis
 
 logger = logging.getLogger(__name__)
 
-# Redis Connection
+# Redis Connection – REDIS_URL varsa onu kullan
+REDIS_URL = os.getenv("REDIS_URL")
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
-redis_client = Redis(host=REDIS_HOST, port=6379, db=0, decode_responses=True)
+if REDIS_URL:
+    redis_client = Redis.from_url(REDIS_URL, decode_responses=True)
+else:
+    redis_client = Redis(host=REDIS_HOST, port=6379, db=0, decode_responses=True)
 
 BASE_DIR = "/app"
 COMPOSE_FILE = f"{BASE_DIR}/compose/docker-compose.string.yml"
@@ -260,7 +268,134 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
     redis_client.hset(f"scan:{uid}:meta", "status", "completed")
     redis_client.hset(f"scan:{uid}:meta", "completed_at", datetime.now().isoformat())
 
+    # E-posta bildirimi gönder
+    try:
+        meta = redis_client.hgetall(f"scan:{uid}:meta")
+        user_email = meta.get("user_email") or os.getenv("MAIL_TO", "")
+        user_name  = meta.get("user_name", "Kullanıcı")
+        if user_email:
+            send_scan_email(
+                to_email=user_email,
+                to_name=user_name,
+                target=target,
+                category=category,
+                uid=uid,
+                services=services,
+                started_at=meta.get("started_at", ""),
+            )
+    except Exception as mail_err:
+        log_scan(uid, f"⚠️ E-posta gönderilemedi: {mail_err}")
+
     return uid
 
 
+def send_scan_email(to_email: str, to_name: str, target: str, category: str,
+                    uid: str, services: list, started_at: str):
+    """Tarama tamamlandığında kullanıcıya HTML e-posta gönderir"""
+    smtp_host = os.getenv("SMTP_HOST", "")
+    smtp_port = int(os.getenv("SMTP_PORT", "465"))
+    smtp_user = os.getenv("SMTP_USER", "")
+    smtp_pass = os.getenv("SMTP_PASS", "")
+    smtp_from = os.getenv("SMTP_FROM", smtp_user)
+
+    if not smtp_host or not smtp_user:
+        log_scan(uid, "⚠️ SMTP yapılandırması eksik, e-posta gönderilmedi.")
+        return
+
+    report_url = f"https://pentestone.zaferkaraca.net/report/{uid}"
+    mode_labels = {"white": "White Box", "gray": "Gray Box", "black": "Black Box"}
+    mode_label = mode_labels.get(category, category.upper())
+    tool_count = len(services)
+    completed_at = datetime.now().strftime("%d.%m.%Y %H:%M")
+
+    html = f"""\
+<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#0f1923;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0f1923;padding:40px 0;">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#16213e 0%,#1a1a2e 100%);border-radius:16px;border:1px solid rgba(117,230,218,0.15);overflow:hidden;">
+      
+      <!-- Header -->
+      <tr><td style="background:linear-gradient(90deg,#00d4aa 0%,#75E6DA 100%);padding:28px 40px;text-align:center;">
+        <h1 style="margin:0;color:#0f1923;font-size:22px;font-weight:800;letter-spacing:0.5px;">🛡️ Tarama Tamamlandı</h1>
+      </td></tr>
+
+      <!-- Body -->
+      <tr><td style="padding:32px 40px;">
+        <p style="color:#b0bec5;font-size:15px;margin:0 0 20px;line-height:1.6;">
+          Merhaba <strong style="color:#75E6DA;">{to_name}</strong>,<br>
+          Güvenlik taramanız başarıyla tamamlandı. Sonuçlarınız aşağıda özetlenmiştir.
+        </p>
+
+        <!-- Info Table -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+          <tr>
+            <td style="padding:12px 16px;background:rgba(255,255,255,0.04);border-radius:8px 8px 0 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <span style="color:#78909c;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Hedef</span><br>
+              <span style="color:#fff;font-size:16px;font-weight:700;">{target}</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.06);">
+              <span style="color:#78909c;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Tarama Modu</span><br>
+              <span style="color:#75E6DA;font-size:15px;font-weight:600;">{mode_label}</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px;background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.06);">
+              <span style="color:#78909c;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Kullanılan Araçlar</span><br>
+              <span style="color:#fff;font-size:15px;font-weight:600;">{tool_count} araç</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px;background:rgba(255,255,255,0.04);border-radius:0 0 8px 8px;">
+              <span style="color:#78909c;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Tamamlanma</span><br>
+              <span style="color:#fff;font-size:15px;font-weight:600;">{completed_at}</span>
+            </td>
+          </tr>
+        </table>
+
+        <!-- CTA Button -->
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td align="center">
+            <a href="{report_url}" style="display:inline-block;padding:14px 40px;background:linear-gradient(90deg,#00d4aa,#75E6DA);color:#0f1923;font-size:15px;font-weight:800;text-decoration:none;border-radius:10px;letter-spacing:0.5px;">
+              📄 Raporu Görüntüle
+            </a>
+          </td></tr>
+        </table>
+
+        <p style="color:#546e7a;font-size:12px;margin:24px 0 0;text-align:center;line-height:1.5;">
+          Bu e-posta <strong>Pentaas One-Click Scanner</strong> tarafından otomatik gönderilmiştir.<br>
+          Tarama ID: <code style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;color:#78909c;">{uid}</code>
+        </p>
+      </td></tr>
+
+      <!-- Footer -->
+      <tr><td style="padding:16px 40px;background:rgba(0,0,0,0.2);text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
+        <span style="color:#455a64;font-size:11px;">© {datetime.now().year} Zafer Karaca · pentestone.zaferkaraca.net</span>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>
+"""
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = f"🛡️ Tarama Tamamlandı — {target} ({mode_label})"
+    msg["From"]    = f"Pentaas Scanner <{smtp_from}>"
+    msg["To"]      = to_email
+    msg.attach(MIMEText(html, "html", "utf-8"))
+
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+
+    with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
+        server.login(smtp_user, smtp_pass)
+        server.sendmail(smtp_from, to_email, msg.as_string())
+
+    log_scan(uid, f"📧 Tarama raporu e-postası gönderildi → {to_email}")
 
