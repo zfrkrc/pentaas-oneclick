@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { authClient } from '../lib/auth';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -6,11 +7,24 @@ const Navbar = () => {
     const [hakkimizdaOpen, setHakkimizdaOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
+    // Fetch session on load
+    const { data: session } = authClient.useSession();
+
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 20);
         window.addEventListener('scroll', onScroll);
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
+
+    const signInWithGoogle = async () => {
+        await authClient.signIn.social({
+            provider: "google"
+        });
+    };
+
+    const signOut = async () => {
+        await authClient.signOut();
+    };
 
     return (
         <>
@@ -227,10 +241,20 @@ const Navbar = () => {
                         </li>
                     </ul>
 
-                    <div className="icons-menu">
+                    <div className="icons-menu" style={{ display: 'flex', alignItems: 'center' }}>
                         <a className="iconfont-wrapper" href="tel:+905346636464" title="Telefon">📞</a>
                         <a className="iconfont-wrapper" href="mailto:zafer@zaferkaraca.net" title="E-posta">✉️</a>
                         <a className="iconfont-wrapper" href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl" title="Konum">📍</a>
+                        {session ? (
+                            <div className="user-profile" title="Çıkış Yap" onClick={signOut} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '16px' }}>
+                                <img src={session.user?.image || 'https://ui-avatars.com/api/?name=' + session.user?.name} style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                                <span style={{ color: '#75E6DA', fontSize: '0.85rem', fontFamily: 'Golos Text' }}>{session.user?.name?.split(' ')[0] || 'Hesabım'}</span>
+                            </div>
+                        ) : (
+                            <button onClick={signInWithGoogle} className="btn-login" style={{ marginLeft: '16px', background: 'transparent', color: '#75E6DA', border: '1px solid rgba(117,230,218,.3)', borderRadius: '6px', padding: '6px 14px', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'Golos Text', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.3s' }}>
+                                <span style={{ fontSize: '1rem' }}>G</span> Giriş Yap
+                            </button>
+                        )}
                     </div>
 
                     <button className="navbar-toggler" onClick={() => setIsOpen(!isOpen)}>
