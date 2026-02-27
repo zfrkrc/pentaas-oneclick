@@ -185,41 +185,37 @@ const Navbar = () => {
                     color: #75E6DA;
                 }
                 
-                /* Body padding for fixed navbar */
-                body {
-                    padding-top: 70px;
-                }
+                /* Main content padding is handled by the component wrapper */
             `}</style>
 
             <nav className="navbar-dropdown">
                 <div className="container">
-                    <a href="https://zaferkaraca.net/html/teklif-sihirbazi.html" className="nav-link" style={{ color: '#4F8EF7', fontWeight: 600, marginLeft: 16 }}>Teklif Sihirbazı</a>
                     <div className="navbar-brand">
                         <span className="navbar-logo">
                             <a href="https://zaferkaraca.net/">
-                                <img src="/assets/images/zk_logo.webp" alt="Zafer Karaca Logo" />
+                                <img src="https://zaferkaraca.net/assets/images/zk_logo.webp" alt="Zafer Karaca Logo" />
                             </a>
                         </span>
-                        <span className="navbar-caption">Pentest<span>One</span></span>
                     </div>
 
                     <ul className="nav-dropdown">
+                        <li className="nav-item">
+                            <a href="https://zaferkaraca.net/teklif-sihirbazi" className="nav-link">Teklif Sihirbazı</a>
+                        </li>
                         <li className={`nav-item dropdown ${hakkimizdaOpen ? 'open' : ''}`}>
                             <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setHakkimizdaOpen(!hakkimizdaOpen); }}>Hakkımızda</a>
                             <div className="dropdown-menu">
                                 <a className="dropdown-item" href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Şirket</a>
-                                <a className="dropdown-item" href="https://zaferkaraca.net/hakkimda.html">Zafer Karaca</a>
+                                <a className="dropdown-item" href="https://zaferkaraca.net/hakkimda">Zafer Karaca</a>
                             </div>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="https://zaferkaraca.net/posta.html">POSTA</a>
-                        </li>
-                        <li className="nav-item">
-                            <a className="nav-link" href="https://zaferkaraca.net/referanslar.html">Referanslar</a>
+                            <a className="nav-link" href="https://zaferkaraca.net/referanslar">Referanslar</a>
                         </li>
                         <li className={`nav-item dropdown ${dropdownOpen ? 'open' : ''}`}>
-                            <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setDropdownOpen(!dropdownOpen); }}>Araçlar</a>
+                            <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setDropdownOpen(!dropdownOpen); }}>Ürünler</a>
                             <div className="dropdown-menu">
+                                <a className="dropdown-item" href="https://zaferkaraca.net/posta">POSTA</a>
                                 <a className="dropdown-item" href="https://hobby.zaferkaraca.net">HOBBY</a>
                                 <a className="dropdown-item" href="https://pentestone.zaferkaraca.net/">PENTEST</a>
                                 <a className="dropdown-item" href="https://cyber.zaferkaraca.net/">ESP Live</a>
