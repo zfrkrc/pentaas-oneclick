@@ -62,7 +62,6 @@ class ScanRequest(BaseModel):
     userId: Optional[str] = None        # better-auth user id
     userName: Optional[str] = None      # display name (for logging)
     userEmail: Optional[str] = None     # e-posta (tarama bitince bildirim)
-    vpnConfig: Optional[str] = None     # base64 encoded .ovpn content
 
 class ScanResponse(BaseModel):
     message: str
@@ -175,7 +174,6 @@ async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks, requ
             "user_id": scan.userId or "anonymous",
             "user_name": scan.userName or "unknown",
             "user_email": scan.userEmail or "",
-            "vpn_config": scan.vpnConfig or "",
             "status": "queued",
             "started_at": datetime.now().isoformat()
         })

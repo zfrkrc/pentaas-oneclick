@@ -15,25 +15,6 @@ function App() {
   const [turnstileToken, setTurnstileToken] = useState('');
   const turnstileRef = useRef(null);
   const turnstileWidgetId = useRef(null);
-  const [vpnConfig, setVpnConfig] = useState(null);
-  const [vpnFileName, setVpnFileName] = useState('');
-
-  const handleVpnUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setVpnFileName(file.name);
-      const reader = new FileReader();
-      reader.onload = (readerEvt) => {
-        const content = readerEvt.target.result;
-        setVpnConfig(btoa(content));
-      };
-      reader.readAsText(file);
-    } else {
-      setVpnConfig(null);
-      setVpnFileName('');
-    }
-  };
-
   // Auth session
   const { data: session } = authClient.useSession();
 
@@ -108,8 +89,7 @@ function App() {
           turnstileToken,
           userId: session.user.id,
           userName: session.user.name || session.user.email,
-          userEmail: session.user.email,
-          vpnConfig: vpnConfig
+          userEmail: session.user.email
         })
       });
       if (!response.ok) {
@@ -326,36 +306,6 @@ function App() {
                     <div className="mb-4">
                       <label className="fl">// Hedef IP / Hostname</label>
                       <input type="text" className="inp" placeholder="192.168.1.1 veya example.com" value={target} onChange={(e) => setTarget(e.target.value)} disabled={isScanning} />
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="fl">// VPN Konfigürasyonu (.ovpn) - İsteğe Bağlı</label>
-                      <div style={{ position: 'relative' }}>
-                        <input
-                          type="file"
-                          accept=".ovpn"
-                          onChange={handleVpnUpload}
-                          disabled={isScanning}
-                          className="inp"
-                          style={{
-                            padding: '0.75rem',
-                            fontSize: '0.8rem',
-                            cursor: isScanning ? 'not-allowed' : 'pointer'
-                          }}
-                        />
-                        {vpnFileName && (
-                          <div style={{
-                            position: 'absolute',
-                            right: '1rem',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            color: 'var(--accent)',
-                            fontSize: '0.7rem'
-                          }}>
-                            📄 {vpnFileName}
-                          </div>
-                        )}
-                      </div>
                     </div>
 
                     <div className="mb-4">

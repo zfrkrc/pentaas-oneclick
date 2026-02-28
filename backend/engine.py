@@ -246,114 +246,12 @@ async def run_all_services(services: list, target_info: dict, uid: str, category
     return results
 
 
-import base64
-import subprocess
-import signal
-
-class VpnManager:
-    """Manages OpenVPN connection for a specific scan"""
-    def __init__(self, uid: str, config_base64: str, log_fn):
-        self.uid = uid
-        self.log = log_fn
-        try:
-            self.config_content = base64.b64decode(config_base64).decode('utf-8')
-        except:
-            self.config_content = None
-        self.config_path = f"/tmp/vpn_{uid}.ovpn"
-        self.process = None
-
-    async def start(self) -> bool:
-        if not self.config_content:
-            self.log(self.uid, "❌ Geçersiz VPN konfigürasyonu (Base64 hatası)")
-            return False
-
-        self.log(self.uid, "🔐 VPN Bağlantısı kuruluyor...")
-        
-        # Check for auth-user-pass and try to handle it
-        lines = self.config_content.splitlines()
-        creds_path = f"/tmp/creds_{self.uid}.txt"
-        has_creds = False
-        
-        # SoftEther/OpenVPN sometimes expects credentials in a separate file
-        # We can look for a special pattern or allow the user to provide them
-        # For now, let's add --script-security 2 and --auth-nocache to prevent hangs
-        
-        with open(self.config_path, 'w') as f:
-            for line in lines:
-                # If config has 'auth-user-pass' without a file, we point it to our temp creds
-                if line.strip() == "auth-user-pass":
-                    f.write(f"auth-user-pass {creds_path}\n")
-                    has_creds = True
-                else:
-                    f.write(line + "\n")
-
-        # If it needs credentials but we don't have them, it will fail, but at least not hang
-        if has_creds:
-            # For testing: If the user didn't provide creds in the request, 
-            # we'll use empty ones or look for them in meta. 
-            # For now, create an empty creds file to avoid interactive prompt hang
-            with open(creds_path, 'w') as f:
-                f.write("vpn_user\nvpn_password\n") # Replace with real logic if needed
-
-        # Start openvpn with flags to prevent interaction
-        cmd = [
-            "openvpn", 
-            "--config", self.config_path,
-            "--auth-retry", "nointeract",
-            "--management", "127.0.0.1", "off",
-            "--management-hold"
-        ]
-        
-        self.process = subprocess.Popen(
-            cmd, 
-            stdout=subprocess.PIPE, 
-            stderr=subprocess.PIPE,
-            preexec_fn=os.setsid
-        )
-        
-        # Wait for connection (max 30s)
-        for _ in range(30):
-            await asyncio.sleep(1)
-            # Check for tun0 interface
-            res = subprocess.run(["ip", "addr", "show", "dev", "tun0"], capture_output=True)
-            if res.returncode == 0:
-                self.log(self.uid, "✅ VPN Tüneli (tun0) aktif.")
-                return True
-            
-            # Check if process died
-            if self.process.poll() is not None:
-                stdout, stderr = self.process.communicate()
-                self.log(self.uid, f"❌ VPN Başlatılamadı. Hata: {stderr.decode()[:200]}")
-                return False
-                
-        self.log(self.uid, "⏱️ VPN bağlantısı zaman aşımına uğradı (Timeout).")
-        return False
-
-    def stop(self):
-        if self.process:
-            self.log(self.uid, "🔌 VPN Tüneli kapatılıyor...")
-            try:
-                os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
-                self.process.wait(timeout=5)
-            except:
-                pass
-        
-        # Cleanup
-        for p in [self.config_path, f"/tmp/creds_{self.uid}.txt"]:
-            if os.path.exists(p):
-                os.remove(p)
-
-
 def run_scan(target: str, category: str, uid: str = None) -> str:
     """Main scan execution — called by RQ worker"""
     if not uid:
         uid = uuid.uuid4().hex
 
-    # 1. Get metadata (especially vpn_config)
-    meta = redis_client.hgetall(f"scan:{uid}:meta")
-    vpn_config = meta.get("vpn_config")
-    
-    # 2. Resolve and analyze target
+    # 1. Resolve and analyze target
     target_info = resolve_target(target)
     
     # Update meta status
@@ -363,27 +261,12 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
     log_scan(uid, f"🎯 Starting {category.upper()} scan for {target}")
     log_scan(uid, f"📄 Target Strategy: IP={target_info['ip']}, FQDN={target_info['fqdn']}")
 
-    vpn = None
-    if vpn_config:
-        vpn = VpnManager(uid, vpn_config, log_scan)
-        # We need an event loop since call_service is async
-        loop = asyncio.get_event_loop()
-        if not loop.run_until_complete(vpn.start()):
-            log_scan(uid, "⚠️ VPN bağlantısı başarısız oldu! Tarama public ağ üzerinden devam ediyor...")
-            # VPN manager'ı temizle ama devam et
-            vpn.stop()
-            vpn = None
-
     # Run all services via HTTP
     try:
         asyncio.run(run_all_services(services, target_info, uid, category))
     except Exception as e:
         log_scan(uid, f"💥 Scan execution failed: {e}")
-        if vpn: vpn.stop()
         raise RuntimeError(f"Scan failed: {e}")
-
-    if vpn:
-        vpn.stop()
 
     # Mark completed
     log_scan(uid, f"✅ Scan completed for {target}")
