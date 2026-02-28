@@ -333,10 +333,10 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
         # We need an event loop since call_service is async
         loop = asyncio.get_event_loop()
         if not loop.run_until_complete(vpn.start()):
-            log_scan(uid, "❌ VPN bağlantısı başarısız olduğu için tarama iptal edildi.")
-            redis_client.hset(f"scan:{uid}:meta", "status", "failed")
+            log_scan(uid, "⚠️ VPN bağlantısı başarısız oldu! Tarama public ağ üzerinden devam ediyor...")
+            # VPN manager'ı temizle ama devam et
             vpn.stop()
-            return uid
+            vpn = None
 
     # Run all services via HTTP
     try:
