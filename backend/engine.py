@@ -268,13 +268,42 @@ class VpnManager:
             return False
 
         self.log(self.uid, "🔐 VPN Bağlantısı kuruluyor...")
-        with open(self.config_path, 'w') as f:
-            f.write(self.config_content)
         
-        # Start openvpn
-        # Note: --dev tun0 might conflict if multiple workers run, 
-        # but for now we assume prioritized/serialized vpn scans
-        cmd = ["openvpn", "--config", self.config_path]
+        # Check for auth-user-pass and try to handle it
+        lines = self.config_content.splitlines()
+        creds_path = f"/tmp/creds_{self.uid}.txt"
+        has_creds = False
+        
+        # SoftEther/OpenVPN sometimes expects credentials in a separate file
+        # We can look for a special pattern or allow the user to provide them
+        # For now, let's add --script-security 2 and --auth-nocache to prevent hangs
+        
+        with open(self.config_path, 'w') as f:
+            for line in lines:
+                # If config has 'auth-user-pass' without a file, we point it to our temp creds
+                if line.strip() == "auth-user-pass":
+                    f.write(f"auth-user-pass {creds_path}\n")
+                    has_creds = True
+                else:
+                    f.write(line + "\n")
+
+        # If it needs credentials but we don't have them, it will fail, but at least not hang
+        if has_creds:
+            # For testing: If the user didn't provide creds in the request, 
+            # we'll use empty ones or look for them in meta. 
+            # For now, create an empty creds file to avoid interactive prompt hang
+            with open(creds_path, 'w') as f:
+                f.write("vpn_user\nvpn_password\n") # Replace with real logic if needed
+
+        # Start openvpn with flags to prevent interaction
+        cmd = [
+            "openvpn", 
+            "--config", self.config_path,
+            "--auth-retry", "nointeract",
+            "--management", "127.0.0.1", "off",
+            "--management-hold"
+        ]
+        
         self.process = subprocess.Popen(
             cmd, 
             stdout=subprocess.PIPE, 
@@ -291,21 +320,28 @@ class VpnManager:
                 self.log(self.uid, "✅ VPN Tüneli (tun0) aktif.")
                 return True
             
+            # Check if process died
             if self.process.poll() is not None:
-                err = self.process.stderr.read().decode()
-                self.log(self.uid, f"❌ VPN Başlatılamadı: {err}")
+                stdout, stderr = self.process.communicate()
+                self.log(self.uid, f"❌ VPN Başlatılamadı. Hata: {stderr.decode()[:200]}")
                 return False
                 
-        self.log(self.uid, "⏱️ VPN bağlantısı zaman aşımına uğradı.")
+        self.log(self.uid, "⏱️ VPN bağlantısı zaman aşımına uğradı (Timeout).")
         return False
 
     def stop(self):
         if self.process:
             self.log(self.uid, "🔌 VPN Tüneli kapatılıyor...")
-            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
-            self.process.wait()
-        if os.path.exists(self.config_path):
-            os.remove(self.config_path)
+            try:
+                os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
+                self.process.wait(timeout=5)
+            except:
+                pass
+        
+        # Cleanup
+        for p in [self.config_path, f"/tmp/creds_{self.uid}.txt"]:
+            if os.path.exists(p):
+                os.remove(p)
 
 
 def run_scan(target: str, category: str, uid: str = None) -> str:
