@@ -220,7 +220,7 @@ function App() {
         .inp::placeholder{color:var(--t3);}
         .inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,170,.12);}
         .inp:disabled{opacity:.5;cursor:not-allowed;}
-        .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
+        .mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;}
         @media(max-width:576px){.mgrid{grid-template-columns:1fr}.sgrid{grid-template-columns:repeat(2,1fr)!important;}}
         .mc{padding:1.2rem;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;background:var(--panel);text-align:center;}
         .mc:hover:not(.dis){border-color:var(--border-hi);background:var(--accent-g);}

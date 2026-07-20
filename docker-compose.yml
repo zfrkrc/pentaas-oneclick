@@ -26,7 +26,7 @@ services:
     env_file: .env
     environment:
       - HOST_REPORTS_PATH=${PWD}/reports
-      - REDIS_URL=${REDIS_URL:-redis://172.16.16.80:6379}
+      - REDIS_URL=${REDIS_URL:-redis://172.16.16.200:6379}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./reports:/app/reports

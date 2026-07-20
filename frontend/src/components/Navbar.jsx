@@ -222,12 +222,8 @@ const Navbar = () => {
                         <li className="nav-item">
                             <a href="https://zaferkaraca.net/teklif-sihirbazi" className="nav-link">Teklif Sihirbazı</a>
                         </li>
-                        <li className={`nav-item dropdown ${hakkimizdaOpen ? 'open' : ''}`}>
-                            <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setHakkimizdaOpen(!hakkimizdaOpen); }}>Hakkımızda</a>
-                            <div className="dropdown-menu">
-                                <a className="dropdown-item" href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Şirket</a>
-                                <a className="dropdown-item" href="https://zaferkaraca.net/hakkimda">Zafer Karaca</a>
-                            </div>
+                        <li className="nav-item">
+                            <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4" className="nav-link">Hakkımızda</a>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="https://zaferkaraca.net/referanslar">Referanslar</a>
@@ -273,10 +269,10 @@ const Navbar = () => {
                 </div>
 
                 <div className={`mobile-menu ${isOpen ? 'open' : ''}`}>
-                    <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Şirket</a>
-                    <a href="https://zaferkaraca.net/hakkimda">Zafer Karaca</a>
-                    <a href="https://zaferkaraca.net/posta">POSTA</a>
+                    <a href="https://zaferkaraca.net/teklif-sihirbazi">Teklif Sihirbazı</a>
+                    <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Hakkımızda</a>
                     <a href="https://zaferkaraca.net/referanslar">Referanslar</a>
+                    <a href="https://zaferkaraca.net/posta">POSTA</a>
                     <a href="https://zaferkaraca.net/hobby">HOBBY</a>
                     <a href="https://pentestone.zaferkaraca.net/">PENTEST</a>
                     <a href="https://zaferkaraca.net/cyber/">ESP Live</a>
