@@ -232,7 +232,9 @@ const Navbar = () => {
                             <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setDropdownOpen(!dropdownOpen); }}>Ürünler</a>
                             <div className="dropdown-menu">
                                 <a className="dropdown-item" href="https://zaferkaraca.net/posta">POSTA</a>
+<a className="dropdown-item" href="https://zaferkaraca.net/web-sitesi">Web Sitesi</a>
                                 <a className="dropdown-item" href="https://zaferkaraca.net/hobby">HOBBY</a>
+<a href="https://zaferkaraca.net/web-sitesi">Web Sitesi</a>
                                 <a className="dropdown-item" href="https://pentestone.zaferkaraca.net/">PENTEST</a>
                                 <a className="dropdown-item" href="https://zaferkaraca.net/cyber/">ESP Live</a>
                                 <a className="dropdown-item" href="https://zaferkaraca.net/kitap/">PDF OKU</a>
@@ -274,6 +276,7 @@ const Navbar = () => {
                     <a href="https://zaferkaraca.net/referanslar">Referanslar</a>
                     <a href="https://zaferkaraca.net/posta">POSTA</a>
                     <a href="https://zaferkaraca.net/hobby">HOBBY</a>
+<a href="https://zaferkaraca.net/web-sitesi">Web Sitesi</a>
                     <a href="https://pentestone.zaferkaraca.net/">PENTEST</a>
                     <a href="https://zaferkaraca.net/cyber/">ESP Live</a>
                     <a href="https://zaferkaraca.net/kitap/">PDF OKU</a>
