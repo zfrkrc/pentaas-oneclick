@@ -56,6 +56,9 @@ SLOW_SERVICES = {"nikto", "testssl", "nuclei", "dalfox", "zap", "wpscan"}
 SERVICE_TIMEOUT = 600   # max seconds to wait per service
 POLL_INTERVAL   = 3     # seconds between status polls
 
+INSIGHTMAP_URL = os.getenv("INSIGHTMAP_URL", "").rstrip("/")
+INSIGHTMAP_API_KEY = os.getenv("INSIGHTMAP_API_KEY", "")
+
 
 def log_scan(uid: str, message: str):
     """Log scan progress to Redis + stdout"""
@@ -273,6 +276,11 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
     redis_client.hset(f"scan:{uid}:meta", "status", "completed")
     redis_client.hset(f"scan:{uid}:meta", "completed_at", datetime.now().isoformat())
 
+    try:
+        send_to_insightmap(uid, target, category, services)
+    except Exception as insight_err:
+        log_scan(uid, f"⚠️ InsightMap analizi gönderilemedi: {insight_err}")
+
     # Email notification
     try:
         meta = redis_client.hgetall(f"scan:{uid}:meta")
@@ -292,6 +300,61 @@ def run_scan(target: str, category: str, uid: str = None) -> str:
         log_scan(uid, f"⚠️ E-posta gönderilemedi: {mail_err}")
 
     return uid
+
+
+def _collect_service_findings(uid: str, services: list[str]) -> list[dict]:
+    findings = []
+    for service in services:
+        raw = redis_client.get(f"scan:{uid}:result:{service}")
+        if not raw:
+            continue
+        try:
+            result = json.loads(raw)
+        except (TypeError, json.JSONDecodeError):
+            continue
+
+        for index, finding in enumerate(result.get("findings") or []):
+            findings.append({
+                "id": str(finding.get("id") or f"{service}-{index}"),
+                "title": str(finding.get("title") or f"{service} finding"),
+                "severity": str(finding.get("severity") or "Info"),
+                "description": str(finding.get("description") or ""),
+                "service": service,
+            })
+    return findings
+
+
+def send_to_insightmap(uid: str, target: str, category: str, services: list[str]):
+    if not INSIGHTMAP_URL or not INSIGHTMAP_API_KEY:
+        log_scan(uid, "ℹ️ InsightMap entegrasyonu yapılandırılmamış.")
+        return None
+
+    meta = redis_client.hgetall(f"scan:{uid}:meta")
+    payload = {
+        "scan_id": uid,
+        "target": target,
+        "scan_type": category,
+        "started_at": meta.get("started_at"),
+        "completed_at": meta.get("completed_at"),
+        "services": services,
+        "findings": _collect_service_findings(uid, services),
+    }
+
+    response = httpx.post(
+        f"{INSIGHTMAP_URL}/api/security/pentest/analyze",
+        headers={"X-API-Key": INSIGHTMAP_API_KEY},
+        json=payload,
+        timeout=30,
+    )
+    response.raise_for_status()
+    analysis = response.json()
+    redis_client.setex(
+        f"scan:{uid}:insightmap",
+        7 * 24 * 60 * 60,
+        json.dumps(analysis, ensure_ascii=False),
+    )
+    log_scan(uid, f"🧠 InsightMap analizi tamamlandı: {analysis.get('risk_level', 'N/A')}")
+    return analysis
 
 
 def send_scan_email(to_email: str, to_name: str, target: str, category: str,

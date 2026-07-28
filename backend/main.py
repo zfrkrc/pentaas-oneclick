@@ -79,6 +79,26 @@ def read_root():
     }
 
 
+@app.get("/health")
+def health_check():
+    redis_status = "unavailable"
+    if redis_conn:
+        try:
+            redis_status = "ok" if redis_conn.ping() else "unavailable"
+        except Exception:
+            redis_status = "unavailable"
+
+    return {
+        "status": "healthy" if redis_status == "ok" else "degraded",
+        "service": "pentaas-backend",
+        "version": __version__,
+        "redis": redis_status,
+        "insightmap_configured": bool(
+            os.getenv("INSIGHTMAP_URL") and os.getenv("INSIGHTMAP_API_KEY")
+        ),
+    }
+
+
 @app.get("/version")
 def get_version():
     """Get API version information"""
@@ -320,8 +340,16 @@ def get_scan_results(scan_id: str):
         "target": target,
         "scan_type": category,
         "timestamp": meta.get("started_at", datetime.now().isoformat()),
-        "findings": []
+        "findings": [],
+        "insightmap_analysis": None,
     }
+
+    insightmap_raw = redis_conn.get(f"scan:{scan_id}:insightmap")
+    if insightmap_raw:
+        try:
+            results["insightmap_analysis"] = json.loads(insightmap_raw)
+        except json.JSONDecodeError:
+            logger.warning("Invalid InsightMap analysis for scan %s", scan_id)
 
     # All service names (new + legacy compat)
     all_services = [
