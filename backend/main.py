@@ -19,6 +19,55 @@ DAILY_SCAN_LIMIT = 2
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# ── Authentikasyon ─────────────────────────────────────────────────────────────
+# Frontend better-auth (.zaferkaraca.net) oturum cookie'siyle gelir. Backend,
+# kullanıcı tarafından gönderilen `userId`'nin gerçekten o oturuma ait olduğunu
+# doğrulamazsa herkes başka bir kullanıcının limitini/bypass edip tarama
+# başlatabilir (authz bypass). AUTH_SESSION_URL, better-auth `get-session` uçunu
+# işaret eder; set edilmediği takdirde doğrulama atlanamaz — güvenlik uyarısı basılır.
+AUTH_SESSION_URL = os.getenv("AUTH_SESSION_URL", "").rstrip("/")
+SESSION_COOKIE = os.getenv("SESSION_COOKIE", "better-auth.session_token")
+
+
+async def _verify_session(request: Request, claimed_user_id: str) -> None:
+    """Oturum cookie'sinden gerçek userId'i çözer ve kullanıcının gönderdiği
+    `claimed_user_id` ile eşleştirir. Eşleşmiyorsa 401.
+
+    AUTH_SESSION_URL tanımlanmadıysa (ör. dev/local) davranışı bozmaz ama
+    kritik güvenlik uyarısı üretir. Üretimde AUTH_SESSION_URL zorunludur.
+    """
+    if not claimed_user_id:
+        raise HTTPException(status_code=401, detail="Giriş yapmalısınız.")
+    if not AUTH_SESSION_URL:
+        logger.warning("⚠️ AUTH_SESSION_URL tanımlanmamış — user_id sunucu tarafında doğrulanamıyor")
+        return
+    token = request.cookies.get(SESSION_COOKIE)
+    if not token:
+        logger.warning("Oturum cookie'si yok — userId doğrulanamadı")
+        raise HTTPException(status_code=401, detail="Oturum bulunamadı. Lütfen tekrar giriş yapın.")
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            resp = await client.get(
+                f"{AUTH_SESSION_URL}/api/auth/get-session",
+                headers={"Cookie": f"{SESSION_COOKIE}={token}"},
+            )
+        if resp.status_code != 200:
+            logger.warning("Session doğrulama başarısız (HTTP %s)", resp.status_code)
+            raise HTTPException(status_code=401, detail="Oturum geçersiz veya süresi dolmuş.")
+        body = resp.json()
+        real_user_id = (
+            (body.get("user") or {}).get("id")
+            if isinstance(body, dict)
+            else None
+        )
+        if not real_user_id or real_user_id != claimed_user_id:
+            logger.warning("userId uyuşmazlığı: claim=%s session=%s", claimed_user_id, real_user_id)
+            raise HTTPException(status_code=401, detail="Oturum kullanıcısı ile uyuşmuyor.")
+    except httpx.RequestError as e:
+        logger.error("Session doğrulama servisine ulaşılamadı: %s", e)
+        raise HTTPException(status_code=503, detail="Oturum doğrulama servisi erişilemez.")
+
+
 # Version
 __version__ = "2.0.0"
 
@@ -29,10 +78,14 @@ app = FastAPI(
     description="Automated penetration testing platform with 24+ security tools"
 )
 
-# CORS Middleware
+# CORS Middleware — origin'ler env'den; "*" ile allow_credentials=True geçersizdir
+# (tarayıcılar bu kombinasyonu reddeder), bu yüzden allowlist kullanılır.
+_ALLOWED_ORIGINS = [
+    o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()
+] or ["https://pentestone.zaferkaraca.net", "https://zaferkaraca.net"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -116,10 +169,11 @@ def get_version():
 
 # ── Kota sorgulama endpoint'i ──────────────────────────────────────────────────
 @app.get("/scan-quota")
-def get_scan_quota(user_id: str):
+async def get_scan_quota(request: Request, user_id: str):
     """Return how many scans the user has left today"""
     if not user_id:
         raise HTTPException(status_code=400, detail="user_id gerekli")
+    await _verify_session(request, user_id)
     if not redis_conn:
         return {"used": 0, "limit": DAILY_SCAN_LIMIT, "remaining": DAILY_SCAN_LIMIT}
 
@@ -141,9 +195,8 @@ async def create_scan(scan: ScanRequest, background_tasks: BackgroundTasks, requ
     """
     from worker import queue_scan  # Deferred import to avoid circular dependency
 
-    # ── Kullanıcı kimlik kontrolü ──────────────────────────────────────────────
-    if not scan.userId:
-        raise HTTPException(status_code=401, detail="Tarama başlatmak için giriş yapmalısınız.")
+    # ── Kullanıcı kimlik kontrolü (session doğrulamalı) ─────────────────────
+    await _verify_session(request, scan.userId or "")
 
     # ── Günlük kota kontrolü ───────────────────────────────────────────────────
     if redis_conn:
@@ -879,13 +932,17 @@ async def get_scan_report_html(scan_id: str):
             if sev in counts: counts[sev] += 1
             else: counts["Info"] += 1
 
+        import html as _html
+        _target = _html.escape(str(target))
+        _scan_type = _html.escape(str(scan_type))
+        _timestamp = _html.escape(str(timestamp))
         html_content = f"""
         <!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Scan Report - {target}</title>
+            <title>Scan Report - {_target}</title>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
             <style>
                 body {{ background-color: #f4f6f9; }}
@@ -905,9 +962,9 @@ async def get_scan_report_html(scan_id: str):
                         <p class="text-muted mb-0">Scan ID: {scan_id}</p>
                     </div>
                     <div class="text-end">
-                        <h3 class="fw-bold">{target}</h3>
-                        <span class="badge bg-dark fs-6">{str(scan_type).upper()}</span>
-                        <span class="badge bg-secondary fs-6">{timestamp}</span>
+                        <h3 class="fw-bold">{_target}</h3>
+                        <span class="badge bg-dark fs-6">{_scan_type.upper()}</span>
+                        <span class="badge bg-secondary fs-6">{_timestamp}</span>
                     </div>
                 </div>
 
