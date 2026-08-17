@@ -1,20 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { authClient } from '../lib/auth';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [hakkimizdaOpen, setHakkimizdaOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
 
     // Fetch session on load
     const { data: session } = authClient.useSession();
-
-    useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 20);
-        window.addEventListener('scroll', onScroll);
-        return () => window.removeEventListener('scroll', onScroll);
-    }, []);
 
     const signInWithGoogle = async () => {
         await authClient.signIn.social({
@@ -35,7 +27,7 @@ const Navbar = () => {
     return (
         <>
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
                 
                 /* Ana site ile birebir aynı stiller */
                 .navbar-dropdown {
@@ -46,7 +38,7 @@ const Navbar = () => {
                     top: 0;
                     transition: all 0.45s ease;
                     z-index: 1030;
-                    background: rgba(10, 14, 26, 0.92);
+                    background: rgba(15, 34, 56, 0.92);
                     backdrop-filter: blur(12px);
                     -webkit-backdrop-filter: blur(12px);
                     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
@@ -69,14 +61,23 @@ const Navbar = () => {
                     transition: all 0.3s ease-in-out;
                 }
                 .navbar-dropdown .navbar-caption {
-                    font-family: 'Golos Text', sans-serif;
+                    font-family: 'Inter', sans-serif;
                     font-weight: 700;
                     font-size: 1rem;
                     color: #ffffff;
                     margin-left: 0.5rem;
                 }
                 .navbar-dropdown .navbar-caption span {
-                    color: #75E6DA;
+                    color: #00D4FF;
+                }
+                .navbar-dropdown .product-label {
+                    margin-left: 0.75rem;
+                    padding-left: 0.75rem;
+                    border-left: 1px solid rgba(255, 255, 255, 0.14);
+                    color: #00D4FF;
+                    font: 600 0.72rem/1 'Inter', sans-serif;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
                 }
                 .nav-dropdown {
                     display: flex;
@@ -85,7 +86,7 @@ const Navbar = () => {
                     list-style: none;
                     margin: 0;
                     padding: 0;
-                    font-family: 'Golos Text', sans-serif;
+                    font-family: 'Inter', sans-serif;
                     font-size: 0.75rem;
                     font-weight: 500;
                 }
@@ -93,7 +94,7 @@ const Navbar = () => {
                     position: relative;
                 }
                 .nav-dropdown .nav-link {
-                    font-family: 'Golos Text', sans-serif;
+                    font-family: 'Inter', sans-serif;
                     font-size: 0.85rem;
                     font-weight: 500;
                     color: #ffffff;
@@ -103,7 +104,12 @@ const Navbar = () => {
                     display: block;
                 }
                 .nav-dropdown .nav-link:hover {
-                    color: #75E6DA;
+                    color: #00D4FF;
+                }
+                .nav-dropdown .nav-link.active-product {
+                    color: #00D4FF;
+                    background: rgba(0, 212, 255, 0.08);
+                    border-radius: 5px;
                 }
                 .nav-dropdown .dropdown-toggle::after {
                     content: '▾';
@@ -115,7 +121,7 @@ const Navbar = () => {
                     top: 100%;
                     left: 0;
                     background: #1a1a1a;
-                    border: 1px solid rgba(117, 230, 218, 0.2);
+                    border: 1px solid rgba(0, 212, 255, 0.2);
                     border-radius: 8px;
                     padding: 0.5rem 0;
                     min-width: 180px;
@@ -126,7 +132,7 @@ const Navbar = () => {
                     display: block;
                 }
                 .nav-dropdown .dropdown-item {
-                    font-family: 'Golos Text', sans-serif;
+                    font-family: 'Inter', sans-serif;
                     font-size: 0.9rem;
                     color: #cccccc;
                     text-decoration: none;
@@ -135,8 +141,8 @@ const Navbar = () => {
                     transition: all 0.15s;
                 }
                 .nav-dropdown .dropdown-item:hover {
-                    color: #75E6DA;
-                    background: rgba(117, 230, 218, 0.08);
+                    color: #00D4FF;
+                    background: rgba(0, 212, 255, 0.08);
                 }
                 .icons-menu {
                     display: flex;
@@ -149,7 +155,7 @@ const Navbar = () => {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    border: 1px solid rgba(117, 230, 218, 0.2);
+                    border: 1px solid rgba(0, 212, 255, 0.2);
                     border-radius: 6px;
                     color: #cccccc;
                     text-decoration: none;
@@ -157,14 +163,14 @@ const Navbar = () => {
                     transition: all 0.2s;
                 }
                 .icons-menu .iconfont-wrapper:hover {
-                    border-color: rgba(117, 230, 218, 0.5);
-                    color: #75E6DA;
-                    background: rgba(117, 230, 218, 0.06);
+                    border-color: rgba(0, 212, 255, 0.5);
+                    color: #00D4FF;
+                    background: rgba(0, 212, 255, 0.06);
                 }
                 .navbar-toggler {
                     display: none;
                     background: transparent;
-                    border: 1px solid rgba(117, 230, 218, 0.3);
+                    border: 1px solid rgba(0, 212, 255, 0.3);
                     border-radius: 6px;
                     padding: 0.5rem 0.75rem;
                     cursor: pointer;
@@ -186,7 +192,7 @@ const Navbar = () => {
                     display: none;
                     padding: 1rem 1.5rem;
                     border-top: 1px solid rgba(255, 255, 255, 0.07);
-                    background: rgba(10, 14, 26, 0.95);
+                    background: rgba(15, 34, 56, 0.95);
                 }
                 .mobile-menu.open {
                     display: block;
@@ -194,7 +200,7 @@ const Navbar = () => {
                 .mobile-menu a {
                     display: block;
                     padding: 0.6rem 0;
-                    font-family: 'Golos Text', sans-serif;
+                    font-family: 'Inter', sans-serif;
                     font-size: 0.85rem;
                     color: #cccccc;
                     text-decoration: none;
@@ -202,7 +208,7 @@ const Navbar = () => {
                     transition: color 0.2s;
                 }
                 .mobile-menu a:hover {
-                    color: #75E6DA;
+                    color: #00D4FF;
                 }
                 
                 /* Main content padding is handled by the component wrapper */
@@ -213,49 +219,43 @@ const Navbar = () => {
                     <div className="navbar-brand">
                         <span className="navbar-logo">
                             <a href="https://zaferkaraca.net/">
-                                <img src="https://zaferkaraca.net/assets/images/zk_logo.webp" alt="Zafer Karaca Logo" />
+                                <img src="https://zaferkaraca.net/assets/images/zk_logo-white.webp" alt="Zafer Karaca Logo" />
                             </a>
                         </span>
+                        <a href="https://zaferkaraca.net/" className="navbar-caption">Zafer Karaca</a>
+                        <span className="product-label">PENTAAS</span>
                     </div>
 
                     <ul className="nav-dropdown">
                         <li className="nav-item">
-                            <a href="https://zaferkaraca.net/teklif-sihirbazi" className="nav-link">Teklif Sihirbazı</a>
+                            <a href="https://zaferkaraca.net/hakkimda" className="nav-link">Hakkımda</a>
                         </li>
-                        <li className="nav-item">
-                            <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4" className="nav-link">Hakkımızda</a>
+                        <li className={`nav-item dropdown ${dropdownOpen ? 'open' : ''}`}>
+                            <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setDropdownOpen(!dropdownOpen); }}>Hizmetler</a>
+                            <div className="dropdown-menu">
+                                <a className="dropdown-item" href="https://zaferkaraca.net/insightmap">InsightMap AI</a>
+                                <a className="dropdown-item" href="https://zaferkaraca.net/veri-merkezi-dr">Veri Merkezi &amp; DR</a>
+                                <a className="dropdown-item" href="https://zaferkaraca.net/altyapi-sanallastirma">Altyapı &amp; Sanallaştırma</a>
+                                <a className="dropdown-item active-product" href="https://zaferkaraca.net/pentaas" aria-current="page">Siber Güvenlik</a>
+                                <a className="dropdown-item" href="https://zaferkaraca.net/posta">Kurumsal E-Posta</a>
+                            </div>
                         </li>
                         <li className="nav-item">
                             <a className="nav-link" href="https://zaferkaraca.net/referanslar">Referanslar</a>
                         </li>
-                        <li className={`nav-item dropdown ${dropdownOpen ? 'open' : ''}`}>
-                            <a className="nav-link dropdown-toggle" href="#" onClick={(e) => { e.preventDefault(); setDropdownOpen(!dropdownOpen); }}>Ürünler</a>
-                            <div className="dropdown-menu">
-                                <a className="dropdown-item" href="https://zaferkaraca.net/posta">POSTA</a>
-<a className="dropdown-item" href="https://zaferkaraca.net/web-sitesi">Web Sitesi</a>
-                                <a className="dropdown-item" href="https://zaferkaraca.net/hobby">HOBBY</a>
-<a href="https://zaferkaraca.net/web-sitesi">Web Sitesi</a>
-                                <a className="dropdown-item" href="https://pentestone.zaferkaraca.net/">PENTEST</a>
-                                <a className="dropdown-item" href="https://zaferkaraca.net/cyber/">ESP Live</a>
-                                <a className="dropdown-item" href="https://zaferkaraca.net/kitap/">PDF OKU</a>
-                            </div>
-                        </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a>
+                            <a className="nav-link" href="https://zaferkaraca.net/teklif-sihirbazi">Teklif Al</a>
                         </li>
                     </ul>
 
                     <div className="icons-menu" style={{ display: 'flex', alignItems: 'center' }}>
-                        <a className="iconfont-wrapper" href="tel:+905346636464" title="Telefon">📞</a>
-                        <a className="iconfont-wrapper" href="mailto:zafer@zaferkaraca.net" title="E-posta">✉️</a>
-                        <a className="iconfont-wrapper" href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl" title="Konum">📍</a>
                         {session ? (
                             <div className="user-profile" title="Çıkış Yap" onClick={signOut} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '16px' }}>
                                 <img src={session.user?.image || 'https://ui-avatars.com/api/?name=' + session.user?.name} style={{ width: 32, height: 32, borderRadius: '50%' }} />
-                                <span style={{ color: '#75E6DA', fontSize: '0.85rem', fontFamily: 'Golos Text' }}>{session.user?.name?.split(' ')[0] || 'Hesabım'}</span>
+                                <span style={{ color: '#00D4FF', fontSize: '0.85rem', fontFamily: 'Inter' }}>{session.user?.name?.split(' ')[0] || 'Hesabım'}</span>
                             </div>
                         ) : (
-                            <button onClick={signInWithGoogle} className="btn-login" style={{ marginLeft: '16px', background: 'transparent', color: '#75E6DA', border: '1px solid rgba(117,230,218,.3)', borderRadius: '6px', padding: '6px 14px', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'Golos Text', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.3s' }}>
+                            <button onClick={signInWithGoogle} className="btn-login" style={{ marginLeft: '16px', background: 'transparent', color: '#00D4FF', border: '1px solid rgba(0,212,255,.3)', borderRadius: '6px', padding: '6px 14px', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'Inter', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.3s' }}>
                                 <span style={{ fontSize: '1rem' }}>G</span> Giriş Yap
                             </button>
                         )}
@@ -271,16 +271,14 @@ const Navbar = () => {
                 </div>
 
                 <div className={`mobile-menu ${isOpen ? 'open' : ''}`}>
-                    <a href="https://zaferkaraca.net/teklif-sihirbazi">Teklif Sihirbazı</a>
-                    <a href="https://zaferkaraca.net/#testimonials-8-uSrJKo6yl4">Hakkımızda</a>
+                    <a href="https://zaferkaraca.net/hakkimda">Hakkımda</a>
+                    <a href="https://zaferkaraca.net/insightmap">InsightMap AI</a>
+                    <a href="https://zaferkaraca.net/veri-merkezi-dr">Veri Merkezi &amp; DR</a>
+                    <a href="https://zaferkaraca.net/altyapi-sanallastirma">Altyapı &amp; Sanallaştırma</a>
+                    <a href="https://zaferkaraca.net/pentaas">Siber Güvenlik</a>
+                    <a href="https://zaferkaraca.net/posta">Kurumsal E-Posta</a>
                     <a href="https://zaferkaraca.net/referanslar">Referanslar</a>
-                    <a href="https://zaferkaraca.net/posta">POSTA</a>
-                    <a href="https://zaferkaraca.net/hobby">HOBBY</a>
-<a href="https://zaferkaraca.net/web-sitesi">Web Sitesi</a>
-                    <a href="https://pentestone.zaferkaraca.net/">PENTEST</a>
-                    <a href="https://zaferkaraca.net/cyber/">ESP Live</a>
-                    <a href="https://zaferkaraca.net/kitap/">PDF OKU</a>
-                    <a href="https://zaferkaraca.net/#contacts-2-uSrJKocEPl">İletişim</a>
+                    <a href="https://zaferkaraca.net/teklif-sihirbazi">Teklif Al</a>
                 </div>
             </nav>
         </>

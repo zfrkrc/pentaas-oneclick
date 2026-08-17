@@ -20,10 +20,10 @@ body {
   background-color: #e8f5f8;
 }
 body {
-  font-family: Golos Text;
+  font-family: Inter;
 }
 .display-1 {
-  font-family: 'Golos Text', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 5rem;
   line-height: 1;
 }
@@ -31,7 +31,7 @@ body {
   font-size: 6.25rem;
 }
 .display-2 {
-  font-family: 'Golos Text', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 4rem;
   line-height: 1;
 }
@@ -39,7 +39,7 @@ body {
   font-size: 5rem;
 }
 .display-4 {
-  font-family: 'Golos Text', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.2rem;
   line-height: 1.5;
 }
@@ -47,7 +47,7 @@ body {
   font-size: 1.5rem;
 }
 .display-5 {
-  font-family: 'Golos Text', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 2.5rem;
   line-height: 1.5;
 }
@@ -55,7 +55,7 @@ body {
   font-size: 3.125rem;
 }
 .display-7 {
-  font-family: 'Golos Text', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.4rem;
   line-height: 1.3;
 }
@@ -648,7 +648,7 @@ a:hover {
   display: none;
 }
 .form-control {
-  font-family: 'Golos Text', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.4rem;
   line-height: 1.3;
   font-weight: 400;
@@ -663,7 +663,7 @@ a:hover {
   border-color: #75e6da !important;
 }
 .form-control:-webkit-input-placeholder {
-  font-family: 'Golos Text', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.4rem;
   line-height: 1.3;
   font-weight: 400;
