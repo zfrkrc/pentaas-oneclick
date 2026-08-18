@@ -290,8 +290,8 @@ function App() {
               </div>
 
               <div className="tabs">
-                <button className={`tab ${activeTab === 'new' ? 'on' : ''}`} onClick={() => setActiveTab('new')}>$ new_scan</button>
-                <button className={`tab ${activeTab === 'history' ? 'on' : ''}`} onClick={() => setActiveTab('history')}>$ history</button>
+                <button className={`tab ${activeTab === 'new' ? 'on' : ''}`} onClick={() => setActiveTab('new')}>Yeni Tarama</button>
+                <button className={`tab ${activeTab === 'history' ? 'on' : ''}`} onClick={() => setActiveTab('history')}>Tarama Geçmişi</button>
               </div>
 
               {activeTab === 'new' ? (
