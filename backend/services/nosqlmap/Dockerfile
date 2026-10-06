@@ -12,7 +12,6 @@ RUN git clone --depth 1 https://github.com/codingo/NoSQLMap.git /opt/nosqlmap
 WORKDIR /app
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r /opt/nosqlmap/requirements.txt
 COPY services/nosqlmap/requirements.txt /app/
 RUN pip install --no-cache-dir -r /app/requirements.txt
 COPY services/base /app/services/base/
