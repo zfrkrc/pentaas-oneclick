@@ -1,8 +1,8 @@
 services:
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    # Host portu YAYINLANMAZ: Logzk'da shared-redis 6379'u kullaniyor.
+    # backend/worker .env REDIS_URL=redis://172.16.16.10:6379 ile shared-redis'e baglanir.
     restart: unless-stopped
 
   frontend:
