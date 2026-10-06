@@ -9,9 +9,10 @@ RUN apt-get update && \
 # Clone Commix
 RUN git clone --depth 1 https://github.com/commixproject/commix.git /opt/commix
 
-WORKDIR /opt/commix
-
-# Create symlink for easier access
-RUN ln -s /opt/commix/commix.py /usr/local/bin/commix
-
-ENTRYPOINT ["python", "/opt/commix/commix.py"]
+WORKDIR /app
+COPY services/commix/requirements.txt /app/
+RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY services/base /app/services/base/
+COPY services/commix /app/
+EXPOSE 8000
+CMD ["python", "service.py"]

@@ -9,9 +9,10 @@ RUN apt-get update && \
 # Clone SQLmap
 RUN git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git /opt/sqlmap
 
-WORKDIR /opt/sqlmap
-
-# Create symlink for easier access
-RUN ln -s /opt/sqlmap/sqlmap.py /usr/local/bin/sqlmap
-
-ENTRYPOINT ["python", "/opt/sqlmap/sqlmap.py"]
+WORKDIR /app
+COPY services/sqlmap/requirements.txt /app/
+RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY services/base /app/services/base/
+COPY services/sqlmap /app/
+EXPOSE 8000
+CMD ["python", "service.py"]

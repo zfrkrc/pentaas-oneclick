@@ -1,4 +1,10 @@
 services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
   frontend:
     build: ./frontend
     ports:
@@ -18,6 +24,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./reports:/app/reports
       - ./backend/compose:/app/compose:ro
+    depends_on:
+      - redis
     restart: unless-stopped
 
   worker:
@@ -26,13 +34,15 @@ services:
     env_file: .env
     environment:
       - HOST_REPORTS_PATH=${PWD}/reports
-      - REDIS_URL=${REDIS_URL:-redis://172.16.16.10:6379}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - INSIGHTMAP_URL=${INSIGHTMAP_URL:-}
       - INSIGHTMAP_API_KEY=${INSIGHTMAP_API_KEY:-}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./reports:/app/reports
       - ./backend/compose:/app/compose:ro
+    depends_on:
+      - redis
     restart: unless-stopped
 
   # Tool Microservices
@@ -189,6 +199,90 @@ services:
       - "8013:8000"
     environment:
       - SERVICE_NAME=sslyze
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  sqlmap-service:
+    build:
+      context: ./backend
+      dockerfile: services/sqlmap/Dockerfile
+    ports:
+      - "8014:8000"
+    environment:
+      - SERVICE_NAME=sqlmap
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  commix-service:
+    build:
+      context: ./backend
+      dockerfile: services/commix/Dockerfile
+    ports:
+      - "8015:8000"
+    environment:
+      - SERVICE_NAME=commix
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  gittools-service:
+    build:
+      context: ./backend
+      dockerfile: services/gittools/Dockerfile
+    ports:
+      - "8016:8000"
+    environment:
+      - SERVICE_NAME=gittools
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  wapiti-service:
+    build:
+      context: ./backend
+      dockerfile: services/wapiti/Dockerfile
+    ports:
+      - "8017:8000"
+    environment:
+      - SERVICE_NAME=wapiti
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  nosqlmap-service:
+    build:
+      context: ./backend
+      dockerfile: services/nosqlmap/Dockerfile
+    ports:
+      - "8018:8000"
+    environment:
+      - SERVICE_NAME=nosqlmap
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  gobuster-service:
+    build:
+      context: ./backend
+      dockerfile: services/gobuster/Dockerfile
+    ports:
+      - "8019:8000"
+    environment:
+      - SERVICE_NAME=gobuster
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
+
+  arachni-service:
+    build:
+      context: ./backend
+      dockerfile: services/arachni/Dockerfile
+    ports:
+      - "8020:8000"
+    environment:
+      - SERVICE_NAME=arachni
     volumes:
       - ./reports:/data/results
     restart: unless-stopped
