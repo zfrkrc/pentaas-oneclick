@@ -1,0 +1,141 @@
+{
+  "last_sync_commit": "0216c3b07df081ba855c5be052aebcd71f646e25",
+  "total_pages": 0,
+  "docs_mode": "none",
+  "docs_enabled": false,
+  "phase_timings": {
+    "detect_changes": 0.0,
+    "rebuild.traverse": 0.05,
+    "rebuild.read": 0.01,
+    "rebuild.parse": 0.02,
+    "rebuild.graph": 0.11,
+    "rebuild.cache_save": 0.0,
+    "rebuild.framework": 0.03,
+    "rebuild.dynamic_hints": 0.01,
+    "rebuild.git.commit_index": 0.0,
+    "rebuild.git.changed_files": 0.0,
+    "rebuild.git.prior_defects": 0.0,
+    "rebuild.git": 0.01,
+    "rebuild.metrics": 0.11,
+    "rebuild": 0.39,
+    "plan_pages": 0.01,
+    "analysis.stored_reads": 0.02,
+    "analysis.health": 0.0,
+    "analysis.dead_code": 0.06,
+    "analysis.doc_drift": 0.0,
+    "knowledge_graph": 0.0,
+    "persist.open": 0.03,
+    "persist.sweeps": 0.0,
+    "persist.page_tree": 0.0,
+    "persist.dead_code": 0.0,
+    "persist.doc_drift": 0.0,
+    "persist.graph_nodes.metrics": 0.0,
+    "persist.graph_nodes.entry_points": 0.0,
+    "persist.graph_nodes.rows": 0.0,
+    "persist.graph_nodes.upsert": 0.0,
+    "persist.graph_nodes.snapshots": 0.0,
+    "persist.graph_nodes": 0.01,
+    "persist.symbols": 0.0,
+    "persist.edges": 0.0,
+    "persist.related_pages": 0.0,
+    "persist.prune": 0.01,
+    "persist": 0.08,
+    "run": 0.73
+  },
+  "git_history_coverage": {
+    "eligible_files": 43,
+    "files_with_history": 43,
+    "unavailable_files": 0,
+    "retained_commits": 50,
+    "per_file_limit": 500,
+    "global_commits": 6,
+    "deep_commits": 0,
+    "recent_files": 43,
+    "deep_files": 0,
+    "fallback_files": 0,
+    "complete_through_depth": 6,
+    "workers": 8
+  },
+  "run_mode": "fast",
+  "git_tier": "essential",
+  "index_scope": {
+    "version": 1,
+    "run_mode": "fast",
+    "content_provenance": "none",
+    "git_tier": "essential",
+    "git_commit_cap": 500,
+    "git_history_coverage": {
+      "eligible_files": 43,
+      "files_with_history": 43,
+      "unavailable_files": 0,
+      "retained_commits": 50,
+      "per_file_limit": 500,
+      "global_commits": 6,
+      "deep_commits": 0,
+      "recent_files": 43,
+      "deep_files": 0,
+      "fallback_files": 0,
+      "complete_through_depth": 6,
+      "workers": 8
+    },
+    "dropped_files": null,
+    "file_pages": {
+      "configured_cap": null,
+      "effective_cap": null,
+      "eligible": 39,
+      "generated": 0,
+      "omitted": 39
+    },
+    "analysis": {
+      "unavailable": [],
+      "skipped": [
+        "generation"
+      ]
+    },
+    "upgrade": {
+      "status": "pending",
+      "retryable": true,
+      "completed_stages": [],
+      "next_stage": null
+    },
+    "provider": {
+      "name": null,
+      "model": null,
+      "embedder": null,
+      "reused": false,
+      "model_cost_possible": false
+    },
+    "search": {
+      "full_text": "unavailable",
+      "semantic": "available",
+      "next_command": null
+    }
+  },
+  "knowledge_graph": {
+    "version": "1.0.0",
+    "node_count": 98,
+    "layer_count": 5,
+    "tour_steps": 12,
+    "has_summaries": true,
+    "fingerprint": "a5da17b4220fd833"
+  },
+  "store_format_version": 2,
+  "written_by_version": "0.55.0",
+  "config_fingerprint": "904ee443958d28e99d402d6df45818486e6f774424ccacecb8d9747cdee8035c",
+  "config_dependency_fingerprints": {
+    "traversal": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "git_history": "2a677ae5e4dd2016ef1191ac7c08539df480c7e3110576b8b1f71312fb185d67",
+    "health": "594e0c42a3a22127976d1564801ee46ca91f3d761eb56819f9da91ba062024ad",
+    "generation": "694319e2928fc2a78b332fefe111c561677cf6913d8daded01a00c85eecf125c",
+    "state_only": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "other": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  "renderer_fingerprint": "7047f792db119f61cde376d04733affdebfe3ea784860630a8ce09b77113d42d:401c53af4991fd0c9dca5eab0d30a50edb17c6232285d683410010e9f8a55bc5",
+  "last_docs_commit": "f04ccf31ae34464c813de37526635ad66b002d7e",
+  "working_tree_paths": [
+    ".claude/CLAUDE.md",
+    ".mcp.json"
+  ],
+  "last_full_rescore_at": 1787060569.0,
+  "health_analyzer_version": 38
+}

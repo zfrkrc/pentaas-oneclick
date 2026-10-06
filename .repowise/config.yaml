@@ -1,0 +1,2 @@
+commit_limit: 500
+embedder: openai

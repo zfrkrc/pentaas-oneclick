@@ -1,0 +1,2840 @@
+{
+  "version": "1.0.0",
+  "schema_version": 1,
+  "project": {
+    "name": "pentaas-oneclick",
+    "is_monorepo": false,
+    "total_files": 84,
+    "entry_points": [
+      "backend/main.py",
+      "frontend/src/main.jsx",
+      "frontend/src/App.jsx"
+    ],
+    "packages": [
+      {
+        "name": "pentaas-click-frontend",
+        "path": "frontend",
+        "declared": false
+      }
+    ],
+    "tech_stack": [
+      {
+        "name": "Docker Compose",
+        "version": null,
+        "category": "infra"
+      }
+    ],
+    "entry_candidates": [
+      "backend/main.py",
+      "frontend/src/main.jsx",
+      "frontend/src/App.jsx"
+    ],
+    "graph_mode": "flow"
+  },
+  "nodes": [
+    {
+      "id": "class:backend/services/base/models.py:Finding",
+      "type": "class",
+      "filePath": "backend/services/base/models.py",
+      "name": "Finding",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "class:backend/services/base/models.py:HealthResponse",
+      "type": "class",
+      "filePath": "backend/services/base/models.py",
+      "name": "HealthResponse",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "class:backend/services/base/models.py:ScanRequest",
+      "type": "class",
+      "filePath": "backend/services/base/models.py",
+      "name": "ScanRequest",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "class:backend/services/base/models.py:ScanResponse",
+      "type": "class",
+      "filePath": "backend/services/base/models.py",
+      "name": "ScanResponse",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "class:backend/services/base/models.py:ScanResultsResponse",
+      "type": "class",
+      "filePath": "backend/services/base/models.py",
+      "name": "ScanResultsResponse",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "class:backend/services/base/models.py:ScanStatus",
+      "type": "class",
+      "filePath": "backend/services/base/models.py",
+      "name": "ScanStatus",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "class:backend/services/base/models.py:ScanStatusResponse",
+      "type": "class",
+      "filePath": "backend/services/base/models.py",
+      "name": "ScanStatusResponse",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "class:backend/services/base/tool_service.py:BaseToolService",
+      "type": "class",
+      "filePath": "backend/services/base/tool_service.py",
+      "name": "BaseToolService",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "file:.claude/CLAUDE.md",
+      "type": "document",
+      "filePath": ".claude/CLAUDE.md",
+      "language": "markdown",
+      "symbolCount": 0,
+      "lineCount": 188,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 5,
+      "tags": [],
+      "summary": "Repository instructions and context for AI coding agents."
+    },
+    {
+      "id": "file:.mcp.json",
+      "type": "config",
+      "filePath": ".mcp.json",
+      "language": "json",
+      "symbolCount": 0,
+      "lineCount": 7,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 6,
+      "tags": [
+        "config"
+      ],
+      "summary": "Configuration file: .mcp.json."
+    },
+    {
+      "id": "file:CHANGELOG.md",
+      "type": "document",
+      "filePath": "CHANGELOG.md",
+      "language": "markdown",
+      "symbolCount": 0,
+      "lineCount": 69,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 7,
+      "tags": [],
+      "summary": "Release history and notable changes."
+    },
+    {
+      "id": "file:MICROSERVICE_ARCHITECTURE.md",
+      "type": "document",
+      "filePath": "MICROSERVICE_ARCHITECTURE.md",
+      "language": "markdown",
+      "symbolCount": 0,
+      "lineCount": 137,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 8,
+      "tags": [],
+      "summary": "Documentation: MICROSERVICE_ARCHITECTURE.md."
+    },
+    {
+      "id": "file:README.md",
+      "type": "document",
+      "filePath": "README.md",
+      "language": "markdown",
+      "symbolCount": 0,
+      "lineCount": 195,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 9,
+      "tags": [],
+      "summary": "Project overview and entry point for new readers."
+    },
+    {
+      "id": "file:backend/Dockerfile",
+      "type": "service",
+      "filePath": "backend/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 15,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 10,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/compose/arjun/Dockerfile",
+      "type": "service",
+      "filePath": "backend/compose/arjun/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 2,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 11,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/compose/dalfox/Dockerfile",
+      "type": "service",
+      "filePath": "backend/compose/dalfox/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 5,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 12,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/compose/dirsearch/Dockerfile",
+      "type": "service",
+      "filePath": "backend/compose/dirsearch/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 3,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 13,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/compose/dnsrecon/Dockerfile",
+      "type": "service",
+      "filePath": "backend/compose/dnsrecon/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 9,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 14,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/compose/docker-compose.string.yml",
+      "type": "service",
+      "filePath": "backend/compose/docker-compose.string.yml",
+      "language": "yaml",
+      "symbolCount": 0,
+      "lineCount": 187,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 15,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Infrastructure definition: docker-compose.string.yml."
+    },
+    {
+      "id": "file:backend/compose/merge/Dockerfile",
+      "type": "service",
+      "filePath": "backend/compose/merge/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 7,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 16,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/compose/merge/run.sh",
+      "type": "file",
+      "filePath": "backend/compose/merge/run.sh",
+      "language": "shell",
+      "symbolCount": 0,
+      "lineCount": 15,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 17,
+      "tags": [],
+      "summary": "Application module run."
+    },
+    {
+      "id": "file:backend/compose/nikto/Dockerfile",
+      "type": "service",
+      "filePath": "backend/compose/nikto/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 4,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 18,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/compose/sslyze/Dockerfile",
+      "type": "service",
+      "filePath": "backend/compose/sslyze/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 3,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 19,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/compose/wafw00f/Dockerfile",
+      "type": "service",
+      "filePath": "backend/compose/wafw00f/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 8,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 20,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/compose/whatweb/Dockerfile",
+      "type": "service",
+      "filePath": "backend/compose/whatweb/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 9,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 21,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/compose/wpscan/Dockerfile",
+      "type": "service",
+      "filePath": "backend/compose/wpscan/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 6,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 22,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/engine.py",
+      "type": "file",
+      "filePath": "backend/engine.py",
+      "language": "python",
+      "symbolCount": 21,
+      "lineCount": 452,
+      "complexity": "complex",
+      "pagerank": 0.008162,
+      "communityId": 0,
+      "tags": [],
+      "summary": "Application module engine defining log_scan, _svc_url, is_ip."
+    },
+    {
+      "id": "file:backend/main.py",
+      "type": "file",
+      "filePath": "backend/main.py",
+      "language": "python",
+      "symbolCount": 24,
+      "lineCount": 1136,
+      "complexity": "complex",
+      "pagerank": 0.006666,
+      "communityId": 0,
+      "tags": [
+        "entry_point"
+      ],
+      "summary": "Application module main defining _verify_session, ScanRequest, ScanResponse."
+    },
+    {
+      "id": "file:backend/services/GENERIC_TEMPLATE.py",
+      "type": "file",
+      "filePath": "backend/services/GENERIC_TEMPLATE.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 30,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module GENERIC_TEMPLATE defining GenericToolService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/TOOLS_CONFIG.py",
+      "type": "file",
+      "filePath": "backend/services/TOOLS_CONFIG.py",
+      "language": "python",
+      "symbolCount": 1,
+      "lineCount": 30,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 3,
+      "tags": [],
+      "summary": "Service module TOOLS_CONFIG (1 symbols)."
+    },
+    {
+      "id": "file:backend/services/arachni/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/arachni/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 16,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 23,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/arjun/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/arjun/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 6,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 24,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/arjun/service.py",
+      "type": "file",
+      "filePath": "backend/services/arjun/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 15,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining ArjunService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/base/models.py",
+      "type": "file",
+      "filePath": "backend/services/base/models.py",
+      "language": "python",
+      "symbolCount": 7,
+      "lineCount": 23,
+      "complexity": "moderate",
+      "pagerank": 0.012633,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module models defining ScanStatus, ScanRequest, ScanResponse."
+    },
+    {
+      "id": "file:backend/services/base/tool_service.py",
+      "type": "file",
+      "filePath": "backend/services/base/tool_service.py",
+      "language": "python",
+      "symbolCount": 6,
+      "lineCount": 134,
+      "complexity": "moderate",
+      "pagerank": 0.024054,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module tool_service defining BaseToolService, __init__, _register_routes."
+    },
+    {
+      "id": "file:backend/services/commix/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/commix/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 10,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 25,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/dalfox/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/dalfox/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 9,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 26,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/dalfox/service.py",
+      "type": "file",
+      "filePath": "backend/services/dalfox/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 16,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining DalfoxService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/dirsearch/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/dirsearch/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 6,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 27,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/dirsearch/service.py",
+      "type": "file",
+      "filePath": "backend/services/dirsearch/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 16,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining DirsearchService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/dnsrecon/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/dnsrecon/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 7,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 28,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/dnsrecon/service.py",
+      "type": "file",
+      "filePath": "backend/services/dnsrecon/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 15,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining DnsreconService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/generate_services.py",
+      "type": "file",
+      "filePath": "backend/services/generate_services.py",
+      "language": "python",
+      "symbolCount": 2,
+      "lineCount": 29,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 29,
+      "tags": [],
+      "summary": "Service module generate_services (2 symbols)."
+    },
+    {
+      "id": "file:backend/services/gittools/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/gittools/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 4,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 30,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/gobuster/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/gobuster/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 12,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 31,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/nikto/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/nikto/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 14,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 32,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/nikto/service.py",
+      "type": "file",
+      "filePath": "backend/services/nikto/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 33,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining NiktoService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/nmap/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/nmap/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 11,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 33,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/nmap/service.py",
+      "type": "file",
+      "filePath": "backend/services/nmap/service.py",
+      "language": "python",
+      "symbolCount": 4,
+      "lineCount": 94,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 3,
+      "tags": [],
+      "summary": "Service module service defining NmapService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/nosqlmap/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/nosqlmap/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 10,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 34,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/nuclei/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/nuclei/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 13,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 35,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/nuclei/service.py",
+      "type": "file",
+      "filePath": "backend/services/nuclei/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 48,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining NucleiService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/sqlmap/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/sqlmap/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 10,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 36,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/sslyze/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/sslyze/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 6,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 37,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/sslyze/service.py",
+      "type": "file",
+      "filePath": "backend/services/sslyze/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 15,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining SslyzeService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/testssl/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/testssl/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 13,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 38,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/testssl/service.py",
+      "type": "file",
+      "filePath": "backend/services/testssl/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 15,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining TestsslService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/w3af/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/w3af/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 20,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 39,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/wafw00f/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/wafw00f/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 6,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 40,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/wafw00f/service.py",
+      "type": "file",
+      "filePath": "backend/services/wafw00f/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 16,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining Wafw00fService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/wapiti/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/wapiti/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 1,
+      "lineCount": 2,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 41,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/whatweb/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/whatweb/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 8,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 42,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/whatweb/service.py",
+      "type": "file",
+      "filePath": "backend/services/whatweb/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 18,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining WhatWebService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/wpscan/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/wpscan/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 12,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 43,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/wpscan/service.py",
+      "type": "file",
+      "filePath": "backend/services/wpscan/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 15,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining WpscanService, __init__, scan."
+    },
+    {
+      "id": "file:backend/services/zap/Dockerfile",
+      "type": "service",
+      "filePath": "backend/services/zap/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 2,
+      "lineCount": 18,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 44,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:backend/services/zap/service.py",
+      "type": "file",
+      "filePath": "backend/services/zap/service.py",
+      "language": "python",
+      "symbolCount": 3,
+      "lineCount": 15,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [],
+      "summary": "Service module service defining ZapService, __init__, scan."
+    },
+    {
+      "id": "file:backend/tests/test_insightmap_client.py",
+      "type": "file",
+      "filePath": "backend/tests/test_insightmap_client.py",
+      "language": "python",
+      "symbolCount": 12,
+      "lineCount": 60,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 1,
+      "tags": [
+        "test"
+      ],
+      "summary": "Tests for insightmap_client."
+    },
+    {
+      "id": "file:backend/worker.py",
+      "type": "file",
+      "filePath": "backend/worker.py",
+      "language": "python",
+      "symbolCount": 6,
+      "lineCount": 21,
+      "complexity": "moderate",
+      "pagerank": 0.007043,
+      "communityId": 0,
+      "tags": [],
+      "summary": "Application module worker defining queue_scan."
+    },
+    {
+      "id": "file:docker-compose.yml",
+      "type": "service",
+      "filePath": "docker-compose.yml",
+      "language": "yaml",
+      "symbolCount": 0,
+      "lineCount": 106,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 45,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Multi-container service orchestration for local development."
+    },
+    {
+      "id": "file:frontend/Dockerfile",
+      "type": "service",
+      "filePath": "frontend/Dockerfile",
+      "language": "dockerfile",
+      "symbolCount": 0,
+      "lineCount": 5,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 47,
+      "tags": [
+        "config",
+        "infra"
+      ],
+      "summary": "Container image build definition."
+    },
+    {
+      "id": "file:frontend/index.html",
+      "type": "file",
+      "filePath": "frontend/index.html",
+      "language": "html",
+      "symbolCount": 0,
+      "lineCount": 78,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 2,
+      "tags": [],
+      "summary": "Application module index."
+    },
+    {
+      "id": "file:frontend/package.json",
+      "type": "config",
+      "filePath": "frontend/package.json",
+      "language": "json",
+      "symbolCount": 0,
+      "lineCount": 18,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 48,
+      "tags": [
+        "config"
+      ],
+      "summary": "Node package manifest: dependencies, scripts, and metadata."
+    },
+    {
+      "id": "file:frontend/public/assets/dropdown/js/navbar-dropdown.js",
+      "type": "file",
+      "filePath": "frontend/public/assets/dropdown/js/navbar-dropdown.js",
+      "language": "javascript",
+      "symbolCount": 1,
+      "lineCount": 89,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 49,
+      "tags": [],
+      "summary": "Application module navbar-dropdown defining b."
+    },
+    {
+      "id": "file:frontend/public/assets/embla/script.js",
+      "type": "file",
+      "filePath": "frontend/public/assets/embla/script.js",
+      "language": "javascript",
+      "symbolCount": 13,
+      "lineCount": 200,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 50,
+      "tags": [],
+      "summary": "Application module script defining e, f, a."
+    },
+    {
+      "id": "file:frontend/public/assets/images/hashes.json",
+      "type": "config",
+      "filePath": "frontend/public/assets/images/hashes.json",
+      "language": "json",
+      "symbolCount": 0,
+      "lineCount": 22,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 51,
+      "tags": [
+        "config"
+      ],
+      "summary": "Configuration file: hashes.json."
+    },
+    {
+      "id": "file:frontend/public/assets/parallax/jarallax.js",
+      "type": "file",
+      "filePath": "frontend/public/assets/parallax/jarallax.js",
+      "language": "javascript",
+      "symbolCount": 13,
+      "lineCount": 478,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 52,
+      "tags": [],
+      "summary": "Application module jarallax defining a, d, b."
+    },
+    {
+      "id": "file:frontend/public/assets/scrollgallery/scroll-gallery.js",
+      "type": "file",
+      "filePath": "frontend/public/assets/scrollgallery/scroll-gallery.js",
+      "language": "javascript",
+      "symbolCount": 1,
+      "lineCount": 84,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 53,
+      "tags": [],
+      "summary": "Application module scroll-gallery defining k."
+    },
+    {
+      "id": "file:frontend/public/assets/smoothscroll/smooth-scroll.js",
+      "type": "file",
+      "filePath": "frontend/public/assets/smoothscroll/smooth-scroll.js",
+      "language": "javascript",
+      "symbolCount": 18,
+      "lineCount": 188,
+      "complexity": "complex",
+      "pagerank": 0.006666,
+      "communityId": 54,
+      "tags": [],
+      "summary": "Application module smooth-scroll defining C, N, R."
+    },
+    {
+      "id": "file:frontend/public/assets/theme/js/script.js",
+      "type": "file",
+      "filePath": "frontend/public/assets/theme/js/script.js",
+      "language": "javascript",
+      "symbolCount": 22,
+      "lineCount": 988,
+      "complexity": "complex",
+      "pagerank": 0.006666,
+      "communityId": 55,
+      "tags": [],
+      "summary": "Application module script defining b, h, d."
+    },
+    {
+      "id": "file:frontend/public/assets/vimeoplayer/player.js",
+      "type": "file",
+      "filePath": "frontend/public/assets/vimeoplayer/player.js",
+      "language": "javascript",
+      "symbolCount": 42,
+      "lineCount": 651,
+      "complexity": "complex",
+      "pagerank": 0.006666,
+      "communityId": 56,
+      "tags": [],
+      "summary": "Application module player defining g, k, l."
+    },
+    {
+      "id": "file:frontend/public/assets/web/assets/cookies-alert-plugin/cookies-alert-core.js",
+      "type": "file",
+      "filePath": "frontend/public/assets/web/assets/cookies-alert-plugin/cookies-alert-core.js",
+      "language": "javascript",
+      "symbolCount": 2,
+      "lineCount": 332,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 57,
+      "tags": [],
+      "summary": "Application module cookies-alert-core defining a, invertHex."
+    },
+    {
+      "id": "file:frontend/public/assets/web/assets/cookies-alert-plugin/cookies-alert-script.js",
+      "type": "file",
+      "filePath": "frontend/public/assets/web/assets/cookies-alert-plugin/cookies-alert-script.js",
+      "language": "javascript",
+      "symbolCount": 7,
+      "lineCount": 273,
+      "complexity": "moderate",
+      "pagerank": 0.006666,
+      "communityId": 58,
+      "tags": [],
+      "summary": "Application module cookies-alert-script defining b, e, a."
+    },
+    {
+      "id": "file:frontend/public/assets/ytplayer/index.js",
+      "type": "file",
+      "filePath": "frontend/public/assets/ytplayer/index.js",
+      "language": "javascript",
+      "symbolCount": 7,
+      "lineCount": 660,
+      "complexity": "complex",
+      "pagerank": 0.006666,
+      "communityId": 59,
+      "tags": [],
+      "summary": "Application module index defining b, c, a."
+    },
+    {
+      "id": "file:frontend/src/App.jsx",
+      "type": "file",
+      "filePath": "frontend/src/App.jsx",
+      "language": "javascript",
+      "symbolCount": 1,
+      "lineCount": 680,
+      "complexity": "complex",
+      "pagerank": 0.009286,
+      "communityId": 2,
+      "tags": [
+        "entry_point"
+      ],
+      "summary": "Application module App defining App."
+    },
+    {
+      "id": "file:frontend/src/components/Footer.jsx",
+      "type": "file",
+      "filePath": "frontend/src/components/Footer.jsx",
+      "language": "javascript",
+      "symbolCount": 1,
+      "lineCount": 15,
+      "complexity": "simple",
+      "pagerank": 0.008244,
+      "communityId": 2,
+      "tags": [],
+      "summary": "UI module Footer defining Footer."
+    },
+    {
+      "id": "file:frontend/src/components/History.jsx",
+      "type": "file",
+      "filePath": "frontend/src/components/History.jsx",
+      "language": "javascript",
+      "symbolCount": 1,
+      "lineCount": 183,
+      "complexity": "moderate",
+      "pagerank": 0.008244,
+      "communityId": 2,
+      "tags": [],
+      "summary": "UI module History defining History."
+    },
+    {
+      "id": "file:frontend/src/components/Navbar.jsx",
+      "type": "file",
+      "filePath": "frontend/src/components/Navbar.jsx",
+      "language": "javascript",
+      "symbolCount": 1,
+      "lineCount": 325,
+      "complexity": "moderate",
+      "pagerank": 0.008244,
+      "communityId": 2,
+      "tags": [],
+      "summary": "UI module Navbar defining Navbar."
+    },
+    {
+      "id": "file:frontend/src/lib/auth.js",
+      "type": "file",
+      "filePath": "frontend/src/lib/auth.js",
+      "language": "javascript",
+      "symbolCount": 1,
+      "lineCount": 8,
+      "complexity": "simple",
+      "pagerank": 0.011748,
+      "communityId": 2,
+      "tags": [],
+      "summary": "Service module auth (1 symbols)."
+    },
+    {
+      "id": "file:frontend/src/main.jsx",
+      "type": "file",
+      "filePath": "frontend/src/main.jsx",
+      "language": "javascript",
+      "symbolCount": 0,
+      "lineCount": 10,
+      "complexity": "simple",
+      "pagerank": 0.012331,
+      "communityId": 2,
+      "tags": [
+        "entry_point"
+      ],
+      "summary": "Application module main."
+    },
+    {
+      "id": "file:frontend/vite.config.js",
+      "type": "file",
+      "filePath": "frontend/vite.config.js",
+      "language": "javascript",
+      "symbolCount": 0,
+      "lineCount": 8,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 4,
+      "tags": [],
+      "summary": "Application module vite.config."
+    },
+    {
+      "id": "file:test_resolution.py",
+      "type": "file",
+      "filePath": "test_resolution.py",
+      "language": "python",
+      "symbolCount": 1,
+      "lineCount": 17,
+      "complexity": "simple",
+      "pagerank": 0.006666,
+      "communityId": 0,
+      "tags": [
+        "test"
+      ],
+      "summary": "Tests for resolution."
+    },
+    {
+      "id": "function:backend/services/base/tool_service.py:__init__",
+      "type": "function",
+      "filePath": "backend/services/base/tool_service.py",
+      "name": "__init__",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "function:backend/services/base/tool_service.py:_execute_scan",
+      "type": "function",
+      "filePath": "backend/services/base/tool_service.py",
+      "name": "_execute_scan",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "function:backend/services/base/tool_service.py:_register_routes",
+      "type": "function",
+      "filePath": "backend/services/base/tool_service.py",
+      "name": "_register_routes",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "function:backend/services/base/tool_service.py:run",
+      "type": "function",
+      "filePath": "backend/services/base/tool_service.py",
+      "name": "run",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "function:backend/services/base/tool_service.py:scan",
+      "type": "function",
+      "filePath": "backend/services/base/tool_service.py",
+      "name": "scan",
+      "language": "python",
+      "tags": [],
+      "summary": ""
+    },
+    {
+      "id": "function:frontend/src/App.jsx:App",
+      "type": "function",
+      "filePath": "frontend/src/App.jsx",
+      "name": "App",
+      "language": "javascript",
+      "tags": [],
+      "summary": ""
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:asyncio",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:datetime",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:email.mime.multipart",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:email.mime.text",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:httpx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:json",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:logging",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:os",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:re",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:redis",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:smtplib",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:socket",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:ssl",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:time",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/engine.py",
+      "target": "file:external:uuid",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:backend/worker.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:datetime",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:fastapi",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:fastapi.middleware.cors",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:fastapi.responses",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:html",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:httpx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:json",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:logging",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:os",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:pydantic",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:redis",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:uuid",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/main.py",
+      "target": "file:external:xml.etree.ElementTree",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/GENERIC_TEMPLATE.py",
+      "target": "file:backend/services/base/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/GENERIC_TEMPLATE.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/GENERIC_TEMPLATE.py",
+      "target": "file:external:os",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/GENERIC_TEMPLATE.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/GENERIC_TEMPLATE.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/GENERIC_TEMPLATE.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/TOOLS_CONFIG.py",
+      "target": "file:external:os",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/arjun/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/arjun/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/arjun/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/arjun/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/models.py",
+      "target": "class:backend/services/base/models.py:Finding",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/models.py",
+      "target": "class:backend/services/base/models.py:HealthResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/models.py",
+      "target": "class:backend/services/base/models.py:ScanRequest",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/models.py",
+      "target": "class:backend/services/base/models.py:ScanResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/models.py",
+      "target": "class:backend/services/base/models.py:ScanResultsResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/models.py",
+      "target": "class:backend/services/base/models.py:ScanStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/models.py",
+      "target": "class:backend/services/base/models.py:ScanStatusResponse",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/models.py",
+      "target": "file:external:enum",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/models.py",
+      "target": "file:external:pydantic",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/models.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "class:backend/services/base/tool_service.py:BaseToolService",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "file:backend/services/base/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "file:external:abc",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "file:external:asyncio",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "file:external:fastapi",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "file:external:json",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "file:external:os",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "file:external:uuid",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "file:external:uvicorn",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "function:backend/services/base/tool_service.py:__init__",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "function:backend/services/base/tool_service.py:_execute_scan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "function:backend/services/base/tool_service.py:_register_routes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "function:backend/services/base/tool_service.py:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py",
+      "target": "function:backend/services/base/tool_service.py:scan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py::BaseToolService",
+      "target": "function:backend/services/base/tool_service.py:__init__",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py::BaseToolService",
+      "target": "function:backend/services/base/tool_service.py:_execute_scan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py::BaseToolService",
+      "target": "function:backend/services/base/tool_service.py:_register_routes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py::BaseToolService",
+      "target": "function:backend/services/base/tool_service.py:run",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/base/tool_service.py::BaseToolService",
+      "target": "function:backend/services/base/tool_service.py:scan",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dalfox/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dalfox/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dalfox/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dalfox/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dirsearch/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dirsearch/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dirsearch/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dirsearch/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dnsrecon/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dnsrecon/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dnsrecon/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/dnsrecon/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nikto/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nikto/service.py",
+      "target": "file:external:json",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nikto/service.py",
+      "target": "file:external:os",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nikto/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nikto/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nikto/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nmap/service.py",
+      "target": "file:backend/services/base/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nmap/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nmap/service.py",
+      "target": "file:external:os",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nmap/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nmap/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nmap/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nmap/service.py",
+      "target": "file:external:xml.etree.ElementTree",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nuclei/service.py",
+      "target": "file:backend/services/base/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nuclei/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nuclei/service.py",
+      "target": "file:external:json",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nuclei/service.py",
+      "target": "file:external:os",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nuclei/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nuclei/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/nuclei/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/sslyze/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/sslyze/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/sslyze/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/sslyze/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/testssl/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/testssl/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/testssl/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/testssl/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/wafw00f/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/wafw00f/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/wafw00f/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/wafw00f/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/whatweb/service.py",
+      "target": "file:backend/services/base/models.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/whatweb/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/whatweb/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/whatweb/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/whatweb/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/wpscan/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/wpscan/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/wpscan/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/wpscan/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/zap/service.py",
+      "target": "file:backend/services/base/tool_service.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/zap/service.py",
+      "target": "file:external:subprocess",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/zap/service.py",
+      "target": "file:external:sys",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/services/zap/service.py",
+      "target": "file:external:typing",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/tests/test_insightmap_client.py",
+      "target": "file:external:engine",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/tests/test_insightmap_client.py",
+      "target": "file:external:json",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/worker.py",
+      "target": "file:backend/engine.py",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/worker.py",
+      "target": "file:external:os",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/worker.py",
+      "target": "file:external:redis",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:backend/worker.py",
+      "target": "file:external:rq",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/index.html",
+      "target": "file:frontend/src/main.jsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/App.jsx",
+      "target": "file:external:react",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/App.jsx",
+      "target": "file:frontend/src/components/Footer.jsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/App.jsx",
+      "target": "file:frontend/src/components/History.jsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/App.jsx",
+      "target": "file:frontend/src/components/Navbar.jsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/App.jsx",
+      "target": "file:frontend/src/lib/auth.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/App.jsx",
+      "target": "function:frontend/src/App.jsx:App",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/components/Footer.jsx",
+      "target": "file:external:react",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/components/History.jsx",
+      "target": "file:external:react",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/components/Navbar.jsx",
+      "target": "file:external:react",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/components/Navbar.jsx",
+      "target": "file:frontend/src/lib/auth.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/lib/auth.js",
+      "target": "file:external:better-auth/react",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/main.jsx",
+      "target": "file:external:react",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/main.jsx",
+      "target": "file:external:react-dom/client",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/main.jsx",
+      "target": "file:external:react-router-dom",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/src/main.jsx",
+      "target": "file:frontend/src/App.jsx",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/vite.config.js",
+      "target": "file:external:@vitejs/plugin-react",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:frontend/vite.config.js",
+      "target": "file:external:vite",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:test_resolution.py",
+      "target": "file:external:asyncio",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:test_resolution.py",
+      "target": "file:external:engine",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:test_resolution.py",
+      "target": "file:external:sys",
+      "type": "tested_by",
+      "direction": "forward",
+      "weight": 1.0
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:application",
+      "name": "Application",
+      "description": "",
+      "nodeIds": [
+        "file:.mcp.json",
+        "file:CHANGELOG.md",
+        "file:MICROSERVICE_ARCHITECTURE.md",
+        "file:README.md",
+        "file:backend/Dockerfile",
+        "file:backend/compose/arjun/Dockerfile",
+        "file:backend/compose/dalfox/Dockerfile",
+        "file:backend/compose/dirsearch/Dockerfile",
+        "file:backend/compose/dnsrecon/Dockerfile",
+        "file:backend/compose/docker-compose.string.yml",
+        "file:backend/compose/merge/Dockerfile",
+        "file:backend/compose/merge/run.sh",
+        "file:backend/compose/nikto/Dockerfile",
+        "file:backend/compose/sslyze/Dockerfile",
+        "file:backend/compose/wafw00f/Dockerfile",
+        "file:backend/compose/whatweb/Dockerfile",
+        "file:backend/compose/wpscan/Dockerfile",
+        "file:backend/engine.py",
+        "file:backend/main.py",
+        "file:backend/worker.py",
+        "file:docker-compose.yml",
+        "file:frontend/Dockerfile",
+        "file:frontend/index.html",
+        "file:frontend/package.json",
+        "file:frontend/public/assets/dropdown/js/navbar-dropdown.js",
+        "file:frontend/public/assets/embla/script.js",
+        "file:frontend/public/assets/images/hashes.json",
+        "file:frontend/public/assets/parallax/jarallax.js",
+        "file:frontend/public/assets/scrollgallery/scroll-gallery.js",
+        "file:frontend/public/assets/smoothscroll/smooth-scroll.js",
+        "file:frontend/public/assets/theme/js/script.js",
+        "file:frontend/public/assets/vimeoplayer/player.js",
+        "file:frontend/public/assets/web/assets/cookies-alert-plugin/cookies-alert-core.js",
+        "file:frontend/public/assets/web/assets/cookies-alert-plugin/cookies-alert-script.js",
+        "file:frontend/public/assets/ytplayer/index.js",
+        "file:frontend/src/App.jsx",
+        "file:frontend/src/main.jsx",
+        "file:frontend/vite.config.js"
+      ],
+      "display_order": 0,
+      "order_basis": "imports"
+    },
+    {
+      "id": "layer:config",
+      "name": "Config",
+      "description": "",
+      "nodeIds": [
+        "file:.claude/CLAUDE.md"
+      ],
+      "display_order": 1,
+      "order_basis": "imports"
+    },
+    {
+      "id": "layer:ui",
+      "name": "UI",
+      "description": "",
+      "nodeIds": [
+        "file:frontend/src/components/Footer.jsx",
+        "file:frontend/src/components/History.jsx",
+        "file:frontend/src/components/Navbar.jsx"
+      ],
+      "display_order": 2,
+      "order_basis": "imports"
+    },
+    {
+      "id": "layer:service",
+      "name": "Service",
+      "description": "",
+      "nodeIds": [
+        "file:backend/services/GENERIC_TEMPLATE.py",
+        "file:backend/services/TOOLS_CONFIG.py",
+        "file:backend/services/arachni/Dockerfile",
+        "file:backend/services/arjun/Dockerfile",
+        "file:backend/services/arjun/service.py",
+        "file:backend/services/base/models.py",
+        "file:backend/services/base/tool_service.py",
+        "file:backend/services/commix/Dockerfile",
+        "file:backend/services/dalfox/Dockerfile",
+        "file:backend/services/dalfox/service.py",
+        "file:backend/services/dirsearch/Dockerfile",
+        "file:backend/services/dirsearch/service.py",
+        "file:backend/services/dnsrecon/Dockerfile",
+        "file:backend/services/dnsrecon/service.py",
+        "file:backend/services/generate_services.py",
+        "file:backend/services/gittools/Dockerfile",
+        "file:backend/services/gobuster/Dockerfile",
+        "file:backend/services/nikto/Dockerfile",
+        "file:backend/services/nikto/service.py",
+        "file:backend/services/nmap/Dockerfile",
+        "file:backend/services/nmap/service.py",
+        "file:backend/services/nosqlmap/Dockerfile",
+        "file:backend/services/nuclei/Dockerfile",
+        "file:backend/services/nuclei/service.py",
+        "file:backend/services/sqlmap/Dockerfile",
+        "file:backend/services/sslyze/Dockerfile",
+        "file:backend/services/sslyze/service.py",
+        "file:backend/services/testssl/Dockerfile",
+        "file:backend/services/testssl/service.py",
+        "file:backend/services/w3af/Dockerfile",
+        "file:backend/services/wafw00f/Dockerfile",
+        "file:backend/services/wafw00f/service.py",
+        "file:backend/services/wapiti/Dockerfile",
+        "file:backend/services/whatweb/Dockerfile",
+        "file:backend/services/whatweb/service.py",
+        "file:backend/services/wpscan/Dockerfile",
+        "file:backend/services/wpscan/service.py",
+        "file:backend/services/zap/Dockerfile",
+        "file:backend/services/zap/service.py",
+        "file:frontend/src/lib/auth.js"
+      ],
+      "display_order": 3,
+      "order_basis": "imports"
+    },
+    {
+      "id": "layer:test",
+      "name": "Test",
+      "description": "",
+      "nodeIds": [
+        "file:backend/tests/test_insightmap_client.py",
+        "file:test_resolution.py"
+      ],
+      "display_order": 4,
+      "order_basis": "imports"
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "target_path": "README.md",
+      "page_type": "repo_overview",
+      "title": "README.md",
+      "depth": 0,
+      "kind": "overview",
+      "reason": "Start here for the end-to-end picture before diving into the code.",
+      "layer_id": "layer:application",
+      "wikiPageIds": []
+    },
+    {
+      "order": 2,
+      "target_path": "frontend/src/main.jsx",
+      "page_type": "file_page",
+      "title": "main.jsx",
+      "depth": 0,
+      "kind": "code",
+      "reason": "An entry point \u2014 execution and imports fan out from here.",
+      "layer_id": "layer:application",
+      "wikiPageIds": []
+    },
+    {
+      "order": 3,
+      "target_path": "frontend/src/App.jsx",
+      "page_type": "file_page",
+      "title": "App.jsx",
+      "depth": 0,
+      "kind": "code",
+      "reason": "An entry point \u2014 execution and imports fan out from here.",
+      "layer_id": "layer:application",
+      "wikiPageIds": []
+    },
+    {
+      "order": 4,
+      "target_path": "backend/main.py",
+      "page_type": "file_page",
+      "title": "main.py",
+      "depth": 0,
+      "kind": "code",
+      "reason": "An entry point \u2014 execution and imports fan out from here.",
+      "layer_id": "layer:application",
+      "wikiPageIds": []
+    },
+    {
+      "order": 5,
+      "target_path": "frontend/src/lib/auth.js",
+      "page_type": "file_page",
+      "title": "auth.js",
+      "depth": 1,
+      "kind": "code",
+      "reason": "Directly used by the entry points above; a core collaborator.",
+      "layer_id": "layer:service",
+      "wikiPageIds": []
+    },
+    {
+      "order": 6,
+      "target_path": "frontend/src/components/Footer.jsx",
+      "page_type": "file_page",
+      "title": "Footer.jsx",
+      "depth": 1,
+      "kind": "code",
+      "reason": "Directly used by the entry points above; a core collaborator.",
+      "layer_id": "layer:ui",
+      "wikiPageIds": []
+    },
+    {
+      "order": 7,
+      "target_path": "frontend/src/components/History.jsx",
+      "page_type": "file_page",
+      "title": "History.jsx",
+      "depth": 1,
+      "kind": "code",
+      "reason": "Directly used by the entry points above; a core collaborator.",
+      "layer_id": "layer:ui",
+      "wikiPageIds": []
+    },
+    {
+      "order": 8,
+      "target_path": "frontend/src/components/Navbar.jsx",
+      "page_type": "file_page",
+      "title": "Navbar.jsx",
+      "depth": 1,
+      "kind": "code",
+      "reason": "Directly used by the entry points above; a core collaborator.",
+      "layer_id": "layer:ui",
+      "wikiPageIds": []
+    },
+    {
+      "order": 9,
+      "target_path": "backend/worker.py",
+      "page_type": "file_page",
+      "title": "worker.py",
+      "depth": 1,
+      "kind": "code",
+      "reason": "Directly used by the entry points above; a core collaborator.",
+      "layer_id": "layer:application",
+      "wikiPageIds": []
+    },
+    {
+      "order": 10,
+      "target_path": "backend/engine.py",
+      "page_type": "file_page",
+      "title": "engine.py",
+      "depth": 2,
+      "kind": "code",
+      "reason": "Reached 2 imports deep \u2014 a supporting building block.",
+      "layer_id": "layer:application",
+      "wikiPageIds": []
+    },
+    {
+      "order": 11,
+      "target_path": "backend/services/base/tool_service.py",
+      "page_type": "file_page",
+      "title": "tool_service.py",
+      "depth": 3,
+      "kind": "code",
+      "reason": "Off the import path from the entry points \u2014 a standalone or supporting file.",
+      "layer_id": "layer:service",
+      "wikiPageIds": []
+    },
+    {
+      "order": 12,
+      "target_path": "test_resolution.py",
+      "page_type": "file_page",
+      "title": "test_resolution.py",
+      "depth": 4,
+      "kind": "code",
+      "reason": "The test suite \u2014 how the system's behavior is verified.",
+      "layer_id": "layer:test",
+      "wikiPageIds": []
+    }
+  ],
+  "modules": [
+    {
+      "id": "module:application",
+      "name": "Application",
+      "path": "",
+      "layerId": "layer:application",
+      "nodeIds": [
+        "file:.mcp.json",
+        "file:CHANGELOG.md",
+        "file:MICROSERVICE_ARCHITECTURE.md",
+        "file:README.md",
+        "file:backend/Dockerfile",
+        "file:backend/compose/arjun/Dockerfile",
+        "file:backend/compose/dalfox/Dockerfile",
+        "file:backend/compose/dirsearch/Dockerfile",
+        "file:backend/compose/dnsrecon/Dockerfile",
+        "file:backend/compose/docker-compose.string.yml",
+        "file:backend/compose/merge/Dockerfile",
+        "file:backend/compose/merge/run.sh",
+        "file:backend/compose/nikto/Dockerfile",
+        "file:backend/compose/sslyze/Dockerfile",
+        "file:backend/compose/wafw00f/Dockerfile",
+        "file:backend/compose/whatweb/Dockerfile",
+        "file:backend/compose/wpscan/Dockerfile",
+        "file:backend/engine.py",
+        "file:backend/main.py",
+        "file:backend/worker.py",
+        "file:docker-compose.yml",
+        "file:frontend/Dockerfile",
+        "file:frontend/index.html",
+        "file:frontend/package.json",
+        "file:frontend/public/assets/dropdown/js/navbar-dropdown.js",
+        "file:frontend/public/assets/embla/script.js",
+        "file:frontend/public/assets/images/hashes.json",
+        "file:frontend/public/assets/parallax/jarallax.js",
+        "file:frontend/public/assets/scrollgallery/scroll-gallery.js",
+        "file:frontend/public/assets/smoothscroll/smooth-scroll.js",
+        "file:frontend/public/assets/theme/js/script.js",
+        "file:frontend/public/assets/vimeoplayer/player.js",
+        "file:frontend/public/assets/web/assets/cookies-alert-plugin/cookies-alert-core.js",
+        "file:frontend/public/assets/web/assets/cookies-alert-plugin/cookies-alert-script.js",
+        "file:frontend/public/assets/ytplayer/index.js",
+        "file:frontend/src/App.jsx",
+        "file:frontend/src/main.jsx",
+        "file:frontend/vite.config.js"
+      ],
+      "wholeLayer": true,
+      "language": "javascript"
+    },
+    {
+      "id": "module:frontend-src-components",
+      "name": "UI",
+      "path": "frontend/src/components",
+      "layerId": "layer:ui",
+      "nodeIds": [
+        "file:frontend/src/components/Footer.jsx",
+        "file:frontend/src/components/History.jsx",
+        "file:frontend/src/components/Navbar.jsx"
+      ],
+      "wholeLayer": true,
+      "language": "javascript"
+    },
+    {
+      "id": "module:service",
+      "name": "Service",
+      "path": "",
+      "layerId": "layer:service",
+      "nodeIds": [
+        "file:backend/services/GENERIC_TEMPLATE.py",
+        "file:backend/services/TOOLS_CONFIG.py",
+        "file:backend/services/arachni/Dockerfile",
+        "file:backend/services/arjun/Dockerfile",
+        "file:backend/services/arjun/service.py",
+        "file:backend/services/base/models.py",
+        "file:backend/services/base/tool_service.py",
+        "file:backend/services/commix/Dockerfile",
+        "file:backend/services/dalfox/Dockerfile",
+        "file:backend/services/dalfox/service.py",
+        "file:backend/services/dirsearch/Dockerfile",
+        "file:backend/services/dirsearch/service.py",
+        "file:backend/services/dnsrecon/Dockerfile",
+        "file:backend/services/dnsrecon/service.py",
+        "file:backend/services/generate_services.py",
+        "file:backend/services/gittools/Dockerfile",
+        "file:backend/services/gobuster/Dockerfile",
+        "file:backend/services/nikto/Dockerfile",
+        "file:backend/services/nikto/service.py",
+        "file:backend/services/nmap/Dockerfile",
+        "file:backend/services/nmap/service.py",
+        "file:backend/services/nosqlmap/Dockerfile",
+        "file:backend/services/nuclei/Dockerfile",
+        "file:backend/services/nuclei/service.py",
+        "file:backend/services/sqlmap/Dockerfile",
+        "file:backend/services/sslyze/Dockerfile",
+        "file:backend/services/sslyze/service.py",
+        "file:backend/services/testssl/Dockerfile",
+        "file:backend/services/testssl/service.py",
+        "file:backend/services/w3af/Dockerfile",
+        "file:backend/services/wafw00f/Dockerfile",
+        "file:backend/services/wafw00f/service.py",
+        "file:backend/services/wapiti/Dockerfile",
+        "file:backend/services/whatweb/Dockerfile",
+        "file:backend/services/whatweb/service.py",
+        "file:backend/services/wpscan/Dockerfile",
+        "file:backend/services/wpscan/service.py",
+        "file:backend/services/zap/Dockerfile",
+        "file:backend/services/zap/service.py",
+        "file:frontend/src/lib/auth.js"
+      ],
+      "wholeLayer": true,
+      "language": "dockerfile"
+    }
+  ]
+}
