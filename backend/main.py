@@ -409,7 +409,7 @@ def get_scan_results(scan_id: str):
         "nmap", "nuclei", "testssl", "dirsearch", "nikto",
         "whatweb", "arjun", "dalfox", "wafw00f", "dnsrecon",
         "wpscan", "zap", "sslyze", "sqlmap", "commix", "gittools",
-        "wapiti", "nosqlmap", "gobuster", "arachni",
+        "wapiti", "nosqlmap", "gobuster",
         "nmap_white", "nmap_gray", "nmap_black",
         "nikto_white", "nikto_black", "nuclei_white"
     ]

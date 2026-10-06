@@ -275,17 +275,8 @@ services:
       - ./reports:/data/results
     restart: unless-stopped
 
-  arachni-service:
-    build:
-      context: ./backend
-      dockerfile: services/arachni/Dockerfile
-    ports:
-      - "8020:8000"
-    environment:
-      - SERVICE_NAME=arachni
-    volumes:
-      - ./reports:/data/results
-    restart: unless-stopped
+  # arachni-service devre disi: upstream GitHub release binary'leri kaldirildi (404),
+  # kaynak derleme Ruby 3.1 ile kirilgan. Kaynak/alternatif imaj ile geri getirilebilir.
 
   httpx-service:
     build:

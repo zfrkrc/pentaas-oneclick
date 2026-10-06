@@ -56,7 +56,7 @@ PROFILE_SERVICES = {
     "white": ["nmap", "testssl", "dirsearch", "nikto", "whatweb",
               "arjun", "dalfox", "wafw00f", "dnsrecon", "nuclei",
               "sqlmap", "commix", "gittools", "wapiti", "nosqlmap",
-              "gobuster", "arachni", "httpx"],
+              "gobuster", "httpx"],
     "gray":  ["nmap", "wpscan", "zap", "sslyze"],
     "black": ["nmap", "nikto", "nuclei"],
 }
@@ -64,7 +64,7 @@ PROFILE_SERVICES = {
 # Slow services get longer poll timeout
 SLOW_SERVICES = {
     "nikto", "testssl", "nuclei", "dalfox", "zap", "wpscan",
-    "sqlmap", "commix", "wapiti", "nosqlmap", "gobuster", "arachni", "gittools"
+    "sqlmap", "commix", "wapiti", "nosqlmap", "gobuster", "gittools"
 }
 SERVICE_TIMEOUT = 600   # max seconds to wait per service
 POLL_INTERVAL   = 3     # seconds between status polls
@@ -158,7 +158,7 @@ async def call_service(service: str, target_info: dict, uid: str, category: str)
     elif service in [
         "nuclei", "dirsearch", "nikto", "whatweb", "arjun", "dalfox",
         "wafw00f", "wpscan", "zap", "sqlmap", "commix", "gittools",
-        "wapiti", "nosqlmap", "gobuster", "arachni", "httpx"
+        "wapiti", "nosqlmap", "gobuster", "httpx"
     ]:
         svc_target = target_info["url"]
     else:
