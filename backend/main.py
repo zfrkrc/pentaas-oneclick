@@ -408,7 +408,8 @@ def get_scan_results(scan_id: str):
     all_services = [
         "nmap", "nuclei", "testssl", "dirsearch", "nikto",
         "whatweb", "arjun", "dalfox", "wafw00f", "dnsrecon",
-        "wpscan", "zap", "sslyze",
+        "wpscan", "zap", "sslyze", "sqlmap", "commix", "gittools",
+        "wapiti", "nosqlmap", "gobuster", "arachni",
         "nmap_white", "nmap_gray", "nmap_black",
         "nikto_white", "nikto_black", "nuclei_white"
     ]
@@ -571,7 +572,11 @@ def get_scan_results(scan_id: str):
             label = {"dirsearch": "Directory Scan", "whatweb": "Technology Detection",
                      "arjun": "Parameter Discovery", "dalfox": "XSS Scan",
                      "dnsrecon": "DNS Reconnaissance", "zap": "ZAP Scan",
-                     "sslyze": "SSL Analysis", "wpscan": "WordPress Scan"}.get(base, f"{base.capitalize()} Scan")
+                     "sslyze": "SSL Analysis", "wpscan": "WordPress Scan",
+                     "sqlmap": "SQL Injection Scan", "commix": "Command Injection Scan",
+                     "gittools": "Exposed Git Scan", "wapiti": "Web Fuzzing Scan",
+                     "nosqlmap": "NoSQL Injection Scan", "gobuster": "Directory Bruteforce Scan",
+                     "arachni": "Arachni Web Scan"}.get(base, f"{base.capitalize()} Scan")
             results["findings"].append({
                 "id": f"{base}-{len(results['findings'])}", "title": label,
                 "severity": "Info", "description": raw_output[:500]

@@ -41,18 +41,30 @@ SERVICE_PORTS = {
     "wpscan":    8011,
     "zap":       8012,
     "sslyze":    8013,
+    "sqlmap":    8014,
+    "commix":    8015,
+    "gittools":  8016,
+    "wapiti":    8017,
+    "nosqlmap":  8018,
+    "gobuster":  8019,
+    "arachni":   8020,
 }
 
 # Services per scan category
 PROFILE_SERVICES = {
     "white": ["nmap", "testssl", "dirsearch", "nikto", "whatweb",
-              "arjun", "dalfox", "wafw00f", "dnsrecon", "nuclei"],
+              "arjun", "dalfox", "wafw00f", "dnsrecon", "nuclei",
+              "sqlmap", "commix", "gittools", "wapiti", "nosqlmap",
+              "gobuster", "arachni"],
     "gray":  ["nmap", "wpscan", "zap", "sslyze"],
     "black": ["nmap", "nikto", "nuclei"],
 }
 
 # Slow services get longer poll timeout
-SLOW_SERVICES = {"nikto", "testssl", "nuclei", "dalfox", "zap", "wpscan"}
+SLOW_SERVICES = {
+    "nikto", "testssl", "nuclei", "dalfox", "zap", "wpscan",
+    "sqlmap", "commix", "wapiti", "nosqlmap", "gobuster", "arachni", "gittools"
+}
 SERVICE_TIMEOUT = 600   # max seconds to wait per service
 POLL_INTERVAL   = 3     # seconds between status polls
 
@@ -142,7 +154,11 @@ async def call_service(service: str, target_info: dict, uid: str, category: str)
     elif service in ["dnsrecon", "testssl", "sslyze"]:
         svc_target = target_info["fqdn"]
     # Web tools prefer URL
-    elif service in ["nuclei", "dirsearch", "nikto", "whatweb", "arjun", "dalfox", "wafw00f", "wpscan", "zap"]:
+    elif service in [
+        "nuclei", "dirsearch", "nikto", "whatweb", "arjun", "dalfox",
+        "wafw00f", "wpscan", "zap", "sqlmap", "commix", "gittools",
+        "wapiti", "nosqlmap", "gobuster", "arachni"
+    ]:
         svc_target = target_info["url"]
     else:
         svc_target = target_info["original"]

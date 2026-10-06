@@ -3,6 +3,8 @@ FROM ruby:3.1-slim
 # Install dependencies
 RUN apt-get update && \
     apt-get install -y \
+    python3 \
+    python3-pip \
     wget \
     build-essential \
     libcurl4-openssl-dev \
@@ -21,4 +23,9 @@ ENV PATH="/opt/arachni/bin:${PATH}"
 
 WORKDIR /app
 
-ENTRYPOINT ["/opt/arachni/bin/arachni"]
+COPY services/arachni/requirements.txt /app/
+RUN pip3 install --no-cache-dir --break-system-packages -r /app/requirements.txt
+COPY services/base /app/services/base/
+COPY services/arachni /app/
+EXPOSE 8000
+CMD ["python3", "service.py"]
