@@ -24,12 +24,13 @@ Tamamen **mikroservis mimarisine** uygun olarak tasarlanan bu proje, her bir gü
     *   Redis üzerinde merkezi loglama ve durum takibi.
     *   Docker Compose ile kolay dağıtım.
 
-### 🆕 Son Güncellemeler (v2.0)
-*   ✅ **7 Yeni Araç Eklendi:** SQLmap, Commix, GitTools, Wapiti, NoSQLMap, Gobuster, Arachni
+### 🆕 Son Güncellemeler (v2.0.1)
+*   ✅ **White Box Profili 18 Araca Çıktı:** SQLmap, Commix, GitTools, Wapiti, NoSQLMap, Gobuster, Arachni ve httpx
 *   ✅ **Gelişmiş Rapor Parsing:** XSS ve DNS bulguları artık detaylı gösteriliyor
 *   ✅ **Paralel Execution:** Tüm araçlar eşzamanlı çalışarak tarama süresini azaltıyor
 *   ✅ **Redis-Based Storage:** Tüm sonuçlar ve loglar Redis'te saklanıyor
 *   ✅ **Timeout Yönetimi:** Yavaş araçlar için özel timeout ayarları
+*   ✅ **Build Stabilite Düzeltmeleri:** Go builder image etiketi güncellendi, NoSQLMap build adımı sadeleştirildi
 
 ---
 

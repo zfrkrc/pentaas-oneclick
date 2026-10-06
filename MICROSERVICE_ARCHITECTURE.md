@@ -7,22 +7,16 @@ Frontend (Session Token: scan_id)
     ↓
 Backend Orchestrator
     ↓ (Paralel HTTP İstekleri)
-    ├─→ nmap-service:8000
-    ├─→ nuclei-service:8000
-    ├─→ nikto-service:8000
-    ├─→ dirsearch-service:8000
-    ├─→ testssl-service:8000
-    ├─→ whatweb-service:8000
-    ├─→ arjun-service:8000
-    ├─→ dalfox-service:8000
-    ├─→ wafw00f-service:8000
-    └─→ dnsrecon-service:8000
+    ├─→ White Box: 18 servis
+    ├─→ Gray Box: 4 servis
+    └─→ Black Box: 3 servis
+         (Toplam 25 benzersiz araç servisi)
 ```
 
 ## ✨ Özellikler
 
 ### 1. **Tam Asenkron Çalışma**
-- ✅ Backend tüm servislere **aynı anda** HTTP POST isteği atar
+- ✅ Backend, seçilen profile göre tüm servislere **aynı anda** HTTP POST isteği atar
 - ✅ Her servis bağımsız çalışır
 - ✅ Bir servisin bitmesini beklemeden diğerleri devam eder
 
@@ -175,7 +169,7 @@ tail -f ./reports/abc123def456/data/scan.log
 [2026-01-17 00:10:24] 🚀 Triggering nikto...
 [2026-01-17 00:10:25] ✅ nmap started (service_scan_id: xyz789)
 [2026-01-17 00:10:25] ✅ nuclei started (service_scan_id: abc456)
-[2026-01-17 00:10:30] ✅ All services triggered (10/10 started)
+[2026-01-17 00:10:30] ✅ All services triggered (18/18 started - white profile)
 ```
 
 ## 🚀 Deployment

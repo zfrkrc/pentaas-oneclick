@@ -5,6 +5,17 @@ All notable changes to PentaaS OneClick Scanner will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-10-06
+
+### Changed
+- Documentation synchronized with current service inventory and profile sizes
+- README "latest updates" section now explicitly includes `httpx` in White Box expansion
+- Microservice architecture guide updated to reflect profile-based service execution
+
+### Fixed
+- Build fix: Go builder image pinned to `golang:alpine` (valid tag)
+- Build fix: removed stale NoSQLMap requirements install step from service Dockerfile
+
 ## [2.0.0] - 2026-01-17
 
 ### Added
@@ -80,5 +91,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
+- **v2.0.1** (2026-10-06): Documentation sync and build reliability fixes
 - **v2.0.0** (2026-01-17): Major update with 7 new tools and enhanced reporting
 - **v1.0.0** (2026-01-15): Initial release with 13 core security tools
