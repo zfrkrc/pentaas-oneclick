@@ -37,7 +37,7 @@ Tamamen **mikroservis mimarisine** uygun olarak tasarlanan bu proje, her bir gü
 
 Aşağıdaki araçların her biri, kendi izole Docker konteynerinde (%100 Mikroservis) çalışır:
 
-### White Box Araçları (17 Araç)
+### White Box Araçları (18 Araç)
 | Servis Adı | Açıklama |
 | :--- | :--- |
 | **Nmap** | Ağ keşfi ve port taraması. |
@@ -57,6 +57,7 @@ Aşağıdaki araçların her biri, kendi izole Docker konteynerinde (%100 Mikros
 | **NoSQLMap** ⭐ | NoSQL injection test aracı. |
 | **Gobuster** ⭐ | Directory/DNS/vhost bruteforce. |
 | **Arachni** ⭐ | Scriptable web güvenlik tarayıcısı. |
+| **httpx** ⭐ | HTTP/HTTPS canlı endpoint doğrulama ve teknoloji tespiti. |
 
 ### Gray Box Araçları (4 Araç)
 | Servis Adı | Açıklama |
@@ -75,7 +76,7 @@ Aşağıdaki araçların her biri, kendi izole Docker konteynerinde (%100 Mikros
 
 > ⭐ **Yeni eklenen araçlar** - awesome-pentest listesinden entegre edildi.
 
-**Toplam:** 24 farklı güvenlik aracı
+**Toplam:** 25 farklı güvenlik aracı
 
 ---
 
@@ -93,7 +94,7 @@ Aşağıdaki araçların her biri, kendi izole Docker konteynerinde (%100 Mikros
     ```
 
 2.  **Servisleri Başlatın:**
-    Bu komut, frontend, backend, redis, worker ve tüm güvenlik araçlarını (24+ servis) derleyip başlatacaktır. İlk kurulumda imajların inmesi ve derlenmesi biraz zaman alabilir.
+    Bu komut, frontend, backend, redis, worker ve tüm güvenlik araçlarını (25+ servis) derleyip başlatacaktır. İlk kurulumda imajların inmesi ve derlenmesi biraz zaman alabilir.
     ```bash
     docker compose up --build -d
     ```

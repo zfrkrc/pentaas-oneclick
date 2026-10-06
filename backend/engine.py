@@ -48,6 +48,7 @@ SERVICE_PORTS = {
     "nosqlmap":  8018,
     "gobuster":  8019,
     "arachni":   8020,
+    "httpx":     8021,
 }
 
 # Services per scan category
@@ -55,7 +56,7 @@ PROFILE_SERVICES = {
     "white": ["nmap", "testssl", "dirsearch", "nikto", "whatweb",
               "arjun", "dalfox", "wafw00f", "dnsrecon", "nuclei",
               "sqlmap", "commix", "gittools", "wapiti", "nosqlmap",
-              "gobuster", "arachni"],
+              "gobuster", "arachni", "httpx"],
     "gray":  ["nmap", "wpscan", "zap", "sslyze"],
     "black": ["nmap", "nikto", "nuclei"],
 }
@@ -157,7 +158,7 @@ async def call_service(service: str, target_info: dict, uid: str, category: str)
     elif service in [
         "nuclei", "dirsearch", "nikto", "whatweb", "arjun", "dalfox",
         "wafw00f", "wpscan", "zap", "sqlmap", "commix", "gittools",
-        "wapiti", "nosqlmap", "gobuster", "arachni"
+        "wapiti", "nosqlmap", "gobuster", "arachni", "httpx"
     ]:
         svc_target = target_info["url"]
     else:

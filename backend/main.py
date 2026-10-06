@@ -75,7 +75,7 @@ __version__ = "2.0.0"
 app = FastAPI(
     title="PentaaS OneClick Scanners",
     version=__version__,
-    description="Automated penetration testing platform with 24+ security tools"
+    description="Automated penetration testing platform with 25+ security tools"
 )
 
 # CORS Middleware — origin'ler env'den; "*" ile allow_credentials=True geçersizdir
@@ -127,7 +127,7 @@ def read_root():
     return {
         "message": "PentaaS OneClick Scanner API is Ready",
         "version": __version__,
-        "tools_count": 24,
+        "tools_count": 25,
         "profiles": ["white", "gray", "black"]
     }
 
@@ -159,10 +159,10 @@ def get_version():
         "version": __version__,
         "release_date": "2026-01-17",
         "tools": {
-            "white_box": 17,
+            "white_box": 18,
             "gray_box": 4,
             "black_box": 3,
-            "total": 24
+            "total": 25
         }
     }
 
