@@ -286,3 +286,15 @@ services:
     volumes:
       - ./reports:/data/results
     restart: unless-stopped
+
+  httpx-service:
+    build:
+      context: ./backend
+      dockerfile: services/httpx/Dockerfile
+    ports:
+      - "8021:8000"
+    environment:
+      - SERVICE_NAME=httpx
+    volumes:
+      - ./reports:/data/results
+    restart: unless-stopped
