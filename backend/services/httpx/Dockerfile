@@ -1,4 +1,4 @@
-FROM golang:latest-alpine AS builder
+FROM golang:alpine AS builder
 
 RUN go install github.com/projectdiscovery/httpx/cmd/httpx@latest
 

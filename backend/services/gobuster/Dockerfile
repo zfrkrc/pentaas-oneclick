@@ -1,4 +1,4 @@
-FROM golang:latest-alpine AS builder
+FROM golang:alpine AS builder
 
 # Install gobuster
 RUN go install github.com/OJ/gobuster/v3@latest
