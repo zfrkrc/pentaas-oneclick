@@ -13,6 +13,7 @@ services:
       - ./reports:/reports:ro
     depends_on:
       - backend
+    restart: unless-stopped
 
   backend:
     build: ./backend
@@ -283,7 +284,7 @@ services:
       context: ./backend
       dockerfile: services/httpx/Dockerfile
     ports:
-      - "8021:8000"
+      - "8024:8000"
     environment:
       - SERVICE_NAME=httpx
     volumes:
