@@ -66,3 +66,5 @@ Thumbs.db
 # Docker
 *.tar
 __pycache__/
+.repowise/
+.claude/CLAUDE.md
