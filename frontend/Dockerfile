@@ -1,7 +1,9 @@
 FROM node:20-alpine as build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+# npm 10.8.2 'edgesOut' bug'ı → npm@11'e yükselt (node:20 uyumlu)
+RUN npm install -g npm@11
+RUN npm install --no-audit --no-fund
 COPY . .
 RUN npm run build
 
