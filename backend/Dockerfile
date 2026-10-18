@@ -1,4 +1,6 @@
 FROM python:3.11-slim
+# Güvenlik: build apt/apk upgrade (Trivy fixable)
+RUN apt-get update && apt-get -y upgrade && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # docker + compose plugin
 RUN apt-get update && \
